@@ -1,6 +1,6 @@
 # Implementation Tasks - Current Cycle
 
-## Current Focus: Task 5 - Data Connector Framework
+## Current Focus: Task 6 - Scoring Engine Layer
 
 This task list shows the current 2-task implementation cycle. After completing these tasks, the next cycle will be loaded from FOUNDATION.
 
@@ -16,87 +16,112 @@ This task list shows the current 2-task implementation cycle. After completing t
 
 ## Current Task Cycle
 
-- [x] Task 5: Implement data connector framework
-- [-] Complete cycle - Commit, push, and setup next tasks
+- [ ] Task 6: Implement scoring engine layer
+- [ ] Complete cycle - Commit, push, and setup next tasks
 
 ---
 
-## Task 5 Details: Implement data connector framework
+## Task 6 Details: Implement scoring engine layer
 
-Implement the framework for extracting data from various sources and transforming it into unified candidate models.
+Implement the framework for scoring candidates using ML models with caching, feature retrieval, and fallback support.
 
 ### Subtasks:
 
-- [ ] 5.1 Create DataConnector interface
-  - Define interface methods (getName, validateConfig, extractData, transformToCandidate)
-  - Create base abstract class with common validation logic
-  - _Requirements: 1.1, 1.2_
+- [ ] 6.1 Create ScoringProvider interface
+  - Define interface methods (getModelId, scoreCandidate, scoreBatch, healthCheck)
+  - Add fallback score support
+  - _Requirements: 3.1, 3.4_
   - _Files to create_:
-    - `solicitation-connectors/src/main/kotlin/com/solicitation/connectors/DataConnector.kt`
-    - `solicitation-connectors/src/main/kotlin/com/solicitation/connectors/BaseDataConnector.kt`
+    - `solicitation-scoring/src/main/kotlin/com/solicitation/scoring/ScoringProvider.kt`
+    - `solicitation-scoring/src/main/kotlin/com/solicitation/scoring/BaseScoringProvider.kt`
 
-- [ ] 5.2 Implement data warehouse connector
-  - Implement Athena/Glue integration for data warehouse queries
-  - Add field mapping configuration support
-  - Implement transformation to unified candidate model
-  - _Requirements: 1.2, 1.3_
+- [ ] 6.2 Implement score caching in DynamoDB
+  - Create score cache table schema
+  - Implement cache read/write with TTL
+  - Add cache invalidation logic
+  - _Requirements: 3.5_
   - _Files to create_:
-    - `solicitation-connectors/src/main/kotlin/com/solicitation/connectors/DataWarehouseConnector.kt`
-    - `solicitation-connectors/src/main/kotlin/com/solicitation/connectors/FieldMapper.kt`
+    - `solicitation-scoring/src/main/kotlin/com/solicitation/scoring/ScoreCache.kt`
+    - `solicitation-scoring/src/main/kotlin/com/solicitation/scoring/ScoreCacheRepository.kt`
 
-- [ ]* 5.3 Write property test for transformation preserves semantics
-  - **Property 1: Data connector transformation preserves semantics**
-  - **Validates: Requirements 1.2**
-  - Verify source data is correctly transformed to candidate model
-  - Verify no data loss during transformation
+- [ ]* 6.3 Write property test for score caching consistency
+  - **Property 6: Score caching consistency**
+  - **Validates: Requirements 3.5**
+  - Verify cached scores match computed scores
+  - Verify cache TTL is respected
   - _Files to create_:
-    - `solicitation-connectors/src/test/kotlin/com/solicitation/connectors/TransformationPropertyTest.kt`
+    - `solicitation-scoring/src/test/kotlin/com/solicitation/scoring/ScoreCachingPropertyTest.kt`
 
-- [ ] 5.4 Add schema validation logic
-  - Implement JSON Schema validation for source data
-  - Add detailed error logging for validation failures
-  - _Requirements: 1.4, 16.1, 16.2, 16.3_
+- [ ] 6.4 Implement feature store integration
+  - Create feature retrieval client
+  - Add feature validation against required features
+  - _Requirements: 3.2_
   - _Files to create_:
-    - `solicitation-connectors/src/main/kotlin/com/solicitation/connectors/SchemaValidator.kt`
+    - `solicitation-scoring/src/main/kotlin/com/solicitation/scoring/FeatureStoreClient.kt`
+    - `solicitation-scoring/src/main/kotlin/com/solicitation/scoring/FeatureValidator.kt`
 
-- [ ]* 5.5 Write property test for required field validation
-  - **Property 49: Required field validation**
-  - **Validates: Requirements 16.1, 16.3**
-  - Verify missing required fields are detected
-  - Verify validation errors are descriptive
+- [ ]* 6.5 Write property test for feature retrieval completeness
+  - **Property 8: Feature retrieval completeness**
+  - **Validates: Requirements 3.2**
+  - Verify all required features are retrieved
+  - Verify feature validation catches missing features
   - _Files to create_:
-    - `solicitation-connectors/src/test/kotlin/com/solicitation/connectors/RequiredFieldPropertyTest.kt`
+    - `solicitation-scoring/src/test/kotlin/com/solicitation/scoring/FeatureRetrievalPropertyTest.kt`
 
-- [ ]* 5.6 Write property test for date format validation
-  - **Property 50: Date format validation**
-  - **Validates: Requirements 16.2, 16.3**
-  - Verify date fields are validated correctly
-  - Verify invalid date formats are rejected
+- [ ] 6.6 Implement multi-model scoring support
+  - Add logic to execute multiple scoring models per candidate
+  - Store scores with modelId, value, confidence, timestamp
+  - _Requirements: 3.3_
   - _Files to create_:
-    - `solicitation-connectors/src/test/kotlin/com/solicitation/connectors/DateFormatPropertyTest.kt`
+    - `solicitation-scoring/src/main/kotlin/com/solicitation/scoring/MultiModelScorer.kt`
+
+- [ ]* 6.7 Write property test for multi-model scoring independence
+  - **Property 5: Multi-model scoring independence**
+  - **Validates: Requirements 3.3**
+  - Verify each model scores independently
+  - Verify one model failure doesn't affect others
+  - _Files to create_:
+    - `solicitation-scoring/src/test/kotlin/com/solicitation/scoring/MultiModelScoringPropertyTest.kt`
+
+- [ ] 6.8 Add scoring fallback logic with circuit breaker
+  - Implement circuit breaker pattern for model endpoints
+  - Add fallback to cached scores or default values
+  - Add failure logging
+  - _Requirements: 3.4, 9.3_
+  - _Files to create_:
+    - `solicitation-scoring/src/main/kotlin/com/solicitation/scoring/CircuitBreaker.kt`
+    - `solicitation-scoring/src/main/kotlin/com/solicitation/scoring/ScoringFallback.kt`
+
+- [ ]* 6.9 Write property test for scoring fallback correctness
+  - **Property 7: Scoring fallback correctness**
+  - **Validates: Requirements 3.4, 9.3**
+  - Verify fallback is used when model fails
+  - Verify circuit breaker opens after threshold
+  - _Files to create_:
+    - `solicitation-scoring/src/test/kotlin/com/solicitation/scoring/ScoringFallbackPropertyTest.kt`
 
 ---
 
 ## Complete Cycle: Commit, Push, and Setup Next Tasks
 
-After Task 5 completion, commit the changes, push to git, and prepare tasks.md for the next cycle.
+After Task 6 completion, commit the changes, push to git, and prepare tasks.md for the next cycle.
 
 ### Subtasks:
 
-- [x] Verify all data connector tests pass
-  - Run `./gradlew :solicitation-connectors:test`
+- [ ] Verify all scoring engine tests pass
+  - Run `./gradlew :solicitation-scoring:test`
   - Ensure all tests pass with no errors
   - Verify build succeeds with no warnings
 
-- [-] Commit and push changes
+- [ ] Commit and push changes
   - Stage all changes with `git add -A`
-  - Create descriptive commit message for Task 5 completion
+  - Create descriptive commit message for Task 6 completion
   - Push to origin/main
 
-- [~] Setup next task cycle in tasks.md
-  - Read FOUNDATION/tasks.md to identify next tasks (Task 6 from FOUNDATION)
-  - Update tasks.md with Task 6 and new cycle completion task
-  - Move completed Task 5 to completed-tasks.md
+- [ ] Setup next task cycle in tasks.md
+  - Read FOUNDATION/tasks.md to identify next tasks (Task 7 from FOUNDATION)
+  - Update tasks.md with Task 7 and new cycle completion task
+  - Move completed Task 6 to completed-tasks.md
   - Commit and push the updated files
 
 ---
@@ -114,39 +139,41 @@ After Task 5 completion, commit the changes, push to git, and prepare tasks.md f
 - Property tests in same location with `PropertyTest` suffix
 - Arbitrary generators in `arbitraries` subpackage for reuse
 
-### Data Connector Testing
-- Test data extraction from various sources
-- Test field mapping with different configurations
-- Test schema validation with valid and invalid data
-- Test transformation to candidate model
+### Scoring Engine Testing
+- Test scoring provider interface compliance
+- Test score caching with various TTL scenarios
+- Test feature retrieval with valid and invalid features
+- Test multi-model scoring with independent failures
+- Test circuit breaker and fallback behavior
 - Test error handling and logging
 
 ---
 
 ## Success Criteria
 
-Task 5 is complete when:
-1. ✅ DataConnector interface and base class created
-2. ✅ Data warehouse connector implemented
-3. ✅ Field mapping configuration working
-4. ✅ Schema validation logic implemented
-5. ✅ All property tests pass with 100+ iterations
-6. ✅ Unit tests cover edge cases and error conditions
-7. ✅ Gradle build succeeds with no warnings
+Task 6 is complete when:
+1. ✅ ScoringProvider interface and base class created
+2. ✅ Score caching implemented with DynamoDB
+3. ✅ Feature store integration working
+4. ✅ Multi-model scoring support implemented
+5. ✅ Circuit breaker and fallback logic working
+6. ✅ All property tests pass with 100+ iterations
+7. ✅ Unit tests cover edge cases and error conditions
+8. ✅ Gradle build succeeds with no warnings
 
 Cycle completion is complete when:
-1. ✅ All data connector tests pass
+1. ✅ All scoring engine tests pass
 2. ✅ No compilation errors or warnings
 3. ✅ Changes committed and pushed to git
-4. ✅ Next task cycle (Task 6 from FOUNDATION) loaded into tasks.md
-5. ✅ Completed Task 5 moved to completed-tasks.md
+4. ✅ Next task cycle (Task 7 from FOUNDATION) loaded into tasks.md
+5. ✅ Completed Task 6 moved to completed-tasks.md
 
 ---
 
 ## Next Cycle Preview
 
-After Task 5 & cycle completion, the next cycle will focus on:
-- **Task 6**: Implement scoring engine layer (from FOUNDATION)
+After Task 6 & cycle completion, the next cycle will focus on:
+- **Task 7**: Implement filtering and eligibility pipeline (from FOUNDATION)
 - **Complete cycle**: Commit, push, and setup next tasks
 
 ---
@@ -159,4 +186,3 @@ After Task 5 & cycle completion, the next cycle will focus on:
 - Refer to FOUNDATION/tasks.md for the complete task list
 - Refer to completed-tasks.md for history of completed work
 - DynamoDB local can be used for testing without AWS credentials
-
