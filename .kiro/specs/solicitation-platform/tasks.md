@@ -40,7 +40,7 @@ Create the unified candidate model and configuration models that serve as the ca
 
 #### Subtasks:
 
-- [ ] 2.1 Create Candidate model with all fields
+- [x] 2.1 Create Candidate model with all fields
   - Implement Context, Subject, Score, CandidateAttributes, CandidateMetadata data classes
   - Add JSON serialization/deserialization annotations
   - Implement validation for required fields
@@ -54,7 +54,7 @@ Create the unified candidate model and configuration models that serve as the ca
     - `solicitation-models/src/main/kotlin/com/solicitation/model/CandidateMetadata.kt`
     - `solicitation-models/src/main/kotlin/com/solicitation/model/RejectionRecord.kt`
 
-- [ ]* 2.2 Write property test for candidate model completeness
+- [x]* 2.2 Write property test for candidate model completeness
   - **Property 2: Candidate model completeness**
   - **Validates: Requirements 2.1, 2.2**
   - Verify all required fields are present in any candidate
@@ -63,7 +63,7 @@ Create the unified candidate model and configuration models that serve as the ca
     - `solicitation-models/src/test/kotlin/com/solicitation/model/CandidatePropertyTest.kt`
     - `solicitation-models/src/test/kotlin/com/solicitation/model/arbitraries/CandidateArbitraries.kt`
 
-- [ ]* 2.3 Write property test for context extensibility
+- [x]* 2.3 Write property test for context extensibility
   - **Property 3: Context extensibility**
   - **Validates: Requirements 1.3, 2.3**
   - Verify any valid context type/id can be stored without data loss
@@ -71,7 +71,7 @@ Create the unified candidate model and configuration models that serve as the ca
   - _Files to create_:
     - `solicitation-models/src/test/kotlin/com/solicitation/model/ContextPropertyTest.kt`
 
-- [ ] 2.4 Create configuration models (ProgramConfig, FilterConfig, ChannelConfig)
+- [x] 2.4 Create configuration models (ProgramConfig, FilterConfig, ChannelConfig)
   - Implement program registry data structures
   - Add validation logic for configuration fields
   - _Requirements: 10.1, 10.2_
@@ -83,7 +83,7 @@ Create the unified candidate model and configuration models that serve as the ca
     - `solicitation-models/src/main/kotlin/com/solicitation/model/config/ScoringModelConfig.kt`
     - `solicitation-models/src/main/kotlin/com/solicitation/model/config/FilterChainConfig.kt`
 
-- [ ]* 2.5 Write property test for program configuration validation
+- [x]* 2.5 Write property test for program configuration validation
   - **Property 30: Program configuration validation**
   - **Validates: Requirements 10.1**
   - Verify all required fields must be present

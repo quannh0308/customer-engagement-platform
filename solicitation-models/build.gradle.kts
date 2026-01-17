@@ -20,6 +20,11 @@ dependencies {
     implementation("javax.validation:validation-api:2.0.1.Final")
     implementation("org.hibernate.validator:hibernate-validator:7.0.5.Final")
     implementation("org.glassfish:jakarta.el:4.0.2") // Required for Hibernate Validator
+    
+    // Bean Validation for tests
+    testImplementation("javax.validation:validation-api:2.0.1.Final")
+    testImplementation("org.hibernate.validator:hibernate-validator:7.0.5.Final")
+    testImplementation("org.glassfish:jakarta.el:4.0.2")
 }
 
 tasks.shadowJar {
