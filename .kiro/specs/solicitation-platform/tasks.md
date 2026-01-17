@@ -16,8 +16,8 @@ This task list shows the current 2-task implementation cycle. After completing t
 
 ## Current Task Cycle
 
-- [ ] Task 6: Implement scoring engine layer
-- [ ] Complete cycle - Commit, push, and setup next tasks
+- [x] Task 6: Implement scoring engine layer
+- [-] Complete cycle - Commit, push, and setup next tasks
 
 ---
 
@@ -108,17 +108,17 @@ After Task 6 completion, commit the changes, push to git, and prepare tasks.md f
 
 ### Subtasks:
 
-- [ ] Verify all scoring engine tests pass
+- [x] Verify all scoring engine tests pass
   - Run `./gradlew :solicitation-scoring:test`
   - Ensure all tests pass with no errors
   - Verify build succeeds with no warnings
 
-- [ ] Commit and push changes
+- [-] Commit and push changes
   - Stage all changes with `git add -A`
   - Create descriptive commit message for Task 6 completion
   - Push to origin/main
 
-- [ ] Setup next task cycle in tasks.md
+- [x] Setup next task cycle in tasks.md
   - Read FOUNDATION/tasks.md to identify next tasks (Task 7 from FOUNDATION)
   - Update tasks.md with Task 7 and new cycle completion task
   - Move completed Task 6 to completed-tasks.md
