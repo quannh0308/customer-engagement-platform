@@ -17,7 +17,7 @@ This task list covers the rebranding of the platform from "General Solicitation 
 
 ## Tasks
 
-### Task 1: Complete Automated Rebranding
+- [ ] Task 1: Complete Automated Rebranding
 
 Execute all automated rebranding tasks including documentation updates, spec directory rename, and FOUNDATION file updates.
 
@@ -25,7 +25,7 @@ Execute all automated rebranding tasks including documentation updates, spec dir
 
 **Note**: This task can be executed automatically. Task 2 (GitHub updates) must be done manually.
 
-#### Subtasks:
+### Subtasks:
 
 - [ ] 1.1 Update README.md
   - Add CEAP header with "Formerly: General Solicitation Platform"
@@ -144,7 +144,7 @@ Execute all automated rebranding tasks including documentation updates, spec dir
 
 ---
 
-### Task 2: Update GitHub Repository Metadata (MANUAL)
+- [ ] Task 2: Update GitHub Repository Metadata (MANUAL)
 
 Update GitHub repository settings to reflect CEAP branding.
 
@@ -152,7 +152,7 @@ Update GitHub repository settings to reflect CEAP branding.
 
 **Note**: This task MUST be done manually in the GitHub web interface.
 
-#### Subtasks:
+### Subtasks:
 
 - [ ] 2.1 Update repository description
   - Navigate to: https://github.com/quannh0308/solicitation-platform/settings
