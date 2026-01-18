@@ -718,6 +718,146 @@ The implementation follows a phased approach:
 - [ ] 27. Final checkpoint - Ensure all tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
+- [ ] 28. Rename code modules and packages to CEAP
+  - Rename all module directories from `solicitation-*` to `ceap-*`
+  - Rename all package names from `com.solicitation.*` to `com.ceap.*`
+  - Update all imports, references, and configuration files
+  - Verify build and all tests pass after renaming
+  - _Requirements: All (code consistency with branding)_
+  
+  - [ ] 28.1 Rename module directories
+    - Rename: `solicitation-channels` → `ceap-channels`
+    - Rename: `solicitation-common` → `ceap-common`
+    - Rename: `solicitation-connectors` → `ceap-connectors`
+    - Rename: `solicitation-filters` → `ceap-filters`
+    - Rename: `solicitation-models` → `ceap-models`
+    - Rename: `solicitation-scoring` → `ceap-scoring`
+    - Rename: `solicitation-serving` → `ceap-serving`
+    - Rename: `solicitation-storage` → `ceap-storage`
+    - Rename: `solicitation-workflow-etl` → `ceap-workflow-etl`
+    - Rename: `solicitation-workflow-filter` → `ceap-workflow-filter`
+    - Rename: `solicitation-workflow-reactive` → `ceap-workflow-reactive`
+    - Rename: `solicitation-workflow-score` → `ceap-workflow-score`
+    - Rename: `solicitation-workflow-store` → `ceap-workflow-store`
+    - Use `git mv` to preserve history
+  
+  - [ ] 28.2 Update settings.gradle.kts
+    - Update all module references from `solicitation-*` to `ceap-*`
+    - Example: `include("solicitation-channels")` → `include("ceap-channels")`
+  
+  - [ ] 28.3 Update all build.gradle.kts files
+    - Update project dependencies from `:solicitation-*` to `:ceap-*`
+    - Example: `implementation(project(":solicitation-models"))` → `implementation(project(":ceap-models"))`
+    - Update in all 13 module build files
+  
+  - [ ] 28.4 Rename package directories
+    - Rename: `com/solicitation` → `com/ceap` in all modules
+    - Use `git mv` to preserve history
+    - Affects all `src/main/kotlin` and `src/main/java` directories
+  
+  - [ ] 28.5 Update package declarations
+    - Replace: `package com.solicitation.*` → `package com.ceap.*`
+    - Affects all Kotlin and Java source files (~150+ files)
+    - Use find and replace across all files
+  
+  - [ ] 28.6 Update import statements
+    - Replace: `import com.solicitation.*` → `import com.ceap.*`
+    - Affects all Kotlin and Java source files (~150+ files)
+    - Use find and replace across all files
+  
+  - [ ] 28.7 Update infrastructure CDK code
+    - Update package references in `infrastructure/src/main/kotlin`
+    - Update Lambda handler references in CDK stacks
+    - Example: `com.solicitation.workflow.etl.ETLHandler` → `com.ceap.workflow.etl.ETLHandler`
+  
+  - [ ] 28.8 Update configuration files
+    - Update `logback.xml` logger names
+    - Update any configuration files referencing package names
+  
+  - [ ] 28.9 Build and test after renaming
+    - Run: `./gradlew clean build`
+    - Verify all modules compile successfully
+    - Verify all tests pass
+    - Fix any issues found
+  
+  - [ ] 28.10 Update documentation references
+    - Update any documentation that references module names
+    - Update any documentation that references package names
+    - Keep migration notes explaining the history
+  
+  - [ ] 28.11 Commit code renaming changes
+    - Stage all changes: `git add .`
+    - Create descriptive commit message
+    - Commit changes
+
+- [ ] 29. Documentation audit and cleanup
+  - Review all markdown files in the project for accuracy, consistency, and completeness
+  - Update outdated information and fix any inconsistencies
+  - Ensure all documentation reflects current architecture and branding
+  - _Requirements: All (documentation quality)_
+  
+  - [ ] 29.1 Audit root-level documentation
+    - Review and update `README.md`
+    - Review and update `TECH-STACK.md`
+    - Verify accuracy of project structure descriptions
+    - Ensure all links work correctly
+  
+  - [ ] 29.2 Audit docs/ directory
+    - Review `docs/VISUAL-ARCHITECTURE.md`
+    - Review `docs/USE-CASES.md`
+    - Review `docs/PLATFORM-EXPANSION-VISION.md`
+    - Review `docs/EXPANSION-SUMMARY.md`
+    - Review `docs/REBRANDING-STRATEGY.md`
+    - Review `docs/BRANDING.md`
+    - Verify consistency across all documents
+  
+  - [ ] 29.3 Audit use case documentation
+    - Review all files in `docs/usecases/`
+    - Review all files in `docs/usecases/expansion/`
+    - Verify metrics and success criteria are accurate
+    - Ensure all use cases reflect current capabilities
+  
+  - [ ] 29.4 Audit infrastructure documentation
+    - Review `infrastructure/DYNAMODB_SCHEMA.md`
+    - Review `infrastructure/LAMBDA_CONFIGURATION.md`
+    - Review `infrastructure/LAMBDA_QUICK_REFERENCE.md`
+    - Verify accuracy of infrastructure descriptions
+  
+  - [ ] 29.5 Audit archived documentation
+    - Review files in `docs/archive/`
+    - Determine if any should be updated or removed
+    - Ensure archive is organized and relevant
+  
+  - [ ] 29.6 Check for documentation gaps
+    - Identify missing documentation for implemented features
+    - Create list of documentation that needs to be written
+    - Prioritize documentation gaps by importance
+  
+  - [ ] 29.7 Verify cross-references and links
+    - Check all internal links between documents
+    - Verify all file paths are correct after rebranding
+    - Fix any broken links or references
+  
+  - [ ] 29.8 Update version information
+    - Ensure version numbers are consistent
+    - Update "last updated" dates where applicable
+    - Document current state of implementation
+  
+  - [ ] 29.9 Review code examples in documentation
+    - Verify code examples compile and run
+    - Update examples to use CEAP naming if Task 28 completed
+    - Ensure examples follow current best practices
+  
+  - [ ] 29.10 Create documentation improvement plan
+    - Document findings from audit
+    - Create prioritized list of improvements
+    - Estimate effort for each improvement
+  
+  - [ ] 29.11 Commit documentation updates
+    - Stage all changes: `git add docs/ *.md`
+    - Create descriptive commit message
+    - Commit changes
+
 ## Notes
 
 - Tasks marked with `*` are optional and can be skipped for faster MVP
