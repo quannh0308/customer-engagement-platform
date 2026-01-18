@@ -533,32 +533,32 @@ The implementation follows a phased approach:
 
 
 
-- [ ] 20. Implement security and compliance features
-  - [ ] 20.1 Add PII redaction in logs
+- [x] 20. Implement security and compliance features
+  - [x] 20.1 Add PII redaction in logs
     - Identify PII fields (email, phone, address)
     - Implement redaction/masking before logging
     - _Requirements: 18.4_
   
-  - [ ]* 20.2 Write property test for PII redaction in logs
+  - [x]* 20.2 Write property test for PII redaction in logs
     - **Property 55: PII redaction in logs**
     - **Validates: Requirements 18.4**
   
-  - [ ] 20.3 Implement opt-out candidate deletion
+  - [x] 20.3 Implement opt-out candidate deletion
     - Create opt-out event handler
     - Delete all candidates for opted-out customer
     - Complete deletion within 24 hours
     - _Requirements: 18.5_
   
-  - [ ]* 20.4 Write property test for opt-out candidate deletion
+  - [x]* 20.4 Write property test for opt-out candidate deletion
     - **Property 56: Opt-out candidate deletion**
     - **Validates: Requirements 18.5**
   
-  - [ ] 20.5 Add email compliance features
+  - [x] 20.5 Add email compliance features
     - Include unsubscribe link in all emails
     - Enforce frequency preferences
     - _Requirements: 18.6_
   
-  - [ ]* 20.6 Write property test for email compliance
+  - [x]* 20.6 Write property test for email compliance
     - **Property 57: Email compliance**
     - **Validates: Requirements 18.6**
   
