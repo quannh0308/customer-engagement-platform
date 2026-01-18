@@ -64,6 +64,8 @@ Create the channel adapter framework for delivering candidates through various c
 
 After Task 10 completion, commit any fixes, push to git, and prepare tasks.md for the next cycle.
 
+**IMPORTANT**: When setting up the next cycle, ALL tasks in the new tasks.md must be marked as `[ ]` not started. This is a fresh cycle start.
+
 ### Subtasks:
 
 - [ ] Commit and push any fixes
@@ -73,8 +75,10 @@ After Task 10 completion, commit any fixes, push to git, and prepare tasks.md fo
 
 - [ ] Setup next task cycle in tasks.md
   - Read FOUNDATION/tasks.md to identify next tasks (Task 11 from FOUNDATION)
-  - Update tasks.md with Task 11 and new cycle completion task
-  - Move completed Task 10 to completed-tasks.md
+  - Move completed Task 10 to completed-tasks.md with full details
+  - Update tasks.md with Task 11 as the new main task
+  - **CRITICAL**: Ensure ALL tasks in tasks.md are marked as `[ ]` not started (including Task 11 AND "Complete cycle" task)
+  - Update the "Complete cycle" subtask to reference Task 12 for the next iteration
   - Commit and push the updated files
 
 ---
