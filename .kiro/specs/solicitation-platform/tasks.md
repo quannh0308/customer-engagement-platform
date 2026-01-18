@@ -17,7 +17,7 @@ This task list shows the current 2-task implementation cycle. After completing t
 ## Current Task Cycle
 
 - [ ] Task 20: Implement security and compliance features
-- [x] Complete cycle - Commit, push, and setup next tasks
+- [ ] Complete cycle - Commit, push, and setup next tasks
 
 ---
 
@@ -80,11 +80,12 @@ After Task 20 completion, commit any fixes, push to git, and prepare tasks.md fo
   - Create descriptive commit message if fixes were needed
   - Push to origin/main
 
-- [x] Setup next task cycle in tasks.md
+- [ ] Setup next task cycle in tasks.md
   - Read FOUNDATION/tasks.md to identify next tasks (Task 21 from FOUNDATION)
   - Move completed Task 20 to completed-tasks.md with full details
   - Update tasks.md with Task 21 as the new main task
   - **CRITICAL**: Ensure ALL tasks in tasks.md are marked as `[ ]` not started (including Task 21 AND "Complete cycle" task)
+  - **CRITICAL**: Ensure tasks in FOUNDATION/tasks.md are updated correctly (mark only the current finished task as done)
   - Update the "Complete cycle" subtask to reference Task 22 for the next iteration
   - Commit and push the updated files
 
