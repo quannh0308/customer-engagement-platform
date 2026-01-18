@@ -1,6 +1,6 @@
 # Implementation Tasks - Current Cycle
 
-## Current Focus: Task 17 - Checkpoint - Ensure workflow and configuration tests pass
+## Current Focus: Task 18 - Implement observability and monitoring
 
 This task list shows the current 2-task implementation cycle. After completing these tasks, the next cycle will be loaded from FOUNDATION.
 
@@ -16,72 +16,77 @@ This task list shows the current 2-task implementation cycle. After completing t
 
 ## Current Task Cycle
 
-- [x] Task 17: Checkpoint - Ensure workflow and configuration tests pass
-- [-] Complete cycle - Commit, push, and setup next tasks
+- [ ] Task 18: Implement observability and monitoring
+- [ ] Complete cycle - Commit, push, and setup next tasks
 
 ---
 
-## Task 17 Details: Checkpoint - Ensure workflow and configuration tests pass
+## Task 18 Details: Implement observability and monitoring
 
-Verify that all workflow and configuration tests pass before proceeding to observability and monitoring.
+Add comprehensive observability features including structured logging, metrics aggregation, dashboards, and alarms.
 
 ### Subtasks:
 
-- [ ] 17.1 Run all workflow tests
-  - Execute `./gradlew :solicitation-workflow-etl:test`
-  - Execute `./gradlew :solicitation-workflow-filter:test`
-  - Execute `./gradlew :solicitation-workflow-score:test`
-  - Execute `./gradlew :solicitation-workflow-store:test`
-  - Execute `./gradlew :solicitation-workflow-reactive:test`
-  - Verify all tests pass with no errors
-  - Verify all property tests complete 100+ iterations
+- [ ] 18.1 Add structured logging with correlation IDs
+  - Implement correlation ID generation and propagation
+  - Add structured log format with context
+  - Log failures with error details
+  - _Requirements: 12.2_
 
-- [ ] 17.2 Run all configuration tests
-  - Execute `./gradlew :solicitation-storage:test` (includes program config tests)
-  - Execute `./gradlew :solicitation-models:test` (includes experiment config tests)
-  - Verify all tests pass with no errors
-  - Verify all property tests complete 100+ iterations
+- [ ]* 18.2 Write property test for structured logging with correlation
+  - **Property 37: Structured logging with correlation**
+  - **Validates: Requirements 12.2**
 
-- [ ] 17.3 Verify build succeeds with no warnings
-  - Execute `./gradlew build`
-  - Verify all modules build successfully
-  - Check for any compilation warnings
+- [ ] 18.3 Implement rejection reason aggregation
+  - Aggregate rejections by filter type and reason code
+  - Publish aggregated metrics to CloudWatch
+  - _Requirements: 12.3_
 
-- [ ] 17.4 Review test coverage
-  - Ensure all workflow components are tested
-  - Ensure all configuration components are tested
-  - Identify any gaps in test coverage
-  - Ask user if questions arise
+- [ ]* 18.4 Write property test for rejection reason aggregation
+  - **Property 38: Rejection reason aggregation**
+  - **Validates: Requirements 12.3**
+
+- [ ] 18.5 Create CloudWatch dashboards
+  - Per-program health dashboard
+  - Per-channel performance dashboard
+  - Cost and capacity dashboard
+  - _Requirements: 12.5_
+
+- [ ] 18.6 Configure CloudWatch alarms
+  - API latency alarms
+  - Workflow failure alarms
+  - Data quality alarms
+  - _Requirements: 12.4, 12.6_
 
 ---
 
 ## Complete Cycle: Commit, Push, and Setup Next Tasks
 
-After Task 17 completion, commit any fixes, push to git, and prepare tasks.md for the next cycle.
+After Task 18 completion, commit any fixes, push to git, and prepare tasks.md for the next cycle.
 
 **IMPORTANT**: When setting up the next cycle, ALL tasks in the new tasks.md must be marked as `[ ]` not started. This is a fresh cycle start.
 
 ### Subtasks:
 
-- [-] Commit and push any fixes
+- [ ] Commit and push any fixes
   - Stage all changes with `git add -A`
   - Create descriptive commit message if fixes were needed
   - Push to origin/main
 
-- [ ] Setup next task cycle in tasks.md
-  - Read FOUNDATION/tasks.md to identify next tasks (Task 18 from FOUNDATION)
-  - Move completed Task 17 to completed-tasks.md with full details
-  - Update tasks.md with Task 18 as the new main task
-  - **CRITICAL**: Ensure ALL tasks in tasks.md are marked as `[ ]` not started (including Task 18 AND "Complete cycle" task)
-  - Update the "Complete cycle" subtask to reference Task 19 for the next iteration
+- [x] Setup next task cycle in tasks.md
+  - Read FOUNDATION/tasks.md to identify next tasks (Task 19 from FOUNDATION)
+  - Move completed Task 18 to completed-tasks.md with full details
+  - Update tasks.md with Task 19 as the new main task
+  - **CRITICAL**: Ensure ALL tasks in tasks.md are marked as `[ ]` not started (including Task 19 AND "Complete cycle" task)
+  - Update the "Complete cycle" subtask to reference Task 20 for the next iteration
   - Commit and push the updated files
 
 ---
 
 ## Next Cycle Preview
 
-After Task 17 & cycle completion, the next cycle will focus on:
-- **Task 18**: Implement observability and monitoring (from FOUNDATION)
+After Task 18 & cycle completion, the next cycle will focus on:
+- **Task 19**: Implement multi-program isolation (from FOUNDATION)
 - **Complete cycle**: Commit, push, and setup next tasks
 
 ---
@@ -94,4 +99,3 @@ After Task 17 & cycle completion, the next cycle will focus on:
 - Refer to FOUNDATION/tasks.md for the complete task list
 - Refer to completed-tasks.md for history of completed work
 - DynamoDB local can be used for testing without AWS credentials
-
