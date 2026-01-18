@@ -538,3 +538,46 @@ This file tracks all completed tasks from the implementation cycles.
 
 ---
 
+## Task 16: Implement experimentation framework ✅
+
+**Completed**: Cycle 13
+**Status**: COMPLETE
+
+### Accomplishments:
+- ✅ Created experiment configuration model (Task 16.1)
+  - Defined ExperimentConfig structure with treatment group definitions
+  - Added support for multiple treatment groups with allocation percentages
+  - Implemented validation for experiment configuration
+- ✅ Implemented deterministic treatment assignment (Task 16.2)
+  - Created ExperimentAssignment with consistent hashing for customer assignment
+  - Ensures same customer always gets same treatment for a given experiment
+  - Uses SHA-256 hashing for deterministic assignment
+- ✅ Added treatment recording to candidates (Task 16.4)
+  - Extended CandidateMetadata with experimentAssignment field
+  - Records assigned treatment in candidate metadata
+  - Enables treatment-based analysis and metrics
+- ✅ Implemented treatment-specific metrics collection (Task 16.6)
+  - Created ExperimentMetrics for collecting metrics per treatment group
+  - Tracks delivery, engagement, and conversion metrics by treatment
+  - Enables A/B test analysis and comparison
+- ✅ Implemented property-based tests (Tasks 16.3, 16.5, 16.7)
+  - DeterministicTreatmentAssignmentPropertyTest: Validates deterministic assignment (Property 34) - ✅ PASSED
+  - TreatmentRecordingPropertyTest: Validates treatment recording (Property 35) - ✅ PASSED
+  - TreatmentMetricsPropertyTest: Validates treatment-specific metrics (Property 36) - ✅ PASSED
+
+**Test Results**: All 18 tests passing (1,800+ property-based test cases)
+**Validates**: Requirements 11.1, 11.2, 11.3, 11.4
+
+**Files Created**:
+- `solicitation-models/src/main/kotlin/com/solicitation/model/config/ExperimentConfig.kt`
+- `solicitation-models/src/main/kotlin/com/solicitation/model/ExperimentAssignment.kt`
+- `solicitation-models/src/main/kotlin/com/solicitation/model/ExperimentMetrics.kt`
+- `solicitation-models/src/test/kotlin/com/solicitation/model/DeterministicTreatmentAssignmentPropertyTest.kt`
+- `solicitation-models/src/test/kotlin/com/solicitation/model/TreatmentRecordingPropertyTest.kt`
+- `solicitation-models/src/test/kotlin/com/solicitation/model/TreatmentMetricsPropertyTest.kt`
+
+**Files Modified**:
+- `solicitation-models/src/main/kotlin/com/solicitation/model/CandidateMetadata.kt` - Added experimentAssignment field
+- `solicitation-models/src/main/kotlin/com/solicitation/model/config/ProgramConfig.kt` - Added experiments field
+
+---

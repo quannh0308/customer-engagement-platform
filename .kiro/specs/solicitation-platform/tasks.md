@@ -1,6 +1,6 @@
 # Implementation Tasks - Current Cycle
 
-## Current Focus: Task 16 - Implement experimentation framework
+## Current Focus: Task 17 - Checkpoint - Ensure workflow and configuration tests pass
 
 This task list shows the current 2-task implementation cycle. After completing these tasks, the next cycle will be loaded from FOUNDATION.
 
@@ -16,77 +16,72 @@ This task list shows the current 2-task implementation cycle. After completing t
 
 ## Current Task Cycle
 
-- [x] Task 16: Implement experimentation framework
-- [-] Complete cycle - Commit, push, and setup next tasks
+- [ ] Task 17: Checkpoint - Ensure workflow and configuration tests pass
+- [ ] Complete cycle - Commit, push, and setup next tasks
 
 ---
 
-## Task 16 Details: Implement experimentation framework
+## Task 17 Details: Checkpoint - Ensure workflow and configuration tests pass
 
-Create experimentation framework for A/B testing with deterministic treatment assignment and metrics collection.
+Verify that all workflow and configuration tests pass before proceeding to observability and monitoring.
 
 ### Subtasks:
 
-- [ ] 16.1 Create experiment configuration model
-  - Define experiment config structure
-  - Add treatment group definitions
-  - _Validates: Requirements 11.1, 11.2_
+- [ ] 17.1 Run all workflow tests
+  - Execute `./gradlew :solicitation-workflow-etl:test`
+  - Execute `./gradlew :solicitation-workflow-filter:test`
+  - Execute `./gradlew :solicitation-workflow-score:test`
+  - Execute `./gradlew :solicitation-workflow-store:test`
+  - Execute `./gradlew :solicitation-workflow-reactive:test`
+  - Verify all tests pass with no errors
+  - Verify all property tests complete 100+ iterations
 
-- [ ] 16.2 Implement deterministic treatment assignment
-  - Use consistent hashing for customer assignment
-  - Ensure same customer always gets same treatment
-  - _Validates: Requirements 11.1_
+- [ ] 17.2 Run all configuration tests
+  - Execute `./gradlew :solicitation-storage:test` (includes program config tests)
+  - Execute `./gradlew :solicitation-models:test` (includes experiment config tests)
+  - Verify all tests pass with no errors
+  - Verify all property tests complete 100+ iterations
 
-- [ ]* 16.3 Write property test for deterministic treatment assignment
-  - **Property 34: Deterministic treatment assignment**
-  - **Validates: Requirements 11.1**
+- [ ] 17.3 Verify build succeeds with no warnings
+  - Execute `./gradlew build`
+  - Verify all modules build successfully
+  - Check for any compilation warnings
 
-- [ ] 16.4 Add treatment recording to candidates
-  - Record assigned treatment in candidate metadata
-  - _Validates: Requirements 11.3_
-
-- [ ]* 16.5 Write property test for treatment recording
-  - **Property 35: Treatment recording**
-  - **Validates: Requirements 11.3**
-
-- [ ] 16.6 Implement treatment-specific metrics collection
-  - Collect metrics per treatment group
-  - Enable comparison of treatment performance
-  - _Validates: Requirements 11.4_
-
-- [ ]* 16.7 Write property test for treatment-specific metrics collection
-  - **Property 36: Treatment-specific metrics collection**
-  - **Validates: Requirements 11.4**
+- [ ] 17.4 Review test coverage
+  - Ensure all workflow components are tested
+  - Ensure all configuration components are tested
+  - Identify any gaps in test coverage
+  - Ask user if questions arise
 
 ---
 
 ## Complete Cycle: Commit, Push, and Setup Next Tasks
 
-After Task 16 completion, commit any fixes, push to git, and prepare tasks.md for the next cycle.
+After Task 17 completion, commit any fixes, push to git, and prepare tasks.md for the next cycle.
 
 **IMPORTANT**: When setting up the next cycle, ALL tasks in the new tasks.md must be marked as `[ ]` not started. This is a fresh cycle start.
 
 ### Subtasks:
 
-- [-] Commit and push any fixes
+- [ ] Commit and push any fixes
   - Stage all changes with `git add -A`
   - Create descriptive commit message if fixes were needed
   - Push to origin/main
 
 - [ ] Setup next task cycle in tasks.md
-  - Read FOUNDATION/tasks.md to identify next tasks (Task 17 from FOUNDATION)
-  - Move completed Task 16 to completed-tasks.md with full details
-  - Update tasks.md with Task 17 as the new main task
-  - **CRITICAL**: Ensure ALL tasks in tasks.md are marked as `[ ]` not started (including Task 17 AND "Complete cycle" task)
-  - Update the "Complete cycle" subtask to reference Task 18 for the next iteration
+  - Read FOUNDATION/tasks.md to identify next tasks (Task 18 from FOUNDATION)
+  - Move completed Task 17 to completed-tasks.md with full details
+  - Update tasks.md with Task 18 as the new main task
+  - **CRITICAL**: Ensure ALL tasks in tasks.md are marked as `[ ]` not started (including Task 18 AND "Complete cycle" task)
+  - Update the "Complete cycle" subtask to reference Task 19 for the next iteration
   - Commit and push the updated files
 
 ---
 
 ## Next Cycle Preview
 
-After Task 16 & cycle completion, the next cycle will focus on:
-- **Task 17**: Checkpoint - Ensure workflow and configuration tests pass (from FOUNDATION)
+After Task 17 & cycle completion, the next cycle will focus on:
+- **Task 18**: Implement observability and monitoring (from FOUNDATION)
 - **Complete cycle**: Commit, push, and setup next tasks
 
 ---
@@ -99,3 +94,4 @@ After Task 16 & cycle completion, the next cycle will focus on:
 - Refer to FOUNDATION/tasks.md for the complete task list
 - Refer to completed-tasks.md for history of completed work
 - DynamoDB local can be used for testing without AWS credentials
+
