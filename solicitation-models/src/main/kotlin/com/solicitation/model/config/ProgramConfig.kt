@@ -25,6 +25,7 @@ import javax.validation.constraints.Positive
  * @property reactiveEnabled Whether reactive (real-time) processing is enabled
  * @property candidateTTLDays Time-to-live for candidates in days
  * @property timingWindowDays Timing window for solicitation in days (optional)
+ * @property experiments List of A/B test experiments for this program (optional)
  */
 data class ProgramConfig(
     @field:NotBlank
@@ -75,5 +76,9 @@ data class ProgramConfig(
     val candidateTTLDays: Int,
     
     @JsonProperty("timingWindowDays")
-    val timingWindowDays: Int? = null
+    val timingWindowDays: Int? = null,
+    
+    @field:Valid
+    @JsonProperty("experiments")
+    val experiments: List<ExperimentConfig>? = null
 )

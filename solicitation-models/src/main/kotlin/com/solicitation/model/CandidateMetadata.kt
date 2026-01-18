@@ -15,6 +15,7 @@ import java.time.Instant
  * @property version Version number for optimistic locking
  * @property sourceConnectorId ID of the data connector that created this candidate
  * @property workflowExecutionId Workflow execution ID for traceability
+ * @property experimentTreatment Assigned experiment treatment (optional)
  */
 data class CandidateMetadata(
     @field:NotNull
@@ -39,5 +40,24 @@ data class CandidateMetadata(
     
     @field:NotBlank
     @JsonProperty("workflowExecutionId")
-    val workflowExecutionId: String
+    val workflowExecutionId: String,
+    
+    @JsonProperty("experimentTreatment")
+    val experimentTreatment: ExperimentTreatment? = null
+)
+
+/**
+ * Records the experiment treatment assigned to a candidate.
+ *
+ * @property experimentId ID of the experiment
+ * @property treatmentId ID of the assigned treatment
+ */
+data class ExperimentTreatment(
+    @field:NotBlank
+    @JsonProperty("experimentId")
+    val experimentId: String,
+    
+    @field:NotBlank
+    @JsonProperty("treatmentId")
+    val treatmentId: String
 )
