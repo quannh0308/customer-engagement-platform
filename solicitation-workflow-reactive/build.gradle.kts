@@ -18,6 +18,9 @@ dependencies {
     // AWS SDK
     implementation(platform("software.amazon.awssdk:bom:2.20.26"))
     implementation("software.amazon.awssdk:dynamodb")
+    
+    // Kotlin Coroutines
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
 }
 
 tasks.shadowJar {
