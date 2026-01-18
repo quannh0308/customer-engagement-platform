@@ -144,110 +144,6 @@ Execute all automated rebranding tasks including documentation updates, spec dir
 
 ---
 
-- [ ] Task 1.5: Rename Code & Modules (OPTIONAL)
-
-Rename all module directories and package names from "solicitation" to "ceap" for complete alignment with the new branding.
-
-**Estimated Time**: 4-8 hours
-
-**Note**: This task is **OPTIONAL** and can be deferred or skipped entirely. The rebranding is complete without it.
-
-**Recommendation**: Consider deferring this task until after major feature development is complete to avoid disrupting ongoing work.
-
-### Why Optional?
-
-**Pros**:
-- ✅ Complete alignment between branding and code
-- ✅ No confusion for new developers
-- ✅ Clean, consistent naming throughout
-
-**Cons**:
-- ⚠️ High effort (4-8 hours of work)
-- ⚠️ High risk (breaking changes, potential bugs)
-- ⚠️ Low business value (internal naming doesn't affect users)
-- ⚠️ Disrupts development (stops all feature work during migration)
-- ⚠️ Merge conflicts (any in-flight branches will have massive conflicts)
-
-### Subtasks:
-
-- [ ] 1.5.1 Rename module directories
-  - Rename: `solicitation-channels` → `ceap-channels`
-  - Rename: `solicitation-common` → `ceap-common`
-  - Rename: `solicitation-connectors` → `ceap-connectors`
-  - Rename: `solicitation-filters` → `ceap-filters`
-  - Rename: `solicitation-models` → `ceap-models`
-  - Rename: `solicitation-scoring` → `ceap-scoring`
-  - Rename: `solicitation-serving` → `ceap-serving`
-  - Rename: `solicitation-storage` → `ceap-storage`
-  - Rename: `solicitation-workflow-etl` → `ceap-workflow-etl`
-  - Rename: `solicitation-workflow-filter` → `ceap-workflow-filter`
-  - Rename: `solicitation-workflow-reactive` → `ceap-workflow-reactive`
-  - Rename: `solicitation-workflow-score` → `ceap-workflow-score`
-  - Rename: `solicitation-workflow-store` → `ceap-workflow-store`
-  - Use: `git mv` to preserve history
-  - _Requirements: 5.1, 5.2_
-
-- [ ] 1.5.2 Update settings.gradle.kts
-  - Update all module references from `solicitation-*` to `ceap-*`
-  - Example: `include("solicitation-channels")` → `include("ceap-channels")`
-  - _Requirements: 5.1, 5.2_
-
-- [ ] 1.5.3 Update all build.gradle.kts files
-  - Update project dependencies from `:solicitation-*` to `:ceap-*`
-  - Example: `implementation(project(":solicitation-models"))` → `implementation(project(":ceap-models"))`
-  - Update in all 13 module build files
-  - _Requirements: 5.1, 5.2_
-
-- [ ] 1.5.4 Rename package directories
-  - Rename: `com/solicitation` → `com/ceap` in all modules
-  - Use: `git mv` to preserve history
-  - Affects: All `src/main/kotlin` and `src/main/java` directories
-  - _Requirements: 5.1, 5.2_
-
-- [ ] 1.5.5 Update package declarations
-  - Replace: `package com.solicitation.*` → `package com.ceap.*`
-  - Affects: All Kotlin and Java source files (~150+ files)
-  - Use: Find and replace across all files
-  - _Requirements: 5.1, 5.2_
-
-- [ ] 1.5.6 Update import statements
-  - Replace: `import com.solicitation.*` → `import com.ceap.*`
-  - Affects: All Kotlin and Java source files (~150+ files)
-  - Use: Find and replace across all files
-  - _Requirements: 5.1, 5.2_
-
-- [ ] 1.5.7 Update infrastructure CDK code
-  - Update package references in `infrastructure/src/main/kotlin`
-  - Update Lambda handler references in CDK stacks
-  - Example: `com.solicitation.workflow.etl.ETLHandler` → `com.ceap.workflow.etl.ETLHandler`
-  - _Requirements: 5.1, 5.2_
-
-- [ ] 1.5.8 Update configuration files
-  - Update `logback.xml` logger names
-  - Update any configuration files referencing package names
-  - _Requirements: 5.1, 5.2_
-
-- [ ] 1.5.9 Build and test
-  - Run: `./gradlew clean build`
-  - Verify: All modules compile successfully
-  - Verify: All tests pass
-  - Fix any issues found
-  - _Requirements: 5.1, 5.2, 5.3, 5.4_
-
-- [ ] 1.5.10 Update documentation references
-  - Update any documentation that references module names
-  - Update any documentation that references package names
-  - Keep migration notes explaining the history
-  - _Requirements: 5.1, 5.2_
-
-- [ ] 1.5.11 Commit code renaming changes
-  - Stage all changes: `git add .`
-  - Create descriptive commit message
-  - Commit changes
-  - _Requirements: All_
-
----
-
 - [ ] Task 2: Update GitHub Repository Metadata (MANUAL)
 
 Update GitHub repository settings to reflect CEAP branding.
@@ -295,10 +191,10 @@ Update GitHub repository settings to reflect CEAP branding.
 | Task | Estimated Time | Type | Execution |
 |------|----------------|------|-----------|
 | Task 1: Complete Automated Rebranding | 90 min | Documentation + File Ops | **Automated** ✅ |
-| Task 1.5: Rename Code & Modules (OPTIONAL) | 4-8 hours | Code Refactoring | **Optional** |
 | Task 2: Update GitHub Metadata | 15 min | Manual (GitHub UI) | **Manual** |
-| **Total (Required)** | **105 minutes** | **~1.75 hours** | |
-| **Total (With Optional)** | **6-10 hours** | | |
+| **Total** | **105 minutes** | **~1.75 hours** | |
+
+**Note**: Code renaming has been moved to the main implementation plan as Task 28 in `.kiro/specs/customer-engagement-platform/FOUNDATION/tasks.md`
 
 ---
 
@@ -324,12 +220,12 @@ You must manually update GitHub settings in the web interface:
 ## Notes
 
 - **Task 1 is fully automated** ✅ - all subtasks executed successfully
-- **Task 1.5 is optional** - can be deferred or skipped entirely
 - **Task 2 is manual** - requires GitHub web interface access
+- **Code renaming** has been moved to Task 28 in the main implementation plan
 - Spec directory renamed: `solicitation-platform` → `customer-engagement-platform` ✅
 - FOUNDATION files updated with CEAP references ✅
 - After rebranding, continue with `.kiro/specs/customer-engagement-platform/tasks.md`
-- Package names currently remain `com.solicitation.*` (Task 1.5 can change this)
+- Package names currently remain `com.solicitation.*` (will be renamed in Task 28)
 - Task tracking and status continue seamlessly after rename
 
 ---
