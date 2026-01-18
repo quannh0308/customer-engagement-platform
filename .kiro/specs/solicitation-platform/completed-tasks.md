@@ -622,3 +622,51 @@ This file tracks all completed tasks from the implementation cycles.
 - `solicitation-models`: All tests passing (includes experiment config tests)
 
 ---
+## Task 18: Implement observability and monitoring ✅
+
+**Completed**: Cycle 15
+**Status**: COMPLETE
+
+### Accomplishments:
+- ✅ Added structured logging with correlation IDs (Task 18.1)
+  - Created CorrelationIdGenerator for generating unique correlation IDs
+  - Created StructuredLoggingContext for managing MDC with correlation IDs
+  - Created FailureLogger for consistent failure logging with structured error details
+  - Implemented correlation ID propagation through nested operations
+  - Added PII redaction for customer IDs in logs
+- ✅ Implemented rejection reason aggregation (Task 18.3)
+  - Created RejectionMetricsAggregator for tracking rejections by filter type and reason code
+  - Implemented thread-safe concurrent rejection recording using ConcurrentHashMap and AtomicInteger
+  - Implemented metrics publishing to CloudWatch with dimensional metrics
+  - Added support for aggregation by program ID and marketplace
+- ✅ Created CloudWatch dashboards (Task 18.5)
+  - Created ObservabilityDashboard construct for CDK infrastructure
+  - Implemented per-program health dashboard showing workflow success and errors
+  - Implemented workflow metrics dashboard showing processing volumes
+  - Implemented channel performance dashboard showing delivery metrics
+  - Implemented rejection metrics dashboard showing rejection reasons
+  - Implemented cost and capacity dashboards
+- ✅ Configured CloudWatch alarms (Task 18.6)
+  - Created ObservabilityStack for managing observability infrastructure
+  - Implemented API latency alarm (triggers when P99 > 30ms)
+  - Implemented workflow failure alarm (triggers when error count > 10)
+  - Implemented data quality alarm (triggers when validation errors > 100)
+  - Configured SNS topic for alarm notifications
+- ✅ Implemented property-based tests (Tasks 18.2, 18.4)
+  - StructuredLoggingPropertyTest: Validates structured logging with correlation (Property 37) - ✅ PASSED
+  - RejectionMetricsPropertyTest: Validates rejection reason aggregation (Property 38) - ✅ PASSED
+
+**Test Results**: All 14 tests passing (1,400+ property-based test cases)
+**Validates**: Requirements 12.2, 12.3, 12.4, 12.5, 12.6
+
+**Files Created**:
+- `solicitation-common/src/main/kotlin/com/solicitation/common/observability/CorrelationIdGenerator.kt`
+- `solicitation-common/src/main/kotlin/com/solicitation/common/observability/StructuredLoggingContext.kt`
+- `solicitation-common/src/main/kotlin/com/solicitation/common/observability/FailureLogger.kt`
+- `solicitation-common/src/main/kotlin/com/solicitation/common/observability/RejectionMetricsAggregator.kt`
+- `solicitation-common/src/test/kotlin/com/solicitation/common/observability/StructuredLoggingPropertyTest.kt`
+- `solicitation-common/src/test/kotlin/com/solicitation/common/observability/RejectionMetricsPropertyTest.kt`
+- `infrastructure/src/main/kotlin/com/solicitation/infrastructure/constructs/ObservabilityDashboard.kt`
+- `infrastructure/src/main/kotlin/com/solicitation/infrastructure/stacks/ObservabilityStack.kt`
+
+---

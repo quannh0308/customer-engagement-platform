@@ -1,6 +1,6 @@
 # Implementation Tasks - Current Cycle
 
-## Current Focus: Task 18 - Implement observability and monitoring
+## Current Focus: Task 19 - Implement multi-program isolation
 
 This task list shows the current 2-task implementation cycle. After completing these tasks, the next cycle will be loaded from FOUNDATION.
 
@@ -16,77 +16,74 @@ This task list shows the current 2-task implementation cycle. After completing t
 
 ## Current Task Cycle
 
-- [x] Task 18: Implement observability and monitoring
-- [-] Complete cycle - Commit, push, and setup next tasks
+- [ ] Task 19: Implement multi-program isolation
+- [ ] Complete cycle - Commit, push, and setup next tasks
 
 ---
 
-## Task 18 Details: Implement observability and monitoring
+## Task 19 Details: Implement multi-program isolation
 
-Add comprehensive observability features including structured logging, metrics aggregation, dashboards, and alarms.
+Ensure programs operate independently with failure isolation, program-specific throttling, and cost attribution.
 
 ### Subtasks:
 
-- [x] 18.1 Add structured logging with correlation IDs
-  - Implement correlation ID generation and propagation
-  - Add structured log format with context
-  - Log failures with error details
-  - _Requirements: 12.2_
+- [ ] 19.1 Add program failure isolation
+  - Ensure program workflows are independent
+  - Prevent cascading failures across programs
+  - _Requirements: 13.1_
 
-- [x]* 18.2 Write property test for structured logging with correlation
-  - **Property 37: Structured logging with correlation**
-  - **Validates: Requirements 12.2**
+- [ ]* 19.2 Write property test for program failure isolation
+  - **Property 39: Program failure isolation**
+  - **Validates: Requirements 13.1**
 
-- [x] 18.3 Implement rejection reason aggregation
-  - Aggregate rejections by filter type and reason code
-  - Publish aggregated metrics to CloudWatch
-  - _Requirements: 12.3_
+- [ ] 19.3 Implement program-specific throttling
+  - Track rate limits per program
+  - Throttle only the exceeding program
+  - _Requirements: 13.3_
 
-- [x]* 18.4 Write property test for rejection reason aggregation
-  - **Property 38: Rejection reason aggregation**
-  - **Validates: Requirements 12.3**
+- [ ]* 19.4 Write property test for program-specific throttling
+  - **Property 40: Program-specific throttling**
+  - **Validates: Requirements 13.3**
 
-- [x] 18.5 Create CloudWatch dashboards
-  - Per-program health dashboard
-  - Per-channel performance dashboard
-  - Cost and capacity dashboard
-  - _Requirements: 12.5_
+- [ ] 19.5 Add program cost attribution
+  - Tag resources with program ID
+  - Track costs per program
+  - Publish cost metrics
+  - _Requirements: 13.4_
 
-- [x] 18.6 Configure CloudWatch alarms
-  - API latency alarms
-  - Workflow failure alarms
-  - Data quality alarms
-  - _Requirements: 12.4, 12.6_
+- [ ]* 19.6 Write property test for program cost attribution
+  - **Property 41: Program cost attribution**
+  - **Validates: Requirements 13.4**
 
 ---
 
 ## Complete Cycle: Commit, Push, and Setup Next Tasks
 
-After Task 18 completion, commit any fixes, push to git, and prepare tasks.md for the next cycle.
+After Task 19 completion, commit any fixes, push to git, and prepare tasks.md for the next cycle.
 
 **IMPORTANT**: When setting up the next cycle, ALL tasks in the new tasks.md must be marked as `[ ]` not started. This is a fresh cycle start.
 
 ### Subtasks:
 
-- [-] Commit and push any fixes
+- [ ] Commit and push any fixes
   - Stage all changes with `git add -A`
   - Create descriptive commit message if fixes were needed
   - Push to origin/main
 
 - [ ] Setup next task cycle in tasks.md
-  - Read FOUNDATION/tasks.md to identify next tasks (Task 19 from FOUNDATION)
-  - Move completed Task 18 to completed-tasks.md with full details
-  - Update tasks.md with Task 19 as the new main task
-  - **CRITICAL**: Ensure ALL tasks in tasks.md are marked as `[ ]` not started (including Task 19 AND "Complete cycle" task)
-  - Update the "Complete cycle" subtask to reference Task 20 for the next iteration
+  - Read FOUNDATION/tasks.md to identify next tasks (Task 20 from FOUNDATION)
+  - Move completed Task 19 to completed-tasks.md with full details
+  - Update tasks.md with Task 20 as the new main task
+  - **CRITICAL**: Ensure ALL tasks in tasks.md are marked as `[ ]` not started (including Task 20 AND "Complete cycle" task)
+  - Update the "Complete cycle" subtask to reference Task 21 for the next iteration
   - Commit and push the updated files
 
 ---
 
 ## Next Cycle Preview
 
-After Task 18 & cycle completion, the next cycle will focus on:
-- **Task 19**: Implement multi-program isolation (from FOUNDATION)
+After Task 19 & cycle completion, the next cycle will focus on:
+- **Task 20**: Implement security and compliance features (from FOUNDATION)
 - **Complete cycle**: Commit, push, and setup next tasks
 
 ---
