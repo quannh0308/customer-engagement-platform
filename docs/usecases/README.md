@@ -22,23 +22,27 @@ This directory contains detailed flow diagrams for each use case, showing:
 2. **[Music Track Feedback](MUSIC-TRACK-FEEDBACK.md)** ⭐ COMPLETE
    - Daily batch at 2 AM
    - 2M → 200K candidates
-   - Multi-channel delivery
+   - Multi-channel delivery (email + voice)
    - 15% feedback rate
 
+3. **[Event Participation Requests](EVENT-PARTICIPATION-REQUESTS.md)** ⭐ COMPLETE
+   - Weekly batch on Monday
+   - 2.5M → 100K candidates
+   - Multi-channel campaign (email + in-app + push)
+   - 8.5% registration rate, 87.5% attendance rate
+
 ### Reactive Processing (Real-Time)
-3. **[Video Ratings](VIDEO-RATINGS-REACTIVE.md)** ⭐ COMPLETE
-   - Event-driven (<1s latency)
-   - In-app card delivery
+4. **[Video Ratings](VIDEO-RATINGS-REACTIVE.md)** ⭐ COMPLETE
+   - Event-driven (<200ms latency)
+   - In-app card + push notification
    - 40% rating submission rate
 
 ### Hybrid Processing (Batch + Reactive)
-4. **Service Experience Surveys** (Coming soon)
+5. **[Service Experience Surveys](SERVICE-EXPERIENCE-SURVEYS.md)** ⭐ COMPLETE
    - Reactive trigger after service completion
-   - Batch aggregation for reporting
-
-5. **Event Participation Requests** (Coming soon)
-   - Weekly batch for targeting
-   - Multi-channel campaign delivery
+   - 1-hour cooling period
+   - Multi-channel delivery (SMS + email)
+   - 35% survey completion rate
 
 ---
 
@@ -87,10 +91,10 @@ Minute-by-minute breakdown showing:
 | Use Case | Mode | Latency | Volume | Conversion |
 |----------|------|---------|--------|------------|
 | Product Reviews | Batch | 1 hour | 500K → 200K | 5% |
-| Music Feedback | Batch | 30 min | 2M → 200K | 15% |
-| Video Ratings | Reactive | <1s | Real-time | 40% |
-| Service Surveys | Reactive | <2s | Real-time | 35% |
-| Event Requests | Batch | 1 hour | 1M → 50K | 20% |
+| Music Feedback | Batch | 1h 20m | 2M → 200K | 15% |
+| Event Requests | Batch | 2 hours | 2.5M → 100K | 8.5% (reg), 87.5% (attend) |
+| Video Ratings | Reactive | <200ms | Real-time | 40% |
+| Service Surveys | Reactive | <500ms + 1h cooling | Real-time | 35% |
 
 ---
 

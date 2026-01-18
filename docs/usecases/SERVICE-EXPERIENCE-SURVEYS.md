@@ -1,17 +1,18 @@
-# Use Case: Video Ratings (Reactive)
+# Use Case: Service Experience Surveys
 
 ## Overview
 
-**Business Goal**: Collect ratings for videos immediately after watch completion to improve recommendation algorithms.
+**Business Goal**: Collect post-service feedback to improve customer satisfaction and identify service quality issues in real-time.
 
-**Processing Mode**: Reactive (Real-time event-driven)
+**Processing Mode**: Reactive (Event-driven with cooling period)
 
 **Actors**:
-- Video viewer (customer)
-- Content team
-- Recommendation team
+- Service customer
+- Customer service team
+- Quality assurance team
+- Service operations team
 - EventBridge
-- In-app notification service
+- SMS gateway
 
 ---
 
@@ -19,59 +20,68 @@
 
 ```
 ┌──────────┐         ┌──────────────┐         ┌─────────────────┐
-│  Viewer  │         │ Content Team │         │ Recommendation  │
+│ Customer │         │ Service Team │         │ QA Team         │
 └────┬─────┘         └──────┬───────┘         └────────┬────────┘
      │                      │                          │
-     │ 1. Watches Video     │                          │
-     │    to Completion     │                          │
+     │ 1. Completes         │                          │
+     │    Service Call      │                          │
      ├──────────────────────┼──────────────────────────┤
      │                      │                          │
-     │ 2. Watch Event       │                          │
-     │    Published         │                          │
+     │ 2. Service Closed    │                          │
+     │    Event Published   │                          │
      ├──────────────────────┼──────────────────────────┤
      │                      │                          │
      │                      │ 3. Configures            │
-     │                      │    Rating Program        │
+     │                      │    Survey Program        │
      │                      ├─────────────────────────>│
      │                      │                          │
-     │ 4. Sees In-App       │                          │
-     │    Rating Card       │<─────────────────────────┤
-     │<─────────────────────┤    (Real-time)           │
+     │ 4. Receives SMS      │                          │
+     │    Survey (1hr later)│<─────────────────────────┤
+     │<─────────────────────┤    (After cooling)       │
      │                      │                          │
-     │ 5. Provides Rating   │                          │
-     │    (1-5 stars)       │                          │
+     │ 5. Completes Survey  │                          │
+     │    (3 questions)     │                          │
      ├─────────────────────>│                          │
      │                      │                          │
-     │                      │ 6. Updates Recommendations│
+     │                      │ 6. Reviews Feedback      │
      │                      │<─────────────────────────┤
+     │                      │                          │
+     │                      │ 7. Takes Action          │
+     │                      │    (if negative)         │
+     │                      ├─────────────────────────>│
      │                      │                          │
      ▼                      ▼                          ▼
 ```
 
 ---
 
-## Reactive Data Flow (Real-Time Processing)
+## Reactive Data Flow (Real-Time Processing with Cooling Period)
 
-### Event-Driven Processing - <1 Second End-to-End
+### Event-Driven Processing - <2 Seconds + 1 Hour Cooling
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────┐
 │                      REACTIVE DATA FLOW                                  │
-│                   (Real-Time Event Processing)                           │
+│              (Real-Time Event Processing + Cooling Period)               │
 └─────────────────────────────────────────────────────────────────────────┘
 
-T+0ms: Customer Completes Video
+T+0ms: Service Interaction Completed
 ┌─────────────────────────────────────┐
-│      Video Player Service           │
-│  - Detects watch completion         │
-│  - watchPercentage >= 80%           │
+│   Service Management System         │
+│  - Service call completed           │
+│  - Resolution: "Issue Resolved"     │
+│  - Duration: 45 minutes             │
+│  - Agent: "John Smith"              │
 │  - Publishes event to EventBridge   │
 └────────┬────────────────────────────┘
          │ Event: {
-         │   customerId: "C123",
-         │   videoId: "V456",
-         │   watchPercentage: 95,
-         │   timestamp: "2026-01-18T12:34:56Z"
+         │   customerId: "C789",
+         │   serviceId: "S123",
+         │   serviceType: "technical-support",
+         │   resolution: "resolved",
+         │   duration: 45,
+         │   agentId: "A456",
+         │   timestamp: "2026-01-18T14:30:00Z"
          │ }
          ▼
 
@@ -79,10 +89,10 @@ T+10ms: EventBridge Routes Event
 ┌─────────────────────────────────────┐
 │         EventBridge Rule            │
 │  Pattern: {                         │
-│    source: "video.player",          │
-│    detail-type: "WatchCompleted",   │
+│    source: "service.management",    │
+│    detail-type: "ServiceCompleted", │
 │    detail: {                        │
-│      watchPercentage: [80, 100]     │
+│      resolution: ["resolved"]       │
 │    }                                │
 │  }                                  │
 │  Target: Reactive Lambda            │
@@ -103,23 +113,29 @@ T+20ms: Reactive Lambda Invoked
 T+30ms: Filter Lambda Processing
 ┌─────────────────────────────────────┐
 │      Filter Chain Executor          │
-│  Parallel filter execution (50ms)   │
+│  Parallel filter execution (80ms)   │
 └────────┬────────────────────────────┘
          │
-         ├─> Trust Filter (15ms)
-         │   ├─ Verify viewer authenticity
+         ├─> Trust Filter (20ms)
+         │   ├─ Verify customer authenticity
          │   ├─ Check account status
          │   └─ Result: PASS
          │
-         ├─> Eligibility Filter (20ms)
-         │   ├─ Viewer hasn't rated this video
-         │   ├─ Video is eligible for ratings
-         │   ├─ Viewer hasn't opted out
+         ├─> Eligibility Filter (30ms)
+         │   ├─ Customer hasn't been surveyed for this service type in 30 days
+         │   ├─ Service type is eligible for surveys
+         │   ├─ Customer hasn't opted out
          │   └─ Result: PASS
          │
-         ├─> Watch Completion Filter (10ms)
-         │   ├─ Check watchPercentage >= 80%
-         │   ├─ Actual: 95% ✓
+         ├─> Service Quality Filter (20ms)
+         │   ├─ Check if service was successful
+         │   ├─ Resolution status: "resolved" ✓
+         │   └─ Result: PASS
+         │
+         ├─> Satisfaction Threshold Filter (10ms)
+         │   ├─ Check customer satisfaction history
+         │   ├─ If already very high (>4.8), skip survey
+         │   ├─ Current: 4.2 (needs feedback)
          │   └─ Result: PASS
          │
          ▼
@@ -127,157 +143,141 @@ T+30ms: Filter Lambda Processing
          │
          ▼
 
-T+80ms: Score Lambda Processing
+T+110ms: Score Lambda Processing
 ┌─────────────────────────────────────┐
-│     Feature Store Client (15ms)     │
-│  - Retrieve viewer features         │
-│    • engagement_score: 0.85         │
-│    • rating_history: 45 ratings     │
-│    • watch_time_total: 1200 hours   │
-│  - Retrieve video features          │
-│    • category: "Documentary"        │
-│    • duration: 90 minutes           │
-│    • release_date: "2026-01-15"     │
+│     Feature Store Client (20ms)     │
+│  - Retrieve customer features       │
+│    • survey_completion_rate: 0.75   │
+│    • satisfaction_history: 4.2      │
+│    • service_frequency: 3/month     │
+│  - Retrieve service features        │
+│    • service_type: "tech-support"   │
+│    • duration: 45 minutes           │
+│    • resolution: "resolved"         │
 └────────┬────────────────────────────┘
          │ Features retrieved
          ▼
 ┌─────────────────────────────────────┐
-│    SageMaker Scoring Provider (30ms)│
-│  - Call engagement prediction model │
-│  - Input: viewer + video features   │
-│  - Output: score = 0.92             │
+│    SageMaker Scoring Provider (40ms)│
+│  - Call survey completion model     │
+│  - Call satisfaction prediction     │
+│  - Input: customer + service        │
+│  - Output: score = 0.88             │
 │  - Confidence: HIGH                 │
 └────────┬────────────────────────────┘
          │ Score computed
          ▼
 ┌─────────────────────────────────────┐
-│       Score Cache Repository (10ms) │
+│       Score Cache Repository (15ms) │
 │  - Cache score in DynamoDB          │
-│  - TTL: 7 days                      │
-│  - Key: ViewerId:VideoId            │
+│  - TTL: 30 days                     │
+│  - Key: CustomerId:ServiceId        │
 └────────┬────────────────────────────┘
          │ Score cached
          ▼
 
-T+135ms: Store Lambda Processing
+T+185ms: Store Lambda Processing
 ┌─────────────────────────────────────┐
 │   DynamoDB Candidate Repository     │
-│  - Write candidate (20ms)           │
-│  - Primary key: ViewerId:Program    │
+│  - Write candidate (25ms)           │
+│  - Primary key: CustomerId:Program  │
 │  - GSI1: Program:Channel:Score      │
-│  - GSI2: Program:VideoId:Date       │
-│  - TTL: 7 days from now             │
+│  - GSI2: Program:ServiceType:Date   │
+│  - TTL: 30 days from now            │
 │  - Attributes:                      │
-│    • score: 0.92                    │
-│    • videoId: "V456"                │
-│    • watchPercentage: 95            │
+│    • score: 0.88                    │
+│    • serviceId: "S123"              │
+│    • serviceType: "tech-support"    │
+│    • coolingPeriodEnd: T+3600000ms  │
 │    • createdAt: T+0                 │
 └────────┬────────────────────────────┘
-         │ Candidate stored
+         │ Candidate stored with cooling period
          ▼
 ┌─────────────────────────────────────┐
-│         DynamoDB Tables             │
-│  ┌─────────────────────────────┐   │
-│  │ Candidates Table            │   │
-│  │ - 1 new item                │   │
-│  │ - Available for serving     │   │
-│  └─────────────────────────────┘   │
+│    Cooling Period Scheduler         │
+│  - Schedule SMS delivery for 1 hour │
+│  - Use EventBridge Scheduler        │
+│  - Target: SMS Channel Lambda       │
+│  - Payload: candidateId             │
 └─────────────────────────────────────┘
 
-T+155ms: Reactive Processing Complete
-Total Latency: 155ms
-Candidate ready for serving
+T+210ms: Reactive Processing Complete
+Total Latency: 210ms
+Candidate ready, SMS scheduled for T+3600000ms (1 hour)
+
+---
+
+T+3600000ms (1 hour later): Cooling Period Ends
+┌─────────────────────────────────────┐
+│   EventBridge Scheduler Trigger     │
+│  - Cooling period complete          │
+│  - Invoke SMS Channel Lambda        │
+└────────┬────────────────────────────┘
+         │
+         ▼
+┌─────────────────────────────────────┐
+│      SMS Channel Lambda             │
+│  - Retrieve candidate from DynamoDB │
+│  - Verify still eligible            │
+│  - Format SMS message               │
+│  - Send via SMS gateway             │
+└────────┬────────────────────────────┘
+         │
+         ▼
+┌─────────────────────────────────────┐
+│         SMS Gateway                 │
+│  - Send SMS to customer             │
+│  - Track delivery status            │
+└─────────────────────────────────────┘
+
+End-to-End: Service completion → SMS delivery = 1 hour + 210ms
 ```
 
 ---
 
-## Data Contribution Flow (Viewer Interaction)
+## Data Contribution Flow (Customer Interaction)
 
-### In-App Rating Card - Real-Time
+### SMS Survey Delivery - 1 Hour After Service
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────┐
 │                      DATA CONTRIBUTION FLOW                              │
-│                     (Viewer Rating Submission)                           │
+│                   (Customer Survey Submission)                           │
 └─────────────────────────────────────────────────────────────────────────┘
 
-T+500ms: Viewer Navigates to Home Screen
+T+3600000ms: Customer Receives SMS
 ┌─────────────────────────────────────┐
-│      Video App Home Screen          │
-│  - App loads home feed              │
-│  - Calls Serving API                │
-│  - Request: GetCandidatesForViewer  │
-│    • viewerId: "C123"               │
-│    • channel: "in-app"              │
-│    • program: "video-ratings"       │
+│         Customer Phone              │
+│  Message: "Hi [Name], how was your  │
+│           recent service experience │
+│           with [Company]? Please    │
+│           rate 1-5 and share        │
+│           feedback: [Survey Link]"  │
 └────────┬────────────────────────────┘
          │
-         ▼
-
-T+512ms: Serving API Query
-┌─────────────────────────────────────┐
-│         Serving API                 │
-│  - Query DynamoDB (8ms)             │
-│  - Primary key: ViewerId:Program    │
-│  - Filter: channel = "in-app"       │
-│  - Sort by score (descending)       │
-│  - Limit: 1 (top candidate)         │
-└────────┬────────────────────────────┘
-         │ Candidate found: VideoId "V456"
-         │ Score: 0.92
+         │ Customer clicks link (within 10 minutes)
          ▼
 ┌─────────────────────────────────────┐
-│    Eligibility Refresh Check (4ms)  │
-│  - Verify candidate still eligible  │
-│  - Check: Viewer hasn't rated yet   │
-│  - Check: Video still active        │
-│  - Result: ELIGIBLE ✓               │
+│      Mobile Survey Page             │
+│  - Pre-filled: Service details      │
+│  - Question 1: Overall satisfaction │
+│    (1-5 stars)                      │
+│  - Question 2: Agent helpfulness    │
+│    (1-5 stars)                      │
+│  - Question 3: Issue resolution     │
+│    (Yes/No)                         │
+│  - Optional: Comments (500 char)    │
 └────────┬────────────────────────────┘
          │
+         │ Customer completes survey (2 minutes)
          ▼
 ┌─────────────────────────────────────┐
-│      Serving API Response           │
-│  - Return candidate                 │
-│  - Include video metadata           │
-│  - Include rating prompt            │
-│  - Total latency: 12ms              │
-└────────┬────────────────────────────┘
-         │
-         ▼
-
-T+512ms: In-App Rating Card Displayed
-┌─────────────────────────────────────┐
-│      In-App Rating Card             │
-│  ┌─────────────────────────────┐   │
-│  │ "How would you rate          │   │
-│  │  [Video Title]?"             │   │
-│  │                              │   │
-│  │  ⭐ ⭐ ⭐ ⭐ ⭐              │   │
-│  │  1  2  3  4  5               │   │
-│  │                              │   │
-│  │  [Skip]                      │   │
-│  └─────────────────────────────┘   │
-└─────────────────────────────────────┘
-         │
-         │ Viewer sees card
-         ▼
-
-T+2000ms: Viewer Provides Rating
-┌─────────────────────────────────────┐
-│      Viewer Interaction             │
-│  - Viewer taps 5-star rating        │
-│  - App captures rating              │
-│  - App calls Rating Service API     │
-└────────┬────────────────────────────┘
-         │
-         ▼
-┌─────────────────────────────────────┐
-│      Rating Service API             │
-│  - Validate rating (1-5 stars)      │
-│  - Store in ratings database        │
-│  - Publish rating event             │
-│  - Update video aggregate rating    │
-│  - Trigger recommendation refresh   │
+│      Survey Service API             │
+│  - Validate responses               │
+│  - Store in survey database         │
+│  - Publish survey event             │
+│  - Calculate satisfaction score     │
+│  - Trigger alerts if negative       │
 └────────┬────────────────────────────┘
          │
          ▼
@@ -287,111 +287,73 @@ T+2000ms: Viewer Provides Rating
 │  - Record delivery timestamp        │
 │  - Record submission timestamp      │
 │  - Update metrics                   │
-│  - Latency: T+2000ms - T+0ms = 2s   │
+└─────────────────────────────────────┘
+
+Survey Response Analysis:
+┌─────────────────────────────────────┐
+│   Real-Time Alert System            │
+│  IF satisfaction < 3:               │
+│    - Alert service manager          │
+│    - Create follow-up ticket        │
+│    - Escalate to QA team            │
+│  IF satisfaction >= 4:              │
+│    - Update agent performance       │
+│    - Add to positive feedback pool  │
 └─────────────────────────────────────┘
 
 Contribution Complete
-Rating Collected: 5 stars
-End-to-End Time: 2 seconds (watch completion → rating submission)
+Survey Collected: 3 questions + optional comment
+Response Time: 12 minutes (SMS sent → survey completed)
 ```
 
 ---
 
-## Alternative Delivery Channel: Push Notification
+## Alternative Delivery Channel: Email
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────┐
-│                   PUSH NOTIFICATION FLOW                                 │
-│                  (Alternative to In-App Card)                            │
+│                      EMAIL SURVEY FLOW                                   │
+│                  (Alternative to SMS)                                    │
 └─────────────────────────────────────────────────────────────────────────┘
 
-T+0: Candidate Created (from reactive flow above)
-         │
-         ▼
-T+300000ms (5 minutes later): Push Notification Scheduled
+T+3600000ms (1 hour later): Email Sent
 ┌─────────────────────────────────────┐
-│   Push Notification Service         │
-│  - Query candidates for push        │
-│  - Filter: Not yet delivered        │
-│  - Filter: Score >= 0.8             │
-│  - Filter: Viewer has push enabled  │
+│   Email Channel Adapter             │
+│  - Retrieve candidate               │
+│  - Format email with survey link    │
+│  - Personalize with service details │
+│  - Send via email service           │
 └────────┬────────────────────────────┘
          │
          ▼
 ┌─────────────────────────────────────┐
-│   Push Notification Sent            │
-│  Title: "Rate [Video Title]"        │
-│  Body: "How did you like it?"       │
-│  Action: Open app to rating screen  │
+│         Customer Inbox              │
+│  Subject: "How was your service     │
+│           experience?"              │
+│  Body: Personalized survey request  │
+│  CTA: "Take 2-Minute Survey" button │
 └────────┬────────────────────────────┘
          │
-         │ Viewer receives notification
+         │ Customer opens email (within 2 hours)
          ▼
 ┌─────────────────────────────────────┐
-│   Viewer Opens Notification         │
-│  - App opens to rating screen       │
-│  - Pre-filled with video info       │
-│  - Viewer provides rating           │
+│      Customer Opens Email           │
+│  - Tracking pixel fires             │
+│  - Open event recorded              │
+└────────┬────────────────────────────┘
+         │
+         │ Customer clicks CTA
+         ▼
+┌─────────────────────────────────────┐
+│      Survey Submission Page         │
+│  - Same 3 questions as SMS          │
+│  - Customer completes survey        │
 └─────────────────────────────────────┘
 
-Push Notification Metrics:
-- Delivery Rate: 95%
-- Open Rate: 35%
-- Rating Submission Rate: 25%
-```
-
----
-
-## Event Deduplication
-
-```
-┌─────────────────────────────────────────────────────────────────────────┐
-│                      EVENT DEDUPLICATION                                 │
-│                  (Preventing Duplicate Candidates)                       │
-└─────────────────────────────────────────────────────────────────────────┘
-
-Scenario: Viewer watches same video multiple times
-
-T+0: First Watch Completion Event
-┌─────────────────────────────────────┐
-│   EventBridge Event                 │
-│   {viewerId: "C123",                │
-│    videoId: "V456",                 │
-│    watchPercentage: 95}             │
-└────────┬────────────────────────────┘
-         │
-         ▼
-┌─────────────────────────────────────┐
-│   Deduplication Tracker             │
-│  - Check cache for key:             │
-│    "C123:V456:video-ratings"        │
-│  - Result: NOT FOUND                │
-│  - Store key with TTL: 7 days       │
-│  - Proceed with processing          │
-└────────┬────────────────────────────┘
-         │
-         ▼
-    Candidate created (normal flow)
-
-T+3600000ms (1 hour later): Second Watch Completion Event
-┌─────────────────────────────────────┐
-│   EventBridge Event                 │
-│   {viewerId: "C123",                │
-│    videoId: "V456",                 │
-│    watchPercentage: 100}            │
-└────────┬────────────────────────────┘
-         │
-         ▼
-┌─────────────────────────────────────┐
-│   Deduplication Tracker             │
-│  - Check cache for key:             │
-│    "C123:V456:video-ratings"        │
-│  - Result: FOUND ✓                  │
-│  - Skip processing                  │
-│  - Log duplicate event              │
-└─────────────────────────────────────┘
-
-Deduplication prevented duplicate candidate!
+Email Survey Metrics:
+- Open Rate: 45%
+- Click-Through Rate: 30%
+- Completion Rate: 25%
 ```
 
 ---
@@ -407,12 +369,11 @@ Hourly Schedule:
 ┌──────────┬────────────────────────────────────────────────────────────┐
 │   Time   │                        Job                                 │
 ├──────────┼────────────────────────────────────────────────────────────┤
-│ Every    │ Push Notification Batch                                    │
-│ Hour     │ - Query candidates not yet delivered                       │
-│ :00      │ - Filter: score >= 0.8, push enabled                       │
-│          │ - Send push notifications                                  │
+│ Every    │ Negative Feedback Alert Check                              │
+│ Hour     │ - Query surveys with satisfaction < 3                      │
+│ :00      │ - Create follow-up tickets                                 │
+│          │ - Alert service managers                                   │
 │          │ - Duration: 5 minutes                                      │
-│          │ - Volume: ~5,000 notifications/hour                        │
 └──────────┴────────────────────────────────────────────────────────────┘
 
 Daily Schedule:
@@ -420,15 +381,15 @@ Daily Schedule:
 │   Time   │                        Job                                 │
 ├──────────┼────────────────────────────────────────────────────────────┤
 │ 3:00 AM  │ Data Warehouse Export                                      │
-│          │ - Export ratings to S3 (Parquet)                           │
+│          │ - Export surveys to S3 (Parquet)                           │
 │          │ - Update Glue catalog                                      │
-│          │ - Duration: 30 minutes                                     │
+│          │ - Duration: 20 minutes                                     │
 ├──────────┼────────────────────────────────────────────────────────────┤
-│ 4:00 AM  │ Recommendation Model Refresh                               │
-│          │ - Aggregate yesterday's ratings                            │
-│          │ - Update recommendation model                              │
-│          │ - Deploy updated model                                     │
-│          │ - Duration: 1 hour                                         │
+│ 6:00 AM  │ Daily Satisfaction Report                                  │
+│          │ - Aggregate yesterday's surveys                            │
+│          │ - Calculate team satisfaction scores                       │
+│          │ - Generate report for managers                             │
+│          │ - Duration: 15 minutes                                     │
 ├──────────┼────────────────────────────────────────────────────────────┤
 │ 11:59 PM │ Metrics Aggregation                                        │
 │          │ - Aggregate daily metrics                                  │
@@ -447,10 +408,17 @@ Weekly Schedule:
 │          │ - Duration: 10 minutes                                     │
 ├──────────┼────────────────────────────────────────────────────────────┤
 │ Sunday   │ Model Retraining                                           │
-│ 3:00 AM  │ - Retrain engagement prediction model                      │
+│ 3:00 AM  │ - Retrain survey completion model                          │
+│          │ - Retrain satisfaction prediction model                    │
 │          │ - Evaluate model performance                               │
 │          │ - Deploy if improved                                       │
 │          │ - Duration: 2 hours                                        │
+├──────────┼────────────────────────────────────────────────────────────┤
+│ Monday   │ Weekly Service Quality Review                              │
+│ 9:00 AM  │ - Aggregate last week's surveys                            │
+│          │ - Identify trends and issues                               │
+│          │ - Generate executive report                                │
+│          │ - Duration: 30 minutes                                     │
 └──────────┴────────────────────────────────────────────────────────────┘
 ```
 
@@ -459,33 +427,37 @@ Weekly Schedule:
 ## Metrics & Success Criteria
 
 ### Processing Metrics
-- **Reactive Latency**: 155ms average (target: < 500ms)
-- **P99 Latency**: 240ms (target: < 1000ms)
-- **Throughput**: 5,000 events/second
-- **Filter Pass Rate**: 85% (high engagement viewers)
+- **Reactive Latency**: 210ms average (target: < 500ms)
+- **P99 Latency**: 350ms (target: < 1000ms)
+- **Throughput**: 2,000 events/second
+- **Filter Pass Rate**: 70% (eligible services)
+- **Cooling Period**: 1 hour (configurable)
 
 ### Delivery Metrics
-- **In-App Card Display Rate**: 90% (of eligible viewers)
-- **Push Notification Delivery Rate**: 95%
-- **Push Notification Open Rate**: 35%
+- **SMS Delivery Rate**: 98%
+- **Email Delivery Rate**: 95%
+- **SMS Open Rate**: 85% (link clicks)
+- **Email Open Rate**: 45%
 
 ### Engagement Metrics
-- **In-App Rating Submission Rate**: 40%
-- **Push Rating Submission Rate**: 25%
-- **Overall Rating Rate**: 38% (combined channels)
+- **SMS Survey Completion Rate**: 35%
+- **Email Survey Completion Rate**: 25%
+- **Overall Survey Rate**: 32% (combined channels)
+- **Average Response Time**: 12 minutes (SMS), 2 hours (email)
 
 ### Business Metrics
-- **Ratings Collected**: 50,000 per day
-- **Cost per Rating**: $0.0001 ($5 daily cost / 50,000 ratings)
-- **Recommendation Improvement**: 18% increase in watch time
-- **Viewer Satisfaction**: 4.6/5.0 average rating
+- **Surveys Collected**: 10,000 per day
+- **Cost per Survey**: $0.05 ($500 daily cost / 10,000 surveys)
+- **Satisfaction Score**: 4.3/5.0 average
+- **Issue Resolution Rate**: 92%
+- **Follow-up Ticket Creation**: 8% (negative feedback)
 
 ### Technical Metrics
-- **Serving API Latency**: P99 = 12ms (target: < 30ms)
-- **Cache Hit Rate**: 88%
-- **Error Rate**: 0.005%
-- **Availability**: 99.98%
-- **Deduplication Rate**: 99.9% (prevents duplicates)
+- **Serving API Latency**: P99 = 15ms (target: < 30ms)
+- **Cache Hit Rate**: 85%
+- **Error Rate**: 0.01%
+- **Availability**: 99.97%
+- **Deduplication Rate**: 99.8%
 
 ---
 
@@ -493,26 +465,29 @@ Weekly Schedule:
 
 ### Program Configuration
 ```yaml
-programId: "video-ratings"
-programName: "Video Ratings (Reactive)"
+programId: "service-surveys"
+programName: "Service Experience Surveys"
 enabled: true
-marketplaces: ["US", "UK", "DE", "FR", "JP", "IN", "BR"]
+marketplaces: ["US", "UK", "DE", "FR", "JP", "IN"]
 
 eventSources:
-  - sourceId: "video-player-events"
+  - sourceId: "service-management-events"
     type: "eventbridge"
     config:
-      eventBusName: "video-platform"
+      eventBusName: "service-platform"
       eventPattern:
-        source: ["video.player"]
-        detail-type: ["WatchCompleted"]
+        source: ["service.management"]
+        detail-type: ["ServiceCompleted"]
         detail:
-          watchPercentage: [80, 100]
+          resolution: ["resolved", "partially-resolved"]
 
 scoringModels:
-  - modelId: "engagement-prediction-v4"
-    endpoint: "sagemaker://engagement-prediction-v4"
-    features: ["engagement_score", "rating_history", "watch_time_total"]
+  - modelId: "survey-completion-v2"
+    endpoint: "sagemaker://survey-completion-v2"
+    features: ["survey_completion_rate", "satisfaction_history", "service_frequency"]
+  - modelId: "satisfaction-prediction-v1"
+    endpoint: "sagemaker://satisfaction-prediction-v1"
+    features: ["service_type", "duration", "resolution"]
 
 filterChain:
   - filterId: "trust"
@@ -521,35 +496,59 @@ filterChain:
   - filterId: "eligibility"
     type: "eligibility"
     order: 2
-  - filterId: "watch-completion"
+  - filterId: "service-quality"
     type: "business-rule"
     order: 3
     parameters:
-      minWatchPercentage: 80
+      requiredResolution: ["resolved", "partially-resolved"]
+  - filterId: "satisfaction-threshold"
+    type: "business-rule"
+    order: 4
+    parameters:
+      maxSatisfactionScore: 4.8  # Skip if already very satisfied
+  - filterId: "frequency-cap"
+    type: "business-rule"
+    order: 5
+    parameters:
+      maxSurveysPerServiceType: 1
+      periodDays: 30
 
 channels:
-  - channelId: "in-app"
-    type: "in-app"
+  - channelId: "sms"
+    type: "sms"
     enabled: true
     priority: 1
     config:
-      cardType: "rating-request"
-      displayDuration: 10  # seconds
-  - channelId: "push"
-    type: "push"
+      coolingPeriodMinutes: 60
+      message: "Hi {customerName}, how was your recent service experience with {companyName}? Please rate 1-5 and share feedback: {surveyLink}"
+      maxLength: 160
+  - channelId: "email"
+    type: "email"
     enabled: true
     priority: 2
     config:
-      delayMinutes: 5
-      title: "Rate {videoTitle}"
-      body: "How did you like it?"
+      coolingPeriodMinutes: 60
+      templateId: "service-survey-v1"
+      subject: "How was your service experience?"
 
 deduplication:
   enabled: true
-  ttlDays: 7
-  keyFormat: "{viewerId}:{videoId}:{programId}"
+  ttlDays: 30
+  keyFormat: "{customerId}:{serviceId}:{programId}"
 
-candidateTTLDays: 7
+alerting:
+  enabled: true
+  negativeFeedbackThreshold: 3
+  alertChannels: ["email", "slack"]
+  escalationRules:
+    - condition: "satisfaction < 2"
+      action: "create-ticket"
+      assignTo: "service-manager"
+    - condition: "satisfaction < 3"
+      action: "alert"
+      recipients: ["qa-team@company.com"]
+
+candidateTTLDays: 30
 ```
 
 ---
@@ -557,12 +556,13 @@ candidateTTLDays: 7
 ## Summary
 
 This use case demonstrates:
-- ✅ **Reactive processing** (<200ms end-to-end latency)
+- ✅ **Reactive processing** with cooling period (210ms + 1 hour)
 - ✅ **Event-driven architecture** (EventBridge → Lambda)
-- ✅ **Real-time scoring** (SageMaker endpoint)
-- ✅ **Multi-channel delivery** (in-app + push notification)
-- ✅ **High engagement** (40% in-app rating rate)
-- ✅ **Cost efficiency** ($0.0001 per rating)
-- ✅ **Deduplication** (99.9% duplicate prevention)
-- ✅ **Low latency serving** (12ms P99)
-- ✅ **Scalability** (5,000 events/second)
+- ✅ **Intelligent cooling period** (1 hour delay for better response)
+- ✅ **Multi-channel delivery** (SMS + email)
+- ✅ **Real-time alerting** (negative feedback triggers immediate action)
+- ✅ **High engagement** (35% SMS completion rate)
+- ✅ **Cost efficiency** ($0.05 per survey)
+- ✅ **Deduplication** (99.8% duplicate prevention)
+- ✅ **Service quality tracking** (4.3/5.0 average satisfaction)
+- ✅ **Automated follow-up** (8% negative feedback → tickets)
