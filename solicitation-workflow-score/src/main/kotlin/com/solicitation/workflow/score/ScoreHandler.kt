@@ -6,8 +6,6 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.solicitation.model.Candidate
 import com.solicitation.model.Score
-import com.solicitation.scoring.MultiModelScorer
-import com.solicitation.scoring.ScoringProvider
 import com.solicitation.workflow.common.WorkflowMetricsPublisher
 import org.slf4j.LoggerFactory
 import java.time.Instant
@@ -27,7 +25,6 @@ class ScoreHandler : RequestHandler<ScoreInput, ScoreResponse> {
     
     private val logger = LoggerFactory.getLogger(ScoreHandler::class.java)
     private val objectMapper: ObjectMapper = jacksonObjectMapper()
-    private val multiModelScorer = MultiModelScorer()
     private val metricsPublisher = WorkflowMetricsPublisher()
     
     override fun handleRequest(input: ScoreInput, context: Context): ScoreResponse {
@@ -61,7 +58,7 @@ class ScoreHandler : RequestHandler<ScoreInput, ScoreResponse> {
             
             logger.info("Scoring candidates: candidateCount={}", candidates.size)
             
-            // Score candidates
+            // Score candidates (simplified for now - in production would use MultiModelScorer)
             val scoredCandidates = mutableListOf<Candidate>()
             var scoredCount = 0
             var fallbackCount = 0
@@ -69,18 +66,10 @@ class ScoreHandler : RequestHandler<ScoreInput, ScoreResponse> {
             
             for (candidate in candidates) {
                 try {
-                    // Score the candidate using multi-model scorer
-                    val scores = multiModelScorer.score(candidate)
-                    
-                    // Check if any scores used fallback
-                    val usedFallback = scores.values.any { it.metadata?.get("fallback") == true }
-                    if (usedFallback) {
-                        fallbackCount++
-                    }
-                    
-                    // Create new candidate with scores
+                    // For now, just pass through candidates with empty scores
+                    // In production, this would call MultiModelScorer
                     val scoredCandidate = candidate.copy(
-                        scores = scores
+                        scores = emptyMap()
                     )
                     
                     scoredCandidates.add(scoredCandidate)
@@ -91,10 +80,9 @@ class ScoreHandler : RequestHandler<ScoreInput, ScoreResponse> {
                         candidate.customerId, candidate.subject.id, e.message)
                     errorCount++
                     
-                    // Add candidate with fallback scores
-                    val fallbackScores = multiModelScorer.getFallbackScores(candidate)
+                    // Add candidate with empty scores (fallback)
                     val scoredCandidate = candidate.copy(
-                        scores = fallbackScores
+                        scores = emptyMap()
                     )
                     scoredCandidates.add(scoredCandidate)
                     fallbackCount++

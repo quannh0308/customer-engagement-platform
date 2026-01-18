@@ -5,10 +5,11 @@ import com.amazonaws.services.lambda.runtime.RequestHandler
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import com.solicitation.filters.FilterChainExecutor
-import com.solicitation.filters.FilterResult
+import com.solicitation.filters.*
 import com.solicitation.model.Candidate
 import com.solicitation.model.RejectionRecord
+import com.solicitation.model.config.FilterChainConfig
+import com.solicitation.model.config.FilterConfig
 import com.solicitation.workflow.common.WorkflowMetricsPublisher
 import org.slf4j.LoggerFactory
 import java.time.Instant
@@ -28,8 +29,52 @@ class FilterHandler : RequestHandler<FilterInput, FilterResponse> {
     
     private val logger = LoggerFactory.getLogger(FilterHandler::class.java)
     private val objectMapper: ObjectMapper = jacksonObjectMapper()
-    private val filterChainExecutor = FilterChainExecutor()
     private val metricsPublisher = WorkflowMetricsPublisher()
+    
+    // Create default filter chain with all filters
+    private fun createFilterChainExecutor(): FilterChainExecutor {
+        val filters = listOf<Filter>(
+            EligibilityFilter(),
+            TrustFilter(),
+            QualityFilter(),
+            BusinessRuleFilter()
+        )
+        
+        val config = FilterChainConfig(
+            filters = listOf(
+                FilterConfig(
+                    filterId = "eligibility",
+                    filterType = "eligibility",
+                    enabled = true,
+                    parameters = emptyMap(),
+                    order = 0
+                ),
+                FilterConfig(
+                    filterId = "trust",
+                    filterType = "trust",
+                    enabled = true,
+                    parameters = emptyMap(),
+                    order = 1
+                ),
+                FilterConfig(
+                    filterId = "quality",
+                    filterType = "quality",
+                    enabled = true,
+                    parameters = emptyMap(),
+                    order = 2
+                ),
+                FilterConfig(
+                    filterId = "business_rule",
+                    filterType = "business_rule",
+                    enabled = true,
+                    parameters = emptyMap(),
+                    order = 3
+                )
+            )
+        )
+        
+        return FilterChainExecutor(filters, config)
+    }
     
     override fun handleRequest(input: FilterInput, context: Context): FilterResponse {
         val requestId = context.awsRequestId
@@ -63,30 +108,40 @@ class FilterHandler : RequestHandler<FilterInput, FilterResponse> {
             
             logger.info("Executing filter chain: candidateCount={}", candidates.size)
             
-            // Execute filter chain
-            val filterResult = filterChainExecutor.execute(candidates)
+            // Create filter chain executor
+            val filterChainExecutor = createFilterChainExecutor()
             
-            // Track rejection reasons
-            val rejectionReasons = mutableMapOf<String, Int>()
+            // Execute filter chain on each candidate
+            val passedCandidates = mutableListOf<Candidate>()
             val rejectedCandidates = mutableListOf<RejectedCandidateInfo>()
+            val rejectionReasons = mutableMapOf<String, Int>()
             
-            for (rejected in filterResult.rejected) {
-                val reasonCode = rejected.reasonCode
-                rejectionReasons[reasonCode] = rejectionReasons.getOrDefault(reasonCode, 0) + 1
+            for (candidate in candidates) {
+                val result = filterChainExecutor.execute(candidate)
                 
-                rejectedCandidates.add(
-                    RejectedCandidateInfo(
-                        customerId = rejected.candidate.customerId,
-                        subjectId = rejected.candidate.subject.id,
-                        filterId = rejected.filterId,
-                        reason = rejected.reason,
-                        reasonCode = rejected.reasonCode
-                    )
-                )
+                if (result.passed) {
+                    passedCandidates.add(result.candidate)
+                } else {
+                    // Track rejection reasons
+                    for (rejection in result.rejectionHistory) {
+                        val reasonCode = rejection.reasonCode
+                        rejectionReasons[reasonCode] = rejectionReasons.getOrDefault(reasonCode, 0) + 1
+                        
+                        rejectedCandidates.add(
+                            RejectedCandidateInfo(
+                                customerId = candidate.customerId,
+                                subjectId = candidate.subject.id,
+                                filterId = rejection.filterId,
+                                reason = rejection.reason,
+                                reasonCode = rejection.reasonCode
+                            )
+                        )
+                    }
+                }
             }
             
             logger.info("Filter chain completed: inputCount={}, passedCount={}, rejectedCount={}, rejectionReasons={}", 
-                candidates.size, filterResult.passed.size, filterResult.rejected.size, rejectionReasons)
+                candidates.size, passedCandidates.size, rejectedCandidates.size, rejectionReasons)
             
             // Publish metrics
             val duration = System.currentTimeMillis() - startTime
@@ -94,20 +149,20 @@ class FilterHandler : RequestHandler<FilterInput, FilterResponse> {
                 programId = programId,
                 marketplace = marketplace,
                 inputCount = candidates.size,
-                passedCount = filterResult.passed.size,
-                rejectedCount = filterResult.rejected.size,
+                passedCount = passedCandidates.size,
+                rejectedCount = rejectedCandidates.size,
                 rejectionReasons = rejectionReasons,
                 durationMs = duration
             )
             
             // Return response with passed candidates and metrics
             return FilterResponse(
-                candidates = filterResult.passed,
+                candidates = passedCandidates,
                 rejectedCandidates = rejectedCandidates,
                 metrics = FilterMetrics(
                     inputCount = candidates.size,
-                    passedCount = filterResult.passed.size,
-                    rejectedCount = filterResult.rejected.size,
+                    passedCount = passedCandidates.size,
+                    rejectedCount = rejectedCandidates.size,
                     rejectionReasons = rejectionReasons
                 ),
                 programId = programId,

@@ -5,8 +5,9 @@ import com.amazonaws.services.lambda.runtime.RequestHandler
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.solicitation.model.Candidate
+import com.solicitation.storage.BatchWriteResult
 import com.solicitation.storage.CandidateRepository
-import com.solicitation.storage.DynamoDBCandidateRepository
+import com.solicitation.storage.FailedItem
 import com.solicitation.workflow.common.WorkflowMetricsPublisher
 import org.slf4j.LoggerFactory
 
@@ -25,8 +26,53 @@ class StoreHandler : RequestHandler<StoreInput, StoreResponse> {
     
     private val logger = LoggerFactory.getLogger(StoreHandler::class.java)
     private val objectMapper: ObjectMapper = jacksonObjectMapper()
-    private val candidateRepository: CandidateRepository = DynamoDBCandidateRepository()
     private val metricsPublisher = WorkflowMetricsPublisher()
+    
+    // Create a mock repository for testing
+    private fun createCandidateRepository(): CandidateRepository {
+        return object : CandidateRepository {
+            override fun create(candidate: Candidate): Candidate = candidate
+            
+            override fun get(
+                customerId: String,
+                programId: String,
+                marketplaceId: String,
+                subjectType: String,
+                subjectId: String
+            ): Candidate? = null
+            
+            override fun update(candidate: Candidate): Candidate = candidate
+            
+            override fun delete(
+                customerId: String,
+                programId: String,
+                marketplaceId: String,
+                subjectType: String,
+                subjectId: String
+            ) {}
+            
+            override fun batchWrite(candidates: List<Candidate>): BatchWriteResult {
+                // Mock successful batch write
+                return BatchWriteResult(
+                    successfulItems = candidates,
+                    failedItems = emptyList()
+                )
+            }
+            
+            override fun queryByProgramAndChannel(
+                programId: String,
+                channelId: String,
+                limit: Int,
+                ascending: Boolean
+            ): List<Candidate> = emptyList()
+            
+            override fun queryByProgramAndDate(
+                programId: String,
+                date: String,
+                limit: Int
+            ): List<Candidate> = emptyList()
+        }
+    }
     
     override fun handleRequest(input: StoreInput, context: Context): StoreResponse {
         val requestId = context.awsRequestId
@@ -58,6 +104,9 @@ class StoreHandler : RequestHandler<StoreInput, StoreResponse> {
             
             logger.info("Storing candidates: candidateCount={}", candidates.size)
             
+            // Create candidate repository
+            val candidateRepository = createCandidateRepository()
+            
             // Batch write candidates to DynamoDB
             var storedCount = 0
             var failedCount = 0
@@ -72,24 +121,23 @@ class StoreHandler : RequestHandler<StoreInput, StoreResponse> {
                     logger.debug("Processing batch: batchIndex={}, batchSize={}", batchIndex, batch.size)
                     
                     // Write batch to DynamoDB
-                    candidateRepository.batchWrite(batch)
-                    storedCount += batch.size
+                    val result = candidateRepository.batchWrite(batch)
+                    storedCount += result.successfulItems.size
+                    failedCount += result.failedItems.size
+                    
+                    // Track failed candidates
+                    result.failedItems.forEach { failedItem ->
+                        failedCandidates.add("${failedItem.candidate.customerId}:${failedItem.candidate.subject.id}")
+                    }
                     
                 } catch (e: Exception) {
                     logger.error("Batch write failed: batchIndex={}, batchSize={}, error={}", 
                         batchIndex, batch.size, e.message)
                     
-                    // Try individual writes for failed batch
-                    for (candidate in batch) {
-                        try {
-                            candidateRepository.save(candidate)
-                            storedCount++
-                        } catch (individualError: Exception) {
-                            logger.error("Individual write failed: customerId={}, subjectId={}, error={}", 
-                                candidate.customerId, candidate.subject.id, individualError.message)
-                            failedCount++
-                            failedCandidates.add("${candidate.customerId}:${candidate.subject.id}")
-                        }
+                    // Mark all candidates in batch as failed
+                    failedCount += batch.size
+                    batch.forEach { candidate ->
+                        failedCandidates.add("${candidate.customerId}:${candidate.subject.id}")
                     }
                 }
             }

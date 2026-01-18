@@ -263,7 +263,10 @@ class WorkflowCompletionTriggersPropertyTest {
             override fun getClientContext() = null
             override fun getRemainingTimeInMillis() = 300000
             override fun getMemoryLimitInMB() = 512
-            override fun getLogger() = com.amazonaws.services.lambda.runtime.LambdaLogger { }
+            override fun getLogger() = object : com.amazonaws.services.lambda.runtime.LambdaLogger {
+                override fun log(message: String?) {}
+                override fun log(message: ByteArray?) {}
+            }
         }
     }
 }
