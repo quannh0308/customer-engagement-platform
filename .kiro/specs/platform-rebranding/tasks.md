@@ -17,7 +17,7 @@ This task list covers the rebranding of the platform from "General Solicitation 
 
 ## Tasks
 
-- [ ] Task 1: Complete Automated Rebranding
+- [-] Task 1: Complete Automated Rebranding
 
 Execute all automated rebranding tasks including documentation updates, spec directory rename, and FOUNDATION file updates.
 

@@ -1,4 +1,6 @@
-# Completed Tasks - Solicitation Platform
+# Completed Tasks - Customer Engagement & Action Platform (CEAP)
+
+> **Platform Rebranding Note**: This platform was formerly known as the "General Solicitation Platform". We've rebranded to "Customer Engagement & Action Platform (CEAP)" to better reflect its capabilities beyond solicitation. This is a documentation update only—package names and code remain unchanged.
 
 This file tracks all completed tasks from the implementation cycles.
 

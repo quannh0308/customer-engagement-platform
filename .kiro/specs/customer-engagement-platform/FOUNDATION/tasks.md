@@ -1,8 +1,10 @@
-# Implementation Plan: General Solicitation Platform
+# Implementation Plan: Customer Engagement & Action Platform (CEAP)
+
+> **Platform Rebranding Note**: This platform was formerly known as the "General Solicitation Platform". We've rebranded to "Customer Engagement & Action Platform (CEAP)" to better reflect its capabilities beyond solicitation. This is a documentation update only—package names and code remain unchanged.
 
 ## Overview
 
-This implementation plan breaks down the General Solicitation Platform into incremental, testable tasks. The platform will be built using Java with AWS services (Lambda, DynamoDB, Step Functions, EventBridge). We'll follow a layered approach, starting with core data models and storage, then adding scoring, filtering, serving, and finally channel delivery.
+This implementation plan breaks down the Customer Engagement & Action Platform (CEAP) into incremental, testable tasks. The platform will be built using Java with AWS services (Lambda, DynamoDB, Step Functions, EventBridge). We'll follow a layered approach, starting with core data models and storage, then adding scoring, filtering, serving, and finally channel delivery.
 
 The implementation follows a phased approach:
 1. Foundation: Core models, storage, and data ingestion

@@ -1,5 +1,7 @@
 # Implementation Tasks - Current Cycle
 
+> **Platform Rebranding Note**: This platform was formerly known as the "General Solicitation Platform". We've rebranded to "Customer Engagement & Action Platform (CEAP)" to better reflect its capabilities beyond solicitation. This is a documentation update only—package names and code remain unchanged.
+
 ## Current Focus: Task 20 - Implement security and compliance features
 
 This task list shows the current 2-task implementation cycle. After completing these tasks, the next cycle will be loaded from FOUNDATION.

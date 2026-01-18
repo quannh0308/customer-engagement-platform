@@ -1,5 +1,7 @@
 # Design Document - Task 2: Implement Core Data Models
 
+> **Platform Rebranding Note**: This platform was formerly known as the "General Solicitation Platform". We've rebranded to "Customer Engagement & Action Platform (CEAP)" to better reflect its capabilities beyond solicitation. This is a documentation update only—package names and code remain unchanged.
+
 ## Task Context
 
 **Current Task**: Task 2 - Implement core data models

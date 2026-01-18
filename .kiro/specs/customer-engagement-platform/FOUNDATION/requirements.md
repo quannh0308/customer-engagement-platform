@@ -1,8 +1,10 @@
-# Requirements Document
+# Requirements: Customer Engagement & Action Platform (CEAP)
+
+> **Platform Rebranding Note**: This platform was formerly known as the "General Solicitation Platform". We've rebranded to "Customer Engagement & Action Platform (CEAP)" to better reflect its capabilities beyond solicitation. This is a documentation update only—package names and code remain unchanged.
 
 ## Introduction
 
-The General Solicitation Platform is a flexible, extensible system that decouples data sources, scoring systems, filtering mechanisms, and notification channels to solicit customer responses across multiple product verticals. The platform supports soliciting any type of customer engagement (reviews, ratings, surveys, participation requests, content contributions) through both reactive (real-time) and proactive (scheduled batch) workflows while maintaining high performance (P99 ~20ms for serving, ~70ms for eligibility checks).
+The Customer Engagement & Action Platform (CEAP) is a flexible, extensible system that decouples data sources, scoring systems, filtering mechanisms, and notification channels to deliver intelligent customer actions across multiple product verticals. The platform supports any type of customer engagement (reviews, ratings, surveys, participation requests, content contributions, recommendations, fraud alerts, and more) through both reactive (real-time) and proactive (scheduled batch) workflows while maintaining high performance (P99 ~20ms for serving, ~70ms for eligibility checks).
 
 ## Glossary
 

@@ -1,8 +1,10 @@
-# Design Document
+# Design: Customer Engagement & Action Platform (CEAP)
+
+> **Platform Rebranding Note**: This platform was formerly known as the "General Solicitation Platform". We've rebranded to "Customer Engagement & Action Platform (CEAP)" to better reflect its capabilities beyond solicitation. This is a documentation update only—package names and code remain unchanged.
 
 ## Overview
 
-The General Solicitation Platform is a cloud-native, event-driven system built on AWS that enables flexible customer response solicitation across multiple product verticals. The platform supports soliciting any type of customer engagement (reviews, ratings, surveys, participation requests, content contributions, poll responses) through a modular, plugin-based architecture where data sources, scoring models, filtering rules, and notification channels can be added or modified without changing core platform logic.
+The Customer Engagement & Action Platform (CEAP) is a cloud-native, event-driven system built on AWS that enables flexible customer engagement and action delivery across multiple product verticals. The platform supports any type of customer engagement (reviews, ratings, surveys, participation requests, content contributions, recommendations, fraud alerts, and more) through a modular, plugin-based architecture where data sources, scoring models, filtering rules, and notification channels can be added or modified without changing core platform logic.
 
 ### Key Design Principles
 

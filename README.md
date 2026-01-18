@@ -1,4 +1,16 @@
-# General Solicitation Platform
+# Customer Engagement & Action Platform (CEAP)
+### Formerly: General Solicitation Platform
+
+> Intelligent customer engagement at scale
+
+## Evolution Note
+This platform started as a "solicitation system" for collecting customer feedback. We realized the architecture is far more powerful—it can deliver ANY customer action across ANY channel with ML-powered intelligence.
+
+**Current capabilities**: 17 use cases, $280M+ annual impact, 5,286% average ROI
+
+For more details on the rebranding, see [docs/REBRANDING-STRATEGY.md](docs/REBRANDING-STRATEGY.md).
+
+## What is CEAP?
 
 A flexible, extensible system that decouples data sources, scoring systems, filtering mechanisms, and notification channels to solicit customer responses across multiple product verticals.
 

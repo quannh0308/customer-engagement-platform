@@ -1,8 +1,10 @@
-# Use Cases - General Solicitation Platform
+# Use Cases - Customer Engagement & Action Platform (CEAP)
+
+> **Platform Rebranding Note**: This platform was formerly known as the "General Solicitation Platform". We've rebranded to "Customer Engagement & Action Platform (CEAP)" to better reflect its capabilities beyond solicitation. Package names (`com.solicitation.*`) remain unchanged for backward compatibility.
 
 ## Overview
 
-The General Solicitation Platform enables businesses to solicit customer responses (reviews, ratings, surveys, participation requests, content contributions) across multiple product verticals through flexible, pluggable components.
+The Customer Engagement & Action Platform (CEAP) enables businesses to deliver intelligent customer actions (reviews, ratings, surveys, participation requests, content contributions, recommendations, fraud alerts, and more) across multiple product verticals through flexible, pluggable components.
 
 ---
 
@@ -641,7 +643,7 @@ Week 1, Sunday 10:00 AM - Event Day
 
 ## Summary
 
-The General Solicitation Platform supports diverse use cases across:
+The Customer Engagement & Action Platform (CEAP) supports diverse use cases across:
 
 ### Business Domains
 - ✅ E-commerce (product reviews, ratings)

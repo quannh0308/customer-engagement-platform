@@ -1,8 +1,10 @@
-# Visual Architecture - Plug-and-Play Components
+# Visual Architecture - Customer Engagement & Action Platform (CEAP)
+
+> **Platform Rebranding Note**: This platform was formerly known as the "General Solicitation Platform". We've rebranded to "Customer Engagement & Action Platform (CEAP)" to better reflect its capabilities beyond solicitation. Package names (`com.solicitation.*`) remain unchanged for backward compatibility.
 
 ## System Overview
 
-The General Solicitation Platform enables businesses to solicit customer responses (reviews, ratings, surveys, feedback) across multiple verticals through flexible, pluggable components.
+The Customer Engagement & Action Platform (CEAP) enables businesses to deliver intelligent customer actions (reviews, ratings, surveys, feedback, recommendations, fraud alerts, and more) across multiple verticals through flexible, pluggable components.
 
 ### Sample Use Cases
 - **E-Commerce**: Product reviews after delivery (batch processing)
@@ -17,7 +19,7 @@ The General Solicitation Platform enables businesses to solicit customer respons
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                        GENERAL SOLICITATION PLATFORM                         │
+│              CUSTOMER ENGAGEMENT & ACTION PLATFORM (CEAP)                    │
 │                     Multi-Module Gradle + Kotlin Architecture                │
 └─────────────────────────────────────────────────────────────────────────────┘
 

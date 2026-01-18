@@ -1,5 +1,7 @@
 # Use Case Diagrams
 
+> **Platform Rebranding Note**: This platform was formerly known as the "General Solicitation Platform". We've rebranded to "Customer Engagement & Action Platform (CEAP)" to better reflect its capabilities beyond solicitation. Package names (`com.solicitation.*`) remain unchanged for backward compatibility.
+
 This directory contains detailed flow diagrams for each use case, showing:
 - Actor interactions
 - Data ingestion flows
