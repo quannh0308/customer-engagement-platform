@@ -309,7 +309,7 @@ The platform uses structured JSON logging with:
 5. Update CloudFormation template
 6. Build: `./gradlew :solicitation-workflow-<name>:shadowJar`
 
-See [MULTI-MODULE-ARCHITECTURE.md](MULTI-MODULE-ARCHITECTURE.md) for detailed instructions.
+See [MULTI-MODULE-ARCHITECTURE.md](docs/archive/MULTI-MODULE-ARCHITECTURE.md) for detailed instructions.
 
 ## CI/CD Pipeline
 

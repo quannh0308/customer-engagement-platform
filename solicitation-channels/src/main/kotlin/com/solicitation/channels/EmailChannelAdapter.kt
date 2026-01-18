@@ -70,7 +70,8 @@ class EmailChannelAdapter(
                 templateId = templateConfig["templateId"] as? String ?: "default-template",
                 subject = templateConfig["subject"] as? String ?: "We'd love your feedback",
                 fromAddress = templateConfig["fromAddress"] as? String ?: "noreply@example.com",
-                fromName = templateConfig["fromName"] as? String ?: "Solicitation Platform"
+                fromName = templateConfig["fromName"] as? String ?: "Solicitation Platform",
+                unsubscribeUrl = templateConfig["unsubscribeUrl"] as? String ?: "https://example.com/unsubscribe"
             )
             programTemplates[programId] = template
             logger.info { "Configured email template for program $programId: ${template.templateId}" }
@@ -355,6 +356,8 @@ class EmailChannelAdapter(
     /**
      * Sends an email to a candidate.
      * 
+     * All emails include an unsubscribe link as required by email compliance regulations.
+     * 
      * @param candidate Candidate to send email to
      * @param template Email template to use
      * @param campaignId Campaign identifier
@@ -369,21 +372,31 @@ class EmailChannelAdapter(
     ): String {
         val deliveryId = "email-${System.nanoTime()}"
         
+        // Build unsubscribe link with customer ID and program ID
+        val unsubscribeLink = buildUnsubscribeLink(
+            template.unsubscribeUrl,
+            candidate.customerId,
+            context.programId
+        )
+        
         // In a real implementation, this would:
         // 1. Render the email template with candidate data
-        // 2. Send via SES
-        // 3. Track the message ID
-        // 4. Set up SNS notifications for bounces/complaints/opens
+        // 2. Include the unsubscribe link in the email footer
+        // 3. Send via SES with List-Unsubscribe header
+        // 4. Track the message ID
+        // 5. Set up SNS notifications for bounces/complaints/opens
         
         // For now, we'll simulate the send
         logger.debug {
             "Sending email: deliveryId=$deliveryId, " +
             "customerId=${candidate.customerId}, " +
             "template=${template.templateId}, " +
-            "campaignId=$campaignId"
+            "campaignId=$campaignId, " +
+            "unsubscribeLink=$unsubscribeLink"
         }
         
         // Simulate SES send (in production, use sesClient.sendEmail())
+        // val htmlBody = renderTemplate(template, candidate, unsubscribeLink)
         // val request = SendEmailRequest.builder()
         //     .source(template.fromAddress)
         //     .destination(Destination.builder().toAddresses(customerEmail).build())
@@ -391,10 +404,32 @@ class EmailChannelAdapter(
         //         .subject(Content.builder().data(template.subject).build())
         //         .body(Body.builder().html(Content.builder().data(htmlBody).build()).build())
         //         .build())
+        //     .configurationSetName("email-tracking")
         //     .build()
         // val response = sesClient.sendEmail(request)
         
         return deliveryId
+    }
+    
+    /**
+     * Builds an unsubscribe link for a customer and program.
+     * 
+     * The link includes the customer ID and program ID as query parameters,
+     * allowing the unsubscribe handler to process the opt-out correctly.
+     * 
+     * Requirements: 18.6 - Email compliance
+     * 
+     * @param baseUrl Base unsubscribe URL
+     * @param customerId Customer identifier
+     * @param programId Program identifier
+     * @return Complete unsubscribe URL
+     */
+    private fun buildUnsubscribeLink(
+        baseUrl: String,
+        customerId: String,
+        programId: String
+    ): String {
+        return "$baseUrl?customerId=$customerId&programId=$programId"
     }
     
     /**
@@ -455,12 +490,14 @@ class EmailChannelAdapter(
  * @property subject Email subject line
  * @property fromAddress From email address
  * @property fromName From display name
+ * @property unsubscribeUrl Base URL for unsubscribe links (will be appended with customer ID and program ID)
  */
 data class EmailTemplate(
     val templateId: String,
     val subject: String,
     val fromAddress: String,
-    val fromName: String
+    val fromName: String,
+    val unsubscribeUrl: String = "https://example.com/unsubscribe"
 )
 
 /**

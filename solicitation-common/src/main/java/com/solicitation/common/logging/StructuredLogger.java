@@ -7,13 +7,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Structured logger that provides consistent JSON-formatted logging.
+ * Structured logger that provides consistent JSON-formatted logging with automatic PII redaction.
  * 
  * This class wraps SLF4J Logger and adds structured data support for
- * better log analysis and monitoring.
+ * better log analysis and monitoring. All log messages and structured data
+ * are automatically scanned and redacted for PII (emails, phone numbers, addresses, etc.)
+ * before being written to logs.
  * 
  * Requirements:
  * - Req 12.2: Structured logging with correlation IDs
+ * - Req 18.4: PII redaction in logs
  */
 public class StructuredLogger {
     
@@ -49,89 +52,104 @@ public class StructuredLogger {
     
     /**
      * Logs an info message with structured data.
+     * PII is automatically redacted from both message and data.
      * 
      * @param message The log message
      * @param data Additional structured data
      */
     public void info(String message, Map<String, Object> data) {
         if (logger.isInfoEnabled()) {
-            logger.info(formatMessage(message, data));
+            String redactedMessage = PIIRedactor.redactAll(message);
+            Map<String, Object> redactedData = redactData(data);
+            logger.info(formatMessage(redactedMessage, redactedData));
         }
     }
     
     /**
      * Logs an info message.
+     * PII is automatically redacted.
      * 
      * @param message The log message
      */
     public void info(String message) {
-        logger.info(message);
+        logger.info(PIIRedactor.redactAll(message));
     }
     
     /**
      * Logs a warning message with structured data.
+     * PII is automatically redacted from both message and data.
      * 
      * @param message The log message
      * @param data Additional structured data
      */
     public void warn(String message, Map<String, Object> data) {
         if (logger.isWarnEnabled()) {
-            logger.warn(formatMessage(message, data));
+            String redactedMessage = PIIRedactor.redactAll(message);
+            Map<String, Object> redactedData = redactData(data);
+            logger.warn(formatMessage(redactedMessage, redactedData));
         }
     }
     
     /**
      * Logs a warning message.
+     * PII is automatically redacted.
      * 
      * @param message The log message
      */
     public void warn(String message) {
-        logger.warn(message);
+        logger.warn(PIIRedactor.redactAll(message));
     }
     
     /**
      * Logs a warning message with exception.
+     * PII is automatically redacted from message.
      * 
      * @param message The log message
      * @param throwable The exception
      */
     public void warn(String message, Throwable throwable) {
-        logger.warn(message, throwable);
+        logger.warn(PIIRedactor.redactAll(message), throwable);
     }
     
     /**
      * Logs an error message with structured data.
+     * PII is automatically redacted from both message and data.
      * 
      * @param message The log message
      * @param data Additional structured data
      */
     public void error(String message, Map<String, Object> data) {
         if (logger.isErrorEnabled()) {
-            logger.error(formatMessage(message, data));
+            String redactedMessage = PIIRedactor.redactAll(message);
+            Map<String, Object> redactedData = redactData(data);
+            logger.error(formatMessage(redactedMessage, redactedData));
         }
     }
     
     /**
      * Logs an error message.
+     * PII is automatically redacted.
      * 
      * @param message The log message
      */
     public void error(String message) {
-        logger.error(message);
+        logger.error(PIIRedactor.redactAll(message));
     }
     
     /**
      * Logs an error message with exception.
+     * PII is automatically redacted from message.
      * 
      * @param message The log message
      * @param throwable The exception
      */
     public void error(String message, Throwable throwable) {
-        logger.error(message, throwable);
+        logger.error(PIIRedactor.redactAll(message), throwable);
     }
     
     /**
      * Logs an error message with exception and structured data.
+     * PII is automatically redacted from both message and data.
      * 
      * @param message The log message
      * @param throwable The exception
@@ -139,29 +157,35 @@ public class StructuredLogger {
      */
     public void error(String message, Throwable throwable, Map<String, Object> data) {
         if (logger.isErrorEnabled()) {
-            logger.error(formatMessage(message, data), throwable);
+            String redactedMessage = PIIRedactor.redactAll(message);
+            Map<String, Object> redactedData = redactData(data);
+            logger.error(formatMessage(redactedMessage, redactedData), throwable);
         }
     }
     
     /**
      * Logs a debug message with structured data.
+     * PII is automatically redacted from both message and data.
      * 
      * @param message The log message
      * @param data Additional structured data
      */
     public void debug(String message, Map<String, Object> data) {
         if (logger.isDebugEnabled()) {
-            logger.debug(formatMessage(message, data));
+            String redactedMessage = PIIRedactor.redactAll(message);
+            Map<String, Object> redactedData = redactData(data);
+            logger.debug(formatMessage(redactedMessage, redactedData));
         }
     }
     
     /**
      * Logs a debug message.
+     * PII is automatically redacted.
      * 
      * @param message The log message
      */
     public void debug(String message) {
-        logger.debug(message);
+        logger.debug(PIIRedactor.redactAll(message));
     }
     
     /**
@@ -216,6 +240,57 @@ public class StructuredLogger {
         }
         
         return sb.toString();
+    }
+    
+    /**
+     * Redacts PII from structured data map.
+     * 
+     * @param data The data map to redact
+     * @return A new map with redacted values
+     */
+    private Map<String, Object> redactData(Map<String, Object> data) {
+        if (data == null || data.isEmpty()) {
+            return data;
+        }
+        
+        Map<String, Object> redacted = new HashMap<>();
+        for (Map.Entry<String, Object> entry : data.entrySet()) {
+            String key = entry.getKey().toLowerCase();
+            Object value = entry.getValue();
+            
+            // Redact known PII fields
+            if (key.contains("email") || key.contains("phone") || 
+                key.contains("address") || key.contains("ssn") ||
+                key.contains("creditcard") || key.contains("card")) {
+                
+                if (value instanceof String) {
+                    redacted.put(entry.getKey(), PIIRedactor.redactAll((String) value));
+                } else {
+                    redacted.put(entry.getKey(), "[REDACTED]");
+                }
+            } else if (key.contains("customerid") || key.contains("customer_id")) {
+                if (value instanceof String) {
+                    redacted.put(entry.getKey(), PIIRedactor.redactCustomerId((String) value));
+                } else {
+                    redacted.put(entry.getKey(), value);
+                }
+            } else if (key.contains("name") && !key.contains("filename") && !key.contains("username")) {
+                if (value instanceof String) {
+                    redacted.put(entry.getKey(), PIIRedactor.redactName((String) value));
+                } else {
+                    redacted.put(entry.getKey(), value);
+                }
+            } else {
+                // For other fields, still scan for PII patterns in string values
+                if (value instanceof String) {
+                    redacted.put(entry.getKey(), PIIRedactor.redactAll((String) value));
+                } else {
+                    redacted.put(entry.getKey(), value);
+                }
+            }
+        }
+        
+        return redacted;
     }
     
     /**

@@ -190,3 +190,29 @@ class MockEventDeduplicationTracker : EventDeduplicationTracker(
         trackedEvents.clear()
     }
 }
+
+/**
+ * Mock Lambda context for testing
+ */
+class MockLambdaContext : com.amazonaws.services.lambda.runtime.Context {
+    override fun getAwsRequestId(): String = "test-request-id"
+    override fun getLogGroupName(): String = "test-log-group"
+    override fun getLogStreamName(): String = "test-log-stream"
+    override fun getFunctionName(): String = "test-function"
+    override fun getFunctionVersion(): String = "1.0"
+    override fun getInvokedFunctionArn(): String = "arn:aws:lambda:us-east-1:123456789012:function:test"
+    override fun getIdentity(): com.amazonaws.services.lambda.runtime.CognitoIdentity? = null
+    override fun getClientContext(): com.amazonaws.services.lambda.runtime.ClientContext? = null
+    override fun getRemainingTimeInMillis(): Int = 300000
+    override fun getMemoryLimitInMB(): Int = 512
+    override fun getLogger(): com.amazonaws.services.lambda.runtime.LambdaLogger {
+        return object : com.amazonaws.services.lambda.runtime.LambdaLogger {
+            override fun log(message: String) {
+                println(message)
+            }
+            override fun log(message: ByteArray) {
+                println(String(message))
+            }
+        }
+    }
+}
