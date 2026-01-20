@@ -73,7 +73,7 @@
     </root>
 
     <!-- Application-specific loggers -->
-    <logger name="com.solicitation" level="${LOG_LEVEL}" additivity="false">
+    <logger name="com.ceap" level="${LOG_LEVEL}" additivity="false">
         <appender-ref ref="ASYNC_CONSOLE" />
     </logger>
 
@@ -110,7 +110,7 @@
                 <appender-ref ref="ASYNC_CONSOLE" />
             </root>
             <!-- Disable debug logging in production -->
-            <logger name="com.solicitation" level="INFO" />
+            <logger name="com.ceap" level="INFO" />
         </then>
     </if>
 
