@@ -1,8 +1,10 @@
 # AWS CDK Migration - COMPLETE ✅
 
+> **Platform Rebranding Note**: This platform was formerly known as the "General Solicitation Platform". We've rebranded to "Customer Engagement & Action Platform (CEAP)" to better reflect its capabilities beyond solicitation. This archived document reflects the historical CDK migration. Package names (`com.solicitation.*`) remain unchanged for backward compatibility.
+
 ## Summary
 
-Successfully migrated from CloudFormation YAML to AWS CDK (Kotlin) for type-safe, plug-and-play infrastructure.
+Successfully migrated from CloudFormation YAML to AWS CDK (Kotlin) for type-safe, plug-and-play infrastructure for the Customer Engagement & Action Platform (CEAP).
 
 ## What Was Created
 

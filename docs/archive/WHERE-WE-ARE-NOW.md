@@ -1,5 +1,7 @@
 # Where We Are Now - Status Update
 
+> **Platform Rebranding Note**: This platform was formerly known as the "General Solicitation Platform". We've rebranded to "Customer Engagement & Action Platform (CEAP)" to better reflect its capabilities beyond solicitation. This archived document reflects the historical status. Package names (`com.solicitation.*`) remain unchanged for backward compatibility.
+
 ## Current Status: 🚧 Infrastructure Modernization Complete, Ready for Implementation
 
 ### What We've Accomplished (Last Hour)

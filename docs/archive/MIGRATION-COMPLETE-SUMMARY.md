@@ -1,5 +1,7 @@
 # Maven to Gradle Migration - COMPLETE ✅
 
+> **Platform Rebranding Note**: This platform was formerly known as the "General Solicitation Platform". We've rebranded to "Customer Engagement & Action Platform (CEAP)" to better reflect its capabilities beyond solicitation. This archived document reflects the historical migration. Package names (`com.solicitation.*`) remain unchanged for backward compatibility.
+
 ## Commit Summary
 
 **Commit**: `8a3e2d5` - "Migrate from Maven to Gradle build system"
@@ -12,7 +14,7 @@
 
 ### Multi-Module Gradle Project Structure
 
-This is a **single workspace** containing **13 independent modules** that are:
+This is a **single workspace** containing **13 independent modules** for the Customer Engagement & Action Platform (CEAP) that are:
 - ✅ Built together as one project
 - ✅ Share common dependencies and configuration
 - ✅ Can be deployed independently (especially the 5 Lambda modules)

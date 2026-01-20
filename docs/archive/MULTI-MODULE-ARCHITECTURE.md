@@ -1,8 +1,10 @@
-# Multi-Module Maven Architecture
+# Multi-Module Architecture
+
+> **Platform Rebranding Note**: This platform was formerly known as the "General Solicitation Platform". We've rebranded to "Customer Engagement & Action Platform (CEAP)" to better reflect its capabilities beyond solicitation. This archived document reflects the historical Maven-based architecture. The current system uses Gradle. Package names (`com.solicitation.*`) remain unchanged for backward compatibility.
 
 ## Overview
 
-The General Solicitation Platform uses a multi-module Maven architecture for better modularity, independent deployment, and clear separation of concerns.
+This document describes the historical multi-module Maven architecture of the Customer Engagement & Action Platform (CEAP). The platform now uses Gradle (see main README.md for current architecture).
 
 ## Module Structure
 
