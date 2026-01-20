@@ -2,7 +2,7 @@
 
 > **Platform Rebranding Note**: This platform was formerly known as the "General Solicitation Platform". We've rebranded to "Customer Engagement & Action Platform (CEAP)" to better reflect its capabilities beyond solicitation. This is a documentation update only—package names and code remain unchanged.
 
-## Current Focus: Task 23 - Implement real-time channel features
+## Current Focus: Task 24 - Implement backward compatibility and migration support
 
 This task list shows the current 2-task implementation cycle. After completing these tasks, the next cycle will be loaded from FOUNDATION.
 
@@ -18,80 +18,75 @@ This task list shows the current 2-task implementation cycle. After completing t
 
 ## Current Task Cycle
 
-- [x] Task 23: Implement real-time channel features
-- [-] Complete cycle - Commit, push, and setup next tasks
+- [ ] Task 24: Implement backward compatibility and migration support
+- [ ] Complete cycle - Commit, push, and setup next tasks
 
 ---
 
-## Task 23 Details: Implement real-time channel features
+## Task 24 Details: Implement backward compatibility and migration support
 
-Implement channel adapters for real-time channels (in-app, push notifications, voice assistant) and add personalized ranking with context and A/B test integration to the serving API.
+Implement v1 API adapter layer to maintain backward compatibility while migrating to v2 backend, with usage tracking and shadow mode support.
 
 ### Subtasks:
 
-- [ ] 23.1 Create in-app channel adapter
-  - Implement serving API integration
-  - Add in-app specific formatting
-  - _Requirements: 15.2_
+- [ ] 24.1 Create v1 API adapter layer
+  - Implement v1 API endpoints
+  - Translate v1 requests to v2 backend
+  - Return v1 response format
+  - _Requirements: 20.1, 20.2_
 
-- [ ] 23.2 Create push notification channel adapter
-  - Integrate with push notification service
-  - Add push-specific formatting
-  - _Requirements: 15.2_
+- [ ]* 24.2 Write property test for V1 API backward compatibility
+  - **Property 58: V1 API backward compatibility**
+  - **Validates: Requirements 20.1**
 
-- [ ] 23.3 Create voice assistant channel adapter
-  - Integrate with voice assistant service
-  - Add voice-specific formatting
-  - _Requirements: 15.2_
+- [ ] 24.3 Add v1 usage tracking
+  - Record v1 API usage metrics
+  - Track endpoint, customer, timestamp
+  - _Requirements: 20.3_
 
-- [ ] 23.4 Implement personalized ranking with context
-  - Use customer history and preferences for ranking
-  - Apply context-aware ranking algorithms
-  - _Requirements: 15.4_
+- [ ]* 24.4 Write property test for V1 usage tracking
+  - **Property 59: V1 usage tracking**
+  - **Validates: Requirements 20.3**
 
-- [ ]* 23.5 Write property test for personalized ranking with context
-  - **Property 47: Personalized ranking with context**
-  - **Validates: Requirements 15.4**
+- [ ] 24.5 Implement shadow mode for v2
+  - Execute v2 processing in parallel with v1
+  - Ensure v2 doesn't affect v1 responses
+  - _Requirements: 20.4_
 
-- [ ] 23.6 Add A/B test integration to serving API
-  - Return treatment-specific candidates
-  - Ensure treatment consistency
-  - _Requirements: 15.5_
-
-- [ ]* 23.7 Write property test for treatment-specific candidate serving
-  - **Property 48: Treatment-specific candidate serving**
-  - **Validates: Requirements 15.5**
+- [ ]* 24.6 Write property test for shadow mode isolation
+  - **Property 60: Shadow mode isolation**
+  - **Validates: Requirements 20.4**
 
 ---
 
 ## Complete Cycle: Commit, Push, and Setup Next Tasks
 
-After Task 23 completion, commit any fixes, push to git, and prepare tasks.md for the next cycle.
+After Task 24 completion, commit any fixes, push to git, and prepare tasks.md for the next cycle.
 
 **IMPORTANT**: When setting up the next cycle, ALL tasks in the new tasks.md must be marked as `[ ]` not started. This is a fresh cycle start.
 
 ### Subtasks:
 
-- [-] Commit and push any fixes
+- [ ] Commit and push any fixes
   - Stage all changes with `git add -A`
   - Create descriptive commit message if fixes were needed
   - Push to origin/main
 
 - [ ] Setup next task cycle in tasks.md
-  - Read FOUNDATION/tasks.md to identify next tasks (Task 24 from FOUNDATION)
-  - Move completed Task 23 to completed-tasks.md with full details
-  - Update tasks.md with Task 24 as the new main task
-  - **CRITICAL**: Ensure ALL tasks in tasks.md are marked as `[ ]` not started (including Task 24 AND "Complete cycle" task)
+  - Read FOUNDATION/tasks.md to identify next tasks (Task 25 from FOUNDATION)
+  - Move completed Task 24 to completed-tasks.md with full details
+  - Update tasks.md with Task 25 as the new main task
+  - **CRITICAL**: Ensure ALL tasks in tasks.md are marked as `[ ]` not started (including Task 25 AND "Complete cycle" task)
   - **CRITICAL**: Ensure tasks in FOUNDATION/tasks.md are updated correctly (mark only the current finished task as done)
-  - Update the "Complete cycle" subtask to reference Task 25 for the next iteration
+  - Update the "Complete cycle" subtask to reference Task 26 for the next iteration
   - Commit and push the updated files
 
 ---
 
 ## Next Cycle Preview
 
-After Task 23 & cycle completion, the next cycle will focus on:
-- **Task 24**: Implement backward compatibility and migration support (from FOUNDATION)
+After Task 24 & cycle completion, the next cycle will focus on:
+- **Task 25**: Implement version monotonicity tracking (from FOUNDATION)
 - **Complete cycle**: Commit, push, and setup next tasks
 
 ---

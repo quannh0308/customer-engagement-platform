@@ -618,37 +618,37 @@ The implementation follows a phased approach:
 
 
 
-- [ ] 23. Implement real-time channel features
-  - [ ] 23.1 Create in-app channel adapter
+- [x] 23. Implement real-time channel features
+  - [x] 23.1 Create in-app channel adapter
     - Implement serving API integration
     - Add in-app specific formatting
     - _Requirements: 15.2_
   
-  - [ ] 23.2 Create push notification channel adapter
+  - [x] 23.2 Create push notification channel adapter
     - Integrate with push notification service
     - Add push-specific formatting
     - _Requirements: 15.2_
   
-  - [ ] 23.3 Create voice assistant channel adapter
+  - [x] 23.3 Create voice assistant channel adapter
     - Integrate with voice assistant service
     - Add voice-specific formatting
     - _Requirements: 15.2_
   
-  - [ ] 23.4 Implement personalized ranking with context
+  - [x] 23.4 Implement personalized ranking with context
     - Use customer history and preferences for ranking
     - Apply context-aware ranking algorithms
     - _Requirements: 15.4_
   
-  - [ ]* 23.5 Write property test for personalized ranking with context
+  - [x]* 23.5 Write property test for personalized ranking with context
     - **Property 47: Personalized ranking with context**
     - **Validates: Requirements 15.4**
   
-  - [ ] 23.6 Add A/B test integration to serving API
+  - [x] 23.6 Add A/B test integration to serving API
     - Return treatment-specific candidates
     - Ensure treatment consistency
     - _Requirements: 15.5_
   
-  - [ ]* 23.7 Write property test for treatment-specific candidate serving
+  - [x]* 23.7 Write property test for treatment-specific candidate serving
     - **Property 48: Treatment-specific candidate serving**
     - **Validates: Requirements 15.5**
 
