@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: 'Lambda Function Configurations for General Solicitation Platform'
+Description: 'Lambda Function Configurations for Customer Engagement & Action Platform (CEAP)'
 
 Parameters:
   Environment:
@@ -13,7 +13,7 @@ Parameters:
 
   ProjectName:
     Type: String
-    Default: solicitation-platform
+    Default: ceap-platform
     Description: Project name for resource naming
 
 Resources:
@@ -249,7 +249,7 @@ Resources:
     Properties:
       FunctionName: !Sub '${ProjectName}-etl-${Environment}'
       Runtime: java17
-      Handler: com.solicitation.workflow.ETLHandler::handleRequest
+      Handler: com.ceap.workflow.ETLHandler::handleRequest
       Role: !GetAtt ETLLambdaRole.Arn
       MemorySize: 1024
       Timeout: 300
@@ -278,7 +278,7 @@ Resources:
     Properties:
       FunctionName: !Sub '${ProjectName}-filter-${Environment}'
       Runtime: java17
-      Handler: com.solicitation.workflow.FilterHandler::handleRequest
+      Handler: com.ceap.workflow.FilterHandler::handleRequest
       Role: !GetAtt FilterLambdaRole.Arn
       MemorySize: 512
       Timeout: 60
@@ -305,7 +305,7 @@ Resources:
     Properties:
       FunctionName: !Sub '${ProjectName}-score-${Environment}'
       Runtime: java17
-      Handler: com.solicitation.workflow.ScoreHandler::handleRequest
+      Handler: com.ceap.workflow.ScoreHandler::handleRequest
       Role: !GetAtt ScoreLambdaRole.Arn
       MemorySize: 1024
       Timeout: 120
@@ -334,7 +334,7 @@ Resources:
     Properties:
       FunctionName: !Sub '${ProjectName}-store-${Environment}'
       Runtime: java17
-      Handler: com.solicitation.workflow.StoreHandler::handleRequest
+      Handler: com.ceap.workflow.StoreHandler::handleRequest
       Role: !GetAtt StoreLambdaRole.Arn
       MemorySize: 512
       Timeout: 60
@@ -361,7 +361,7 @@ Resources:
     Properties:
       FunctionName: !Sub '${ProjectName}-serve-${Environment}'
       Runtime: java17
-      Handler: com.solicitation.serving.ServeHandler::handleRequest
+      Handler: com.ceap.serving.ServeHandler::handleRequest
       Role: !GetAtt ServeLambdaRole.Arn
       MemorySize: 512
       Timeout: 30

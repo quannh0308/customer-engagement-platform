@@ -20,7 +20,7 @@ private val logger = KotlinLogging.logger {}
  */
 class ScoreCacheRepository(
     private val dynamoDbClient: DynamoDbClient,
-    private val tableName: String = "solicitation-score-cache",
+    private val tableName: String = "ceap-score-cache",
     private val config: ScoreCacheConfig = ScoreCacheConfig()
 ) {
     

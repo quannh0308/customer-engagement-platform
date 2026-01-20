@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: 'EventBridge Rules for General Solicitation Platform'
+Description: 'EventBridge Rules for Customer Engagement & Action Platform (CEAP)'
 
 Parameters:
   Environment:
@@ -13,7 +13,7 @@ Parameters:
 
   ProjectName:
     Type: String
-    Default: solicitation-platform
+    Default: ceap-platform
     Description: Project name for resource naming
 
   BatchIngestionStateMachineArn:

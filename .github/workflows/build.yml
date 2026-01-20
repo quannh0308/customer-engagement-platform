@@ -1,4 +1,4 @@
-name: Build and Deploy
+name: CEAP Platform - Build and Deploy
 
 on:
   push:
@@ -12,7 +12,7 @@ on:
 
 env:
   JAVA_VERSION: '17'
-  MAVEN_OPTS: '-Xmx3072m'
+  GRADLE_OPTS: '-Xmx3072m'
 
 jobs:
   # ============================================================================
@@ -31,42 +31,44 @@ jobs:
         with:
           java-version: ${{ env.JAVA_VERSION }}
           distribution: 'temurin'
-          cache: 'maven'
+          cache: 'gradle'
       
-      - name: Cache Maven packages
+      - name: Cache Gradle packages
         uses: actions/cache@v3
         with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: |
-            ${{ runner.os }}-maven-
+            ${{ runner.os }}-gradle-
       
-      - name: Build with Maven
-        run: mvn clean package -B
+      - name: Build with Gradle
+        run: ./gradlew build -x test
       
       - name: Run unit tests
-        run: mvn test -B
+        run: ./gradlew test
       
       - name: Run property-based tests
-        run: mvn verify -B
+        run: ./gradlew test
       
       - name: Generate code coverage report
-        run: mvn jacoco:report
+        run: ./gradlew jacocoTestReport
       
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
         with:
-          files: ./target/site/jacoco/jacoco.xml
+          files: ./build/reports/jacoco/test/jacocoTestReport.xml
           flags: unittests
           name: codecov-umbrella
       
       - name: Verify Lambda JARs
         run: |
           echo "Verifying Lambda deployment packages..."
-          for module in solicitation-workflow-etl solicitation-workflow-filter solicitation-workflow-score solicitation-workflow-store solicitation-workflow-reactive; do
-            if [ -f "$module/target/$module-1.0-SNAPSHOT.jar" ]; then
+          for module in ceap-workflow-etl ceap-workflow-filter ceap-workflow-score ceap-workflow-store ceap-workflow-reactive; do
+            if [ -f "$module/build/libs/$module-1.0.0-SNAPSHOT.jar" ]; then
               echo "✓ $module JAR exists"
-              ls -lh "$module/target/$module-1.0-SNAPSHOT.jar"
+              ls -lh "$module/build/libs/$module-1.0.0-SNAPSHOT.jar"
             else
               echo "✗ $module JAR not found"
               exit 1
@@ -78,11 +80,11 @@ jobs:
         with:
           name: lambda-jars
           path: |
-            solicitation-workflow-etl/target/*.jar
-            solicitation-workflow-filter/target/*.jar
-            solicitation-workflow-score/target/*.jar
-            solicitation-workflow-store/target/*.jar
-            solicitation-workflow-reactive/target/*.jar
+            ceap-workflow-etl/build/libs/*.jar
+            ceap-workflow-filter/build/libs/*.jar
+            ceap-workflow-score/build/libs/*.jar
+            ceap-workflow-store/build/libs/*.jar
+            ceap-workflow-reactive/build/libs/*.jar
           retention-days: 7
 
   # ============================================================================
@@ -102,18 +104,18 @@ jobs:
         with:
           java-version: ${{ env.JAVA_VERSION }}
           distribution: 'temurin'
-          cache: 'maven'
+          cache: 'gradle'
       
       - name: Run Checkstyle
-        run: mvn checkstyle:check -B
+        run: ./gradlew checkstyleMain checkstyleTest
         continue-on-error: true
       
       - name: Run SpotBugs
-        run: mvn spotbugs:check -B
+        run: ./gradlew spotbugsMain
         continue-on-error: true
       
       - name: Run PMD
-        run: mvn pmd:check -B
+        run: ./gradlew pmdMain
         continue-on-error: true
 
   # ============================================================================
@@ -126,7 +128,7 @@ jobs:
     if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
     environment:
       name: dev
-      url: https://dev.solicitation-platform.example.com
+      url: https://dev.ceap-platform.example.com
     
     steps:
       - name: Checkout code
@@ -170,7 +172,7 @@ jobs:
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     environment:
       name: staging
-      url: https://staging.solicitation-platform.example.com
+      url: https://staging.ceap-platform.example.com
     
     steps:
       - name: Checkout code
@@ -220,7 +222,7 @@ jobs:
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     environment:
       name: production
-      url: https://solicitation-platform.example.com
+      url: https://ceap-platform.example.com
     
     steps:
       - name: Checkout code
@@ -283,10 +285,10 @@ jobs:
         with:
           java-version: ${{ env.JAVA_VERSION }}
           distribution: 'temurin'
-          cache: 'maven'
+          cache: 'gradle'
       
       - name: Run OWASP Dependency Check
-        run: mvn org.owasp:dependency-check-maven:check -B
+        run: ./gradlew dependencyCheckAnalyze
         continue-on-error: true
       
       - name: Upload security report
@@ -294,5 +296,5 @@ jobs:
         if: always()
         with:
           name: security-report
-          path: target/dependency-check-report.html
+          path: build/reports/dependency-check-report.html
           retention-days: 30

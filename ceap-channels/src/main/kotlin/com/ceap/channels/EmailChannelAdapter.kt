@@ -70,7 +70,7 @@ class EmailChannelAdapter(
                 templateId = templateConfig["templateId"] as? String ?: "default-template",
                 subject = templateConfig["subject"] as? String ?: "We'd love your feedback",
                 fromAddress = templateConfig["fromAddress"] as? String ?: "noreply@example.com",
-                fromName = templateConfig["fromName"] as? String ?: "Solicitation Platform",
+                fromName = templateConfig["fromName"] as? String ?: "CEAP Platform",
                 unsubscribeUrl = templateConfig["unsubscribeUrl"] as? String ?: "https://example.com/unsubscribe"
             )
             programTemplates[programId] = template
