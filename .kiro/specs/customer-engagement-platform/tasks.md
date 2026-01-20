@@ -2,7 +2,7 @@
 
 > **Platform Rebranding Note**: This platform was formerly known as the "General Solicitation Platform". We've rebranded to "Customer Engagement & Action Platform (CEAP)" to better reflect its capabilities beyond solicitation. This is a documentation update only—package names and code remain unchanged.
 
-## Current Focus: Task 27 - Final checkpoint - Ensure all tests pass
+## Current Focus: Task 28 - Rename code modules and packages to CEAP
 
 This task list shows the current 2-task implementation cycle. After completing these tasks, the next cycle will be loaded from FOUNDATION.
 
@@ -18,72 +18,114 @@ This task list shows the current 2-task implementation cycle. After completing t
 
 ## Current Task Cycle
 
-- [x] Task 27: Final checkpoint - Ensure all tests pass
-- [-] Complete cycle - Commit, push, and setup next tasks
+- [ ] Task 28: Rename code modules and packages to CEAP
+- [ ] Complete cycle - Commit, push, and setup next tasks
 
 ---
 
-## Task 27 Details: Final checkpoint - Ensure all tests pass
+## Task 28 Details: Rename code modules and packages to CEAP
 
-Run all tests across all modules to ensure the platform is fully functional and all correctness properties are validated.
+Rename all module directories from `solicitation-*` to `ceap-*` and all package names from `com.solicitation.*` to `com.ceap.*`. This aligns the codebase with the platform rebranding to "Customer Engagement & Action Platform (CEAP)".
+
+**Requirements**: All (code consistency with branding)
 
 ### Subtasks:
 
-- [ ] 27.1 Run all unit tests
-  - Execute: `./gradlew test`
-  - Verify all unit tests pass
-  - Fix any failing tests
+- [ ] 28.1 Rename module directories
+  - Rename: `solicitation-channels` → `ceap-channels`
+  - Rename: `solicitation-common` → `ceap-common`
+  - Rename: `solicitation-connectors` → `ceap-connectors`
+  - Rename: `solicitation-filters` → `ceap-filters`
+  - Rename: `solicitation-models` → `ceap-models`
+  - Rename: `solicitation-scoring` → `ceap-scoring`
+  - Rename: `solicitation-serving` → `ceap-serving`
+  - Rename: `solicitation-storage` → `ceap-storage`
+  - Rename: `solicitation-workflow-etl` → `ceap-workflow-etl`
+  - Rename: `solicitation-workflow-filter` → `ceap-workflow-filter`
+  - Rename: `solicitation-workflow-reactive` → `ceap-workflow-reactive`
+  - Rename: `solicitation-workflow-score` → `ceap-workflow-score`
+  - Rename: `solicitation-workflow-store` → `ceap-workflow-store`
+  - Use `git mv` to preserve history
 
-- [ ] 27.2 Run all property-based tests
-  - Execute: `./gradlew test --tests "*PropertyTest"`
-  - Verify all property tests pass (100+ iterations each)
-  - Fix any failing property tests
+- [ ] 28.2 Update settings.gradle.kts
+  - Update all module references from `solicitation-*` to `ceap-*`
+  - Example: `include("solicitation-channels")` → `include("ceap-channels")`
 
-- [ ] 27.3 Run all integration tests
-  - Execute: `./gradlew test --tests "*IntegrationTest"`
-  - Verify all integration tests pass
-  - Fix any failing integration tests
+- [ ] 28.3 Update all build.gradle.kts files
+  - Update project dependencies from `:solicitation-*` to `:ceap-*`
+  - Example: `implementation(project(":solicitation-models"))` → `implementation(project(":ceap-models"))`
+  - Update in all 13 module build files
 
-- [ ] 27.4 Run end-to-end tests
-  - Execute: `./gradlew test --tests "*EndToEndPropertyTest"`
-  - Verify all end-to-end tests pass
-  - Fix any failing end-to-end tests
+- [ ] 28.4 Rename package directories
+  - Rename: `com/solicitation` → `com/ceap` in all modules
+  - Use `git mv` to preserve history
+  - Affects all `src/main/kotlin` and `src/main/java` directories
 
-- [ ] 27.5 Verify build succeeds
-  - Execute: `./gradlew clean build`
+- [ ] 28.5 Update package declarations
+  - Replace: `package com.solicitation.*` → `package com.ceap.*`
+  - Affects all Kotlin and Java source files (~150+ files)
+  - Use find and replace across all files
+
+- [ ] 28.6 Update import statements
+  - Replace: `import com.solicitation.*` → `import com.ceap.*`
+  - Affects all Kotlin and Java source files (~150+ files)
+  - Use find and replace across all files
+
+- [ ] 28.7 Update infrastructure CDK code
+  - Update package references in `infrastructure/src/main/kotlin`
+  - Update Lambda handler references in CDK stacks
+  - Example: `com.solicitation.workflow.etl.ETLHandler` → `com.ceap.workflow.etl.ETLHandler`
+
+- [ ] 28.8 Update configuration files
+  - Update `logback.xml` logger names
+  - Update any configuration files referencing package names
+
+- [ ] 28.9 Build and test after renaming
+  - Run: `./gradlew clean build`
   - Verify all modules compile successfully
-  - Verify no warnings or errors
+  - Verify all tests pass
+  - Fix any issues found
+
+- [ ] 28.10 Update documentation references
+  - Update any documentation that references module names
+  - Update any documentation that references package names
+  - Keep migration notes explaining the history
+
+- [ ] 28.11 Commit code renaming changes
+  - Stage all changes: `git add .`
+  - Create descriptive commit message
+  - Commit changes
 
 ---
 
 ## Complete Cycle: Commit, Push, and Setup Next Tasks
 
-After Task 27 completion, commit any fixes, push to git, and prepare tasks.md for the next cycle.
+After Task 28 completion, commit any fixes, push to git, and prepare tasks.md for the next cycle.
 
 **IMPORTANT**: When setting up the next cycle, ALL tasks in the new tasks.md must be marked as `[ ]` not started. This is a fresh cycle start.
 
 ### Subtasks:
 
-- [-] Commit and push any fixes
+- [ ] Commit and push any fixes
   - Stage all changes with `git add -A`
   - Create descriptive commit message if fixes were needed
   - Push to origin/main
 
 - [ ] Setup next task cycle in tasks.md
-  - Read FOUNDATION/tasks.md to identify next tasks (Task 28 from FOUNDATION)
-  - Move completed Task 27 to completed-tasks.md with full details
-  - Update tasks.md with Task 28 as the new main task
-  - **CRITICAL**: Ensure ALL tasks in tasks.md are marked as `[ ]` not started (including Task 28 AND "Complete cycle" task)
+  - Read FOUNDATION/tasks.md to identify next tasks (Task 29 from FOUNDATION)
+  - Move completed Task 28 to completed-tasks.md with full details
+  - Update tasks.md with Task 29 as the new main task
+  - **CRITICAL**: Ensure ALL tasks in tasks.md are marked as `[ ]` not started (including Task 29 AND "Complete cycle" task)
   - **CRITICAL**: Ensure tasks in FOUNDATION/tasks.md are updated correctly (mark only the current finished task as done)
-  - Update the "Complete cycle" subtask to reference Task 29 for the next iteration
+  - Update the "Complete cycle" subtask to reference Task 30 for the next iteration
   - Commit and push the updated files
 
 ---
 
 ## Next Cycle Preview
 
-After Task 27 & cycle completion, the next cycle will focus on:
-- **Task 28**: Rename code modules and packages to CEAP (from FOUNDATION)
+After Task 28 & cycle completion, the next cycle will focus on:
+- **Task 29**: Documentation audit and cleanup (from FOUNDATION)
 - **Complete cycle**: Commit, push, and setup next tasks
 
 ---
