@@ -43,9 +43,9 @@ object DynamoDBConfig {
      * Table name constants.
      */
     object TableNames {
-        const val CANDIDATES = "solicitation-candidates"
-        const val PROGRAM_CONFIG = "solicitation-program-config"
-        const val SCORE_CACHE = "solicitation-score-cache"
+        const val CANDIDATES = "ceap-candidates"
+        const val PROGRAM_CONFIG = "ceap-program-config"
+        const val SCORE_CACHE = "ceap-score-cache"
     }
     
     /**
