@@ -1,6 +1,6 @@
 # Lambda Functions Quick Reference
 
-> **Platform Rebranding Note**: This platform was formerly known as the "General Solicitation Platform". We've rebranded to "Customer Engagement & Action Platform (CEAP)" to better reflect its capabilities beyond solicitation. Package names (`com.solicitation.*`) remain unchanged for backward compatibility.
+> **Platform Rebranding Note**: This platform was formerly known as the "General Solicitation Platform". We've rebranded to "Customer Engagement & Action Platform (CEAP)" to better reflect its capabilities beyond customer engagement. Package names now use `com.ceap.*` following the CEAP branding.
 
 ## Function Overview
 
@@ -15,11 +15,11 @@
 ## Handler Classes
 
 ```
-ETL:    com.solicitation.workflow.ETLHandler::handleRequest
-Filter: com.solicitation.workflow.FilterHandler::handleRequest
-Score:  com.solicitation.workflow.ScoreHandler::handleRequest
-Store:  com.solicitation.workflow.StoreHandler::handleRequest
-Serve:  com.solicitation.serving.ServeHandler::handleRequest
+ETL:    com.ceap.workflow.ETLHandler::handleRequest
+Filter: com.ceap.workflow.FilterHandler::handleRequest
+Score:  com.ceap.workflow.ScoreHandler::handleRequest
+Store:  com.ceap.workflow.StoreHandler::handleRequest
+Serve:  com.ceap.serving.ServeHandler::handleRequest
 ```
 
 ## Environment Variables

@@ -17,7 +17,7 @@ import java.util.Arrays
  * 
  * Workflows:
  * - Batch Ingestion: ETL → Filter → Score → Store with error handling and retry logic
- * - Reactive Solicitation: Real-time event processing
+ * - Reactive Customer Engagement: Real-time event processing
  */
 class OrchestrationStack(
     scope: Construct,

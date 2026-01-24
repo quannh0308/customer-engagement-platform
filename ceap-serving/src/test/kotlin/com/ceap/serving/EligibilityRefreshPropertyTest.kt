@@ -9,7 +9,7 @@ import java.time.Instant
 /**
  * Property-based tests for eligibility refresh correctness.
  * 
- * **Feature: solicitation-platform, Property 18: Eligibility refresh correctness**
+ * **Feature: ceap-platform, Property 18: Eligibility refresh correctness**
  * 
  * **Validates: Requirements 6.4**
  * 

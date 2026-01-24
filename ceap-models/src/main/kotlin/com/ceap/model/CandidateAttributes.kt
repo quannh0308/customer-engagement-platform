@@ -5,11 +5,11 @@ import javax.validation.constraints.NotNull
 import java.time.Instant
 
 /**
- * Attributes describing the solicitation opportunity.
+ * Attributes describing the customer engagement opportunity.
  *
  * @property eventDate When the triggering event occurred
  * @property deliveryDate Preferred delivery date (optional)
- * @property timingWindow Timing window for solicitation (optional)
+ * @property timingWindow Timing window for customer engagement (optional)
  * @property orderValue Order value if applicable (optional)
  * @property mediaEligible Whether media (images/video) is eligible
  * @property channelEligibility Channel eligibility flags

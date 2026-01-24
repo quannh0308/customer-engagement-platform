@@ -12,7 +12,7 @@ import java.time.Instant
 /**
  * Configuration for an A/B test experiment.
  *
- * Experiments enable testing different solicitation strategies (timing, channels,
+ * Experiments enable testing different customer engagement strategies (timing, channels,
  * scoring thresholds, messaging) to optimize conversion rates.
  *
  * @property experimentId Unique identifier for the experiment

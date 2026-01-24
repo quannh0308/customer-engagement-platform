@@ -6,7 +6,7 @@ import software.amazon.awscdk.StackProps
 import com.ceap.infrastructure.stacks.*
 
 /**
- * Main CDK application for the Solicitation Platform.
+ * Main CDK application for the Customer Engagement & Action Platform (CEAP).
  * 
  * This app creates all infrastructure stacks for the platform including:
  * - Database stack (DynamoDB tables)

@@ -51,8 +51,8 @@ class ObservabilityStack(
      */
     private fun createAlarmTopic(): Topic {
         val topic = Topic.Builder.create(this, "AlarmTopic")
-            .topicName("SolicitationPlatform-Alarms")
-            .displayName("Solicitation Platform Alarms")
+            .topicName("CEAPlatform-Alarms")
+            .displayName("CEAP Alarms")
             .build()
         
         // Subscribe email to alarm notifications

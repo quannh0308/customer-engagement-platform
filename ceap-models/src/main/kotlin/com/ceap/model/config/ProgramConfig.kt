@@ -8,9 +8,9 @@ import javax.validation.constraints.NotNull
 import javax.validation.constraints.Positive
 
 /**
- * Configuration for a solicitation program.
+ * Configuration for a customer engagement program.
  *
- * A program represents an independent solicitation configuration with specific rules,
+ * A program represents an independent customer engagement configuration with specific rules,
  * channels, and data sources. Programs can be enabled/disabled and configured per marketplace.
  *
  * @property programId Unique identifier for the program
@@ -24,7 +24,7 @@ import javax.validation.constraints.Positive
  * @property batchSchedule Cron expression for batch processing schedule (optional)
  * @property reactiveEnabled Whether reactive (real-time) processing is enabled
  * @property candidateTTLDays Time-to-live for candidates in days
- * @property timingWindowDays Timing window for solicitation in days (optional)
+ * @property timingWindowDays Timing window for customer engagement in days (optional)
  * @property experiments List of A/B test experiments for this program (optional)
  */
 data class ProgramConfig(

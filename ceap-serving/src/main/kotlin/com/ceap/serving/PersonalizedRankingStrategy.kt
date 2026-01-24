@@ -145,7 +145,7 @@ class PersonalizedRankingStrategy(
     /**
      * Calculates recency boost based on event timing.
      * 
-     * More recent events are generally more relevant for solicitation.
+     * More recent events are generally more relevant for customer engagement.
      * 
      * @param eventDate Event date as ISO string
      * @param preferredWindow Customer's preferred timing window in days

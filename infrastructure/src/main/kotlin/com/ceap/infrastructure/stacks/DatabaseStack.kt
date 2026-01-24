@@ -7,10 +7,10 @@ import software.amazon.awscdk.services.dynamodb.*
 import software.constructs.Construct
 
 /**
- * Database stack containing all DynamoDB tables for the Solicitation Platform.
+ * Database stack containing all DynamoDB tables for the Customer Engagement & Action Platform (CEAP).
  * 
  * Tables:
- * - Candidates: Stores solicitation candidates with GSIs for querying
+ * - Candidates: Stores customer engagement candidates with GSIs for querying
  * - ProgramConfig: Stores program configurations
  * - ScoreCache: Caches scoring results with TTL
  */

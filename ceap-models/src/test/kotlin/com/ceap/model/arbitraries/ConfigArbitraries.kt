@@ -155,7 +155,7 @@ object ConfigArbitraries {
         
         val programNames = Arbitraries.of(
             "Product Review Program",
-            "Video Solicitation Program",
+            "Video Engagement Program",
             "Music Review Program",
             "Service Feedback Program",
             "Event Review Program"

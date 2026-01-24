@@ -11,7 +11,7 @@ import java.time.Instant
 /**
  * Property-based tests for serving API fallback behavior.
  * 
- * **Feature: solicitation-platform, Property 19: Serving API fallback behavior**
+ * **Feature: ceap-platform, Property 19: Serving API fallback behavior**
  * 
  * **Validates: Requirements 6.5**
  * 

@@ -7,7 +7,7 @@ import com.ceap.model.Score
  * Interface for scoring providers that evaluate candidates using ML models.
  * 
  * Implementations of this interface integrate with various ML platforms
- * (e.g., SageMaker, custom models) to score candidates for solicitation targeting.
+ * (e.g., SageMaker, custom models) to score candidates for customer engagement targeting.
  * 
  * **Requirements**: 3.1, 3.4
  */

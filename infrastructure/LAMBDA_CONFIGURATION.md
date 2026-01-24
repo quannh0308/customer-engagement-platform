@@ -1,12 +1,12 @@
 # Lambda Function Configurations
 
-> **Platform Rebranding Note**: This platform was formerly known as the "General Solicitation Platform". We've rebranded to "Customer Engagement & Action Platform (CEAP)" to better reflect its capabilities beyond solicitation. Package names (`com.solicitation.*`) and handler paths remain unchanged for backward compatibility.
+> **Platform Rebranding Note**: This platform was formerly known as the "General Solicitation Platform". We've rebranded to "Customer Engagement & Action Platform (CEAP)" to better reflect its capabilities beyond customer engagement. Package names now use `com.ceap.*` and handler paths use `com.ceap.workflow.*` following the CEAP branding.
 
 This document describes the Lambda function configurations for the Customer Engagement & Action Platform (CEAP).
 
 ## Overview
 
-The platform uses five core Lambda functions to implement the solicitation workflow:
+The platform uses five core Lambda functions to implement the customer engagement workflow:
 
 1. **ETL Lambda** - Extract, Transform, Load data from various sources
 2. **Filter Lambda** - Apply eligibility and business rule filters
@@ -24,7 +24,7 @@ The platform uses five core Lambda functions to implement the solicitation workf
 - **Memory**: 1024 MB
 - **Timeout**: 300 seconds (5 minutes)
 - **Runtime**: Java 17
-- **Handler**: `com.solicitation.workflow.ETLHandler::handleRequest`
+- **Handler**: `com.ceap.workflow.ETLHandler::handleRequest`
 
 **Environment Variables**:
 - `ENVIRONMENT` - Deployment environment (dev/staging/prod)
@@ -56,7 +56,7 @@ The platform uses five core Lambda functions to implement the solicitation workf
 - **Memory**: 512 MB
 - **Timeout**: 60 seconds
 - **Runtime**: Java 17
-- **Handler**: `com.solicitation.workflow.FilterHandler::handleRequest`
+- **Handler**: `com.ceap.workflow.FilterHandler::handleRequest`
 
 **Environment Variables**:
 - `ENVIRONMENT` - Deployment environment
@@ -83,7 +83,7 @@ The platform uses five core Lambda functions to implement the solicitation workf
 - **Memory**: 1024 MB
 - **Timeout**: 120 seconds (2 minutes)
 - **Runtime**: Java 17
-- **Handler**: `com.solicitation.workflow.ScoreHandler::handleRequest`
+- **Handler**: `com.ceap.workflow.ScoreHandler::handleRequest`
 
 **Environment Variables**:
 - `ENVIRONMENT` - Deployment environment
@@ -113,7 +113,7 @@ The platform uses five core Lambda functions to implement the solicitation workf
 - **Memory**: 512 MB
 - **Timeout**: 60 seconds
 - **Runtime**: Java 17
-- **Handler**: `com.solicitation.workflow.StoreHandler::handleRequest`
+- **Handler**: `com.ceap.workflow.StoreHandler::handleRequest`
 
 **Environment Variables**:
 - `ENVIRONMENT` - Deployment environment
@@ -139,7 +139,7 @@ The platform uses five core Lambda functions to implement the solicitation workf
 - **Memory**: 512 MB
 - **Timeout**: 30 seconds
 - **Runtime**: Java 17
-- **Handler**: `com.solicitation.serving.ServeHandler::handleRequest`
+- **Handler**: `com.ceap.serving.ServeHandler::handleRequest`
 
 **Environment Variables**:
 - `ENVIRONMENT` - Deployment environment

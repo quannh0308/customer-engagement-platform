@@ -140,7 +140,7 @@ class ConfigModelsTest {
 
         val config = ProgramConfig(
             programId = "product-reviews",
-            programName = "Product Review Solicitation",
+            programName = "Product Review Engagement",
             enabled = true,
             marketplaces = listOf("US", "UK", "DE"),
             dataConnectors = listOf(dataConnector),
@@ -154,7 +154,7 @@ class ConfigModelsTest {
         )
 
         assertEquals("product-reviews", config.programId)
-        assertEquals("Product Review Solicitation", config.programName)
+        assertEquals("Product Review Engagement", config.programName)
         assertTrue(config.enabled)
         assertEquals(3, config.marketplaces.size)
         assertEquals(1, config.dataConnectors.size)
@@ -198,7 +198,7 @@ class ConfigModelsTest {
 
         val original = ProgramConfig(
             programId = "product-reviews",
-            programName = "Product Review Solicitation",
+            programName = "Product Review Engagement",
             enabled = true,
             marketplaces = listOf("US", "UK"),
             dataConnectors = listOf(dataConnector),

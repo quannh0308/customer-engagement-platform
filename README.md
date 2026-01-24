@@ -55,7 +55,7 @@ The project uses a multi-module Gradle structure for better modularity and indep
 - **ceap-workflow-store**: Store Lambda for DynamoDB writes
 - **ceap-workflow-reactive**: Reactive Lambda for real-time events
 
-> **Note**: Module directories use `ceap-*` naming (CEAP branding), but package names remain `com.solicitation.*` for backward compatibility.
+> **Note**: Module directories use `ceap-*` naming, and package names use `com.ceap.*` following the CEAP branding.
 
 **See [docs/archive/MULTI-MODULE-ARCHITECTURE.md](docs/archive/MULTI-MODULE-ARCHITECTURE.md) for detailed architecture documentation.**
 
@@ -121,7 +121,7 @@ customer-engagement-platform/
         └── build.yml                # CI/CD pipeline
 ```
 
-> **Note**: Package names within modules use `com.solicitation.*` for backward compatibility, while module directories use `ceap-*` naming.
+> **Note**: Package names within modules use `com.ceap.*` following the CEAP branding, and module directories use `ceap-*` naming.
 
 ## Building the Project
 

@@ -10,7 +10,7 @@ import java.time.Instant
 /**
  * Property-based tests for batch query correctness.
  * 
- * **Feature: solicitation-platform, Property 20: Batch query correctness**
+ * **Feature: ceap-platform, Property 20: Batch query correctness**
  * 
  * **Validates: Requirements 6.6**
  * 

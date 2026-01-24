@@ -6,14 +6,14 @@ import javax.validation.constraints.NotEmpty
 import javax.validation.constraints.NotNull
 
 /**
- * Represents a solicitation candidate - a potential opportunity to solicit
+ * Represents a customer engagement candidate - a potential opportunity to engage
  * customer response for a specific subject.
  *
  * @property customerId Unique identifier for the customer
- * @property context Multi-dimensional context describing the solicitation scenario
- * @property subject The subject being solicited for response
+ * @property context Multi-dimensional context describing the customer engagement scenario
+ * @property subject The subject being engaged for response
  * @property scores Scores from various ML models (key: modelId, value: Score)
- * @property attributes Attributes describing the solicitation opportunity
+ * @property attributes Attributes describing the customer engagement opportunity
  * @property metadata System-level metadata for tracking
  * @property rejectionHistory History of rejections (if any)
  */

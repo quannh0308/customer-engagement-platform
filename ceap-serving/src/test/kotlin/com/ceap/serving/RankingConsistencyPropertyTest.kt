@@ -8,7 +8,7 @@ import java.time.Instant
 /**
  * Property-based tests for channel-specific ranking consistency.
  * 
- * **Feature: solicitation-platform, Property 17: Channel-specific ranking consistency**
+ * **Feature: ceap-platform, Property 17: Channel-specific ranking consistency**
  * 
  * **Validates: Requirements 6.3**
  * 

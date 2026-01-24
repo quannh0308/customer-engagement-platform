@@ -9,7 +9,7 @@ import software.amazon.awscdk.services.logs.RetentionDays
 import software.constructs.Construct
 
 /**
- * Reusable construct for creating Solicitation Platform Lambda functions.
+ * Reusable construct for creating CEAP Lambda functions.
  * 
  * This construct encapsulates common Lambda configuration including:
  * - Java 17 runtime

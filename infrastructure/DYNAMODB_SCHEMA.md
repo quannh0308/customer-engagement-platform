@@ -1,6 +1,6 @@
 # DynamoDB Schema Documentation
 
-> **Platform Rebranding Note**: This platform was formerly known as the "General Solicitation Platform". We've rebranded to "Customer Engagement & Action Platform (CEAP)" to better reflect its capabilities beyond solicitation. Package names (`com.solicitation.*`) and table structures remain unchanged for backward compatibility.
+> **Platform Rebranding Note**: This platform was formerly known as the "General Solicitation Platform". We've rebranded to "Customer Engagement & Action Platform (CEAP)" to better reflect its capabilities beyond customer engagement. Package names now use `com.ceap.*` following the CEAP branding, and table structures remain unchanged for backward compatibility.
 
 ## Overview
 
@@ -10,7 +10,7 @@ This document describes the DynamoDB table schemas for the Customer Engagement &
 
 ### 1. Candidates Table
 
-**Purpose**: Stores solicitation candidates with customer, program, subject, and scoring information.
+**Purpose**: Stores customer engagement candidates with customer, program, subject, and scoring information.
 
 **Primary Key Pattern**:
 - **PK**: `CUSTOMER#{customerId}#PROGRAM#{programId}#MARKETPLACE#{marketplaceId}`
@@ -89,7 +89,7 @@ GSI2SK begins_with "CREATED#"
 {
   "PK": "PROGRAM#retail",
   "SK": "MARKETPLACE#US",
-  "programName": "Retail Solicitation",
+  "programName": "Retail Customer Engagement",
   "enabled": true,
   "dataConnectors": [
     {

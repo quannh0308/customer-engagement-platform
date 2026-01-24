@@ -78,7 +78,7 @@ class CandidateTest {
             customerId = "customer-456",
             context = listOf(
                 Context(type = "marketplace", id = "US"),
-                Context(type = "program", id = "review-solicitation")
+                Context(type = "program", id = "review-engagement")
             ),
             subject = Subject(
                 type = "product",
@@ -148,7 +148,7 @@ class CandidateTest {
             customerId = "customer-789",
             context = listOf(
                 Context(type = "marketplace", id = "US"),
-                Context(type = "program", id = "review-solicitation"),
+                Context(type = "program", id = "review-engagement"),
                 Context(type = "vertical", id = "electronics")
             ),
             subject = Subject(type = "product", id = "B08N5WRWNW"),

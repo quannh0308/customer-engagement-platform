@@ -49,9 +49,9 @@ class DefaultScoringProvider : BaseScoringProvider() {
 }
 
 /**
- * Lambda handler for reactive solicitation workflow.
+ * Lambda handler for reactive customer engagement workflow.
  * 
- * Processes customer events in real-time to create solicitation candidates.
+ * Processes customer events in real-time to create customer engagement candidates.
  * 
  * Responsibilities:
  * - Parse customer events from EventBridge

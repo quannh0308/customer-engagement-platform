@@ -1,4 +1,4 @@
-rootProject.name = "solicitation-platform"
+rootProject.name = "ceap-platform"
 
 // Include all subprojects
 include(

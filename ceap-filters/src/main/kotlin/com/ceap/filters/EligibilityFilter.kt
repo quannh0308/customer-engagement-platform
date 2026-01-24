@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory
 import java.time.Instant
 
 /**
- * Eligibility filter that checks if a candidate is eligible for solicitation.
+ * Eligibility filter that checks if a candidate is eligible for customer engagement.
  * 
  * Evaluates channel eligibility, timing windows, and other eligibility criteria.
  */

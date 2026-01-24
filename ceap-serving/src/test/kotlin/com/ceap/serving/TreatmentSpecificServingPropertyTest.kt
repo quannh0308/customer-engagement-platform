@@ -11,7 +11,7 @@ import java.time.Instant
 /**
  * Property-based tests for treatment-specific candidate serving.
  * 
- * **Feature: solicitation-platform, Property 48: Treatment-specific candidate serving**
+ * **Feature: ceap-platform, Property 48: Treatment-specific candidate serving**
  * **Validates: Requirements 15.5**
  */
 class TreatmentSpecificServingPropertyTest {
