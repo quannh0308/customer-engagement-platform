@@ -89,7 +89,7 @@ The implementation follows five phases:
     - Update `OrchestrationStack.kt` line 163: Change `SolicitationBatchIngestion-$envName` to `CeapBatchIngestion-$envName`
     - _Requirements: 5.1_
   
-  - [~] 4.7 Write unit tests for resource name updates
+  - [x] 4.7 Write unit tests for resource name updates
     - Test that database stack uses `CeapDatabase-$envName` pattern
     - Test that ETL stack uses `CeapEtlWorkflow-$envName` pattern
     - Test that filter stack uses `CeapFilterWorkflow-$envName` pattern
@@ -104,7 +104,7 @@ The implementation follows five phases:
     - Test that schedule rule uses `CeapBatchIngestion-$envName` pattern
     - _Requirements: 2.1-2.7, 4.1, 5.1, 5.2, 6.1, 7.1_
   
-  - [~] 4.8 Write property test for naming convention consistency
+  - [x] 4.8 Write property test for naming convention consistency
     - **Property 4: Naming Convention Consistency**
     - **Validates: Requirements 2.1-2.7, 4.1, 5.1-5.2, 6.1-6.2, 7.1, 8.1-8.4, 9.1, 10.1-10.3, 11.1-11.2, 12.1**
     - Verify all resources follow CEAP naming patterns from the naming conventions table
