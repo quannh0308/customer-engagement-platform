@@ -28,7 +28,7 @@ dependencies {
 }
 
 application {
-    mainClass.set("com.solicitation.infrastructure.SolicitationPlatformAppKt")
+    mainClass.set("com.ceap.infrastructure.CeapPlatformAppKt")
 }
 
 tasks.test {

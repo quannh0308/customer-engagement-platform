@@ -39,10 +39,10 @@ class NamingConventionPropertyTest : StringSpec({
     val projectRoot = File(System.getProperty("user.dir"))
     
     // Determine correct paths based on working directory
-    val mainAppPath = if (File(projectRoot, "src/main/kotlin/com/ceap/infrastructure/SolicitationPlatformApp.kt").exists()) {
-        "src/main/kotlin/com/ceap/infrastructure/SolicitationPlatformApp.kt"
+    val mainAppPath = if (File(projectRoot, "src/main/kotlin/com/ceap/infrastructure/CeapPlatformApp.kt").exists()) {
+        "src/main/kotlin/com/ceap/infrastructure/CeapPlatformApp.kt"
     } else {
-        "infrastructure/src/main/kotlin/com/ceap/infrastructure/SolicitationPlatformApp.kt"
+        "infrastructure/src/main/kotlin/com/ceap/infrastructure/CeapPlatformApp.kt"
     }
     
     val reactiveStackPath = if (File(projectRoot, "src/main/kotlin/com/ceap/infrastructure/stacks/ReactiveWorkflowStack.kt").exists()) {

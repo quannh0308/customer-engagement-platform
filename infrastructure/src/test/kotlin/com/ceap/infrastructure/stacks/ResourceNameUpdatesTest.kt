@@ -30,10 +30,10 @@ class ResourceNameUpdatesTest {
     
     // When running tests from the infrastructure module, the working directory is the infrastructure directory
     // When running from the root, we need to include the infrastructure prefix
-    private val mainAppPath = if (File(projectRoot, "src/main/kotlin/com/ceap/infrastructure/SolicitationPlatformApp.kt").exists()) {
-        "src/main/kotlin/com/ceap/infrastructure/SolicitationPlatformApp.kt"
+    private val mainAppPath = if (File(projectRoot, "src/main/kotlin/com/ceap/infrastructure/CeapPlatformApp.kt").exists()) {
+        "src/main/kotlin/com/ceap/infrastructure/CeapPlatformApp.kt"
     } else {
-        "infrastructure/src/main/kotlin/com/ceap/infrastructure/SolicitationPlatformApp.kt"
+        "infrastructure/src/main/kotlin/com/ceap/infrastructure/CeapPlatformApp.kt"
     }
     
     private val reactiveStackPath = if (File(projectRoot, "src/main/kotlin/com/ceap/infrastructure/stacks/ReactiveWorkflowStack.kt").exists()) {

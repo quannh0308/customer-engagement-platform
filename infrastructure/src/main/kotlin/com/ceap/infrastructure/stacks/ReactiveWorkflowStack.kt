@@ -73,7 +73,7 @@ class ReactiveWorkflowStack(
     // Create EventBridge rule for customer events
     val customerEventRule = Rule.Builder.create(this, "CustomerEventRule")
         .ruleName("ceap-customer-events-$envName")
-        .description("Routes customer events to reactive solicitation workflow")
+        .description("Routes customer events to reactive ceap workflow")
         .eventPattern(
             EventPattern.builder()
                 .source(listOf("ceap.customer-events"))

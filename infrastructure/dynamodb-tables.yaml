@@ -13,7 +13,7 @@ Parameters:
 
 Resources:
   # Candidates Table
-  # Stores solicitation candidates with customer, program, and subject information
+  # Stores CEAP candidates with customer, program, and subject information
   # Supports queries by program+channel and program+date via GSIs
   CandidatesTable:
     Type: AWS::DynamoDB::Table
@@ -71,7 +71,7 @@ Resources:
         - Key: Environment
           Value: !Ref Environment
         - Key: Application
-          Value: SolicitationPlatform
+          Value: CeapPlatform
         - Key: ManagedBy
           Value: CloudFormation
 
@@ -100,7 +100,7 @@ Resources:
         - Key: Environment
           Value: !Ref Environment
         - Key: Application
-          Value: SolicitationPlatform
+          Value: CeapPlatform
         - Key: ManagedBy
           Value: CloudFormation
 
@@ -133,7 +133,7 @@ Resources:
         - Key: Environment
           Value: !Ref Environment
         - Key: Application
-          Value: SolicitationPlatform
+          Value: CeapPlatform
         - Key: ManagedBy
           Value: CloudFormation
 

@@ -312,13 +312,13 @@ Resources:
           Value: BatchIngestion
 
   # ============================================================================
-  # Reactive Solicitation Workflow State Machine
+  # Reactive CEAP Workflow State Machine
   # ============================================================================
 
-  ReactiveSolicitationStateMachine:
+  ReactiveCeapStateMachine:
     Type: AWS::StepFunctions::StateMachine
     Properties:
-      StateMachineName: !Sub '${ProjectName}-reactive-solicitation-${Environment}'
+      StateMachineName: !Sub '${ProjectName}-reactive-ceap-${Environment}'
       RoleArn: !GetAtt StepFunctionsExecutionRole.Arn
       StateMachineType: EXPRESS
       TracingConfiguration:
@@ -328,10 +328,10 @@ Resources:
         IncludeExecutionData: true
         Destinations:
           - CloudWatchLogsLogGroup:
-              LogGroupArn: !GetAtt ReactiveSolicitationLogGroup.Arn
+              LogGroupArn: !GetAtt ReactiveCeapLogGroup.Arn
       DefinitionString: !Sub |
         {
-          "Comment": "Reactive Solicitation Workflow - Fast path for event-driven candidate creation",
+          "Comment": "Reactive CEAP Workflow - Fast path for event-driven candidate creation",
           "StartAt": "Filter",
           "States": {
             "Filter": {
@@ -488,7 +488,7 @@ Resources:
         - Key: Project
           Value: !Ref ProjectName
         - Key: Workflow
-          Value: ReactiveSolicitation
+          Value: ReactiveCeap
 
   # ============================================================================
   # CloudWatch Log Groups for Step Functions
@@ -500,10 +500,10 @@ Resources:
       LogGroupName: !Sub '/aws/stepfunctions/${ProjectName}-batch-ingestion-${Environment}'
       RetentionInDays: 30
 
-  ReactiveSolicitationLogGroup:
+  ReactiveCeapLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
-      LogGroupName: !Sub '/aws/stepfunctions/${ProjectName}-reactive-solicitation-${Environment}'
+      LogGroupName: !Sub '/aws/stepfunctions/${ProjectName}-reactive-ceap-${Environment}'
       RetentionInDays: 30
 
 # ============================================================================
@@ -517,11 +517,11 @@ Outputs:
     Export:
       Name: !Sub '${ProjectName}-batch-ingestion-arn-${Environment}'
 
-  ReactiveSolicitationStateMachineArn:
-    Description: ARN of the Reactive Solicitation State Machine
-    Value: !GetAtt ReactiveSolicitationStateMachine.Arn
+  ReactiveCeapStateMachineArn:
+    Description: ARN of the Reactive CEAP State Machine
+    Value: !GetAtt ReactiveCeapStateMachine.Arn
     Export:
-      Name: !Sub '${ProjectName}-reactive-solicitation-arn-${Environment}'
+      Name: !Sub '${ProjectName}-reactive-ceap-arn-${Environment}'
 
   StepFunctionsExecutionRoleArn:
     Description: ARN of the Step Functions execution role

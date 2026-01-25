@@ -371,10 +371,10 @@ Resources:
           Value: !Ref RetailBatchScheduleRule
       TreatMissingData: notBreaching
 
-  ReactiveSolicitationFailureAlarm:
+  ReactiveCeapFailureAlarm:
     Type: AWS::CloudWatch::Alarm
     Properties:
-      AlarmName: !Sub '${ProjectName}-reactive-solicitation-failures-${Environment}'
+      AlarmName: !Sub '${ProjectName}-reactive-ceap-failures-${Environment}'
       AlarmDescription: 'Alert when reactive ceap rules fail to trigger'
       MetricName: FailedInvocations
       Namespace: AWS/Events
