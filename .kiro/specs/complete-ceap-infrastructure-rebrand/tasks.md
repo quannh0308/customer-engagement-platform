@@ -110,36 +110,36 @@ The implementation follows five phases:
     - Verify all resources follow CEAP naming patterns from the naming conventions table
     - _Requirements: 2.1-2.7, 4.1, 5.1, 5.2, 6.1, 7.1_
 
-- [ ] 5. Checkpoint - Verify compilation after resource name updates
+- [x] 5. Checkpoint - Verify compilation after resource name updates
   - Ensure all tests pass, ask the user if questions arise.
 
 - [ ] 6. Phase 4: Update Observability Identifiers
-  - [~] 6.1 Update CloudWatch dashboard name in ObservabilityDashboard
+  - [x] 6.1 Update CloudWatch dashboard name in ObservabilityDashboard
     - Update `ObservabilityDashboard.kt` line 44: Change `SolicitationPlatform-$programId` to `CeapPlatform-$programId`
     - _Requirements: 9.1_
   
-  - [~] 6.2 Update CloudWatch namespace references in ObservabilityDashboard
+  - [x] 6.2 Update CloudWatch namespace references in ObservabilityDashboard
     - Update `ObservabilityDashboard.kt` lines 75, 76, 90-92, 201, 227: Change `SolicitationPlatform/Workflow` to `CeapPlatform/Workflow`
     - Update `ObservabilityDashboard.kt` lines 106-108: Change `SolicitationPlatform/Channels` to `CeapPlatform/Channels`
     - Update `ObservabilityDashboard.kt` line 122: Change `SolicitationPlatform/Rejections` to `CeapPlatform/Rejections`
     - _Requirements: 8.1, 8.3, 8.4_
   
-  - [~] 6.3 Update CloudWatch alarm names in ObservabilityDashboard
+  - [x] 6.3 Update CloudWatch alarm names in ObservabilityDashboard
     - Update `ObservabilityDashboard.kt` line 183: Change `SolicitationPlatform-ApiLatency-$programId` to `CeapPlatform-ApiLatency-$programId`
     - Update `ObservabilityDashboard.kt` line 209: Change `SolicitationPlatform-WorkflowFailure-$programId` to `CeapPlatform-WorkflowFailure-$programId`
     - Update `ObservabilityDashboard.kt` line 238: Change `SolicitationPlatform-DataQuality-$programId` to `CeapPlatform-DataQuality-$programId`
     - _Requirements: 10.1, 10.2, 10.3_
   
-  - [~] 6.4 Update Lambda function name references in ObservabilityDashboard
+  - [x] 6.4 Update Lambda function name references in ObservabilityDashboard
     - Update `ObservabilityDashboard.kt` line 152: Change `SolicitationPlatform-ETL-$programId` to `CeapPlatform-ETL-$programId`
     - Update `ObservabilityDashboard.kt` lines 153, 177: Change `SolicitationPlatform-Serve-$programId` to `CeapPlatform-Serve-$programId`
     - _Requirements: 11.1, 11.2_
   
-  - [~] 6.5 Update DynamoDB table name references in ObservabilityDashboard
+  - [x] 6.5 Update DynamoDB table name references in ObservabilityDashboard
     - Update `ObservabilityDashboard.kt` lines 137, 138: Change `SolicitationCandidates-$programId` to `CeapCandidates-$programId`
     - _Requirements: 12.1_
   
-  - [~] 6.6 Write unit tests for observability identifier updates
+  - [x] 6.6 Write unit tests for observability identifier updates
     - Test that dashboard uses `CeapPlatform-$programId` pattern
     - Test that workflow namespace uses `CeapPlatform/Workflow`
     - Test that channels namespace uses `CeapPlatform/Channels`

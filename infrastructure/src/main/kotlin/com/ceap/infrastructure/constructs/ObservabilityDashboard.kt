@@ -41,7 +41,7 @@ class ObservabilityDashboard(
      */
     private fun createDashboard(): Dashboard {
         val dashboard = Dashboard.Builder.create(this, "Dashboard")
-            .dashboardName("SolicitationPlatform-$programId")
+            .dashboardName("CeapPlatform-$programId")
             .build()
         
         // Add program health widgets
@@ -72,8 +72,8 @@ class ObservabilityDashboard(
         return GraphWidget.Builder.create()
             .title("Program Health - $programId")
             .left(listOf(
-                createMetric("SolicitationPlatform/Workflow", "WorkflowSuccess", "ProgramId", programId),
-                createMetric("SolicitationPlatform/Workflow", "TotalErrors", "ProgramId", programId)
+                createMetric("CeapPlatform/Workflow", "WorkflowSuccess", "ProgramId", programId),
+                createMetric("CeapPlatform/Workflow", "TotalErrors", "ProgramId", programId)
             ))
             .width(12)
             .height(6)
@@ -87,9 +87,9 @@ class ObservabilityDashboard(
         return GraphWidget.Builder.create()
             .title("Workflow Metrics - $programId")
             .left(listOf(
-                createMetric("SolicitationPlatform/Workflow", "TotalProcessed", "ProgramId", programId),
-                createMetric("SolicitationPlatform/Workflow", "TotalStored", "ProgramId", programId),
-                createMetric("SolicitationPlatform/Workflow", "TotalRejected", "ProgramId", programId)
+                createMetric("CeapPlatform/Workflow", "TotalProcessed", "ProgramId", programId),
+                createMetric("CeapPlatform/Workflow", "TotalStored", "ProgramId", programId),
+                createMetric("CeapPlatform/Workflow", "TotalRejected", "ProgramId", programId)
             ))
             .width(12)
             .height(6)
@@ -103,9 +103,9 @@ class ObservabilityDashboard(
         return GraphWidget.Builder.create()
             .title("Channel Performance - $programId")
             .left(listOf(
-                createMetric("SolicitationPlatform/Channels", "DeliveryAttempts", "ProgramId", programId),
-                createMetric("SolicitationPlatform/Channels", "DeliverySuccess", "ProgramId", programId),
-                createMetric("SolicitationPlatform/Channels", "DeliveryFailures", "ProgramId", programId)
+                createMetric("CeapPlatform/Channels", "DeliveryAttempts", "ProgramId", programId),
+                createMetric("CeapPlatform/Channels", "DeliverySuccess", "ProgramId", programId),
+                createMetric("CeapPlatform/Channels", "DeliveryFailures", "ProgramId", programId)
             ))
             .width(12)
             .height(6)
@@ -119,7 +119,7 @@ class ObservabilityDashboard(
         return GraphWidget.Builder.create()
             .title("Rejection Reasons - $programId")
             .left(listOf(
-                createMetric("SolicitationPlatform/Rejections", "RejectionCount", "ProgramId", programId)
+                createMetric("CeapPlatform/Rejections", "RejectionCount", "ProgramId", programId)
             ))
             .width(12)
             .height(6)
@@ -134,8 +134,8 @@ class ObservabilityDashboard(
         return GraphWidget.Builder.create()
             .title("Cost Metrics - $programId")
             .left(listOf(
-                createMetric("AWS/DynamoDB", "ConsumedReadCapacityUnits", "TableName", "SolicitationCandidates-$programId"),
-                createMetric("AWS/DynamoDB", "ConsumedWriteCapacityUnits", "TableName", "SolicitationCandidates-$programId")
+                createMetric("AWS/DynamoDB", "ConsumedReadCapacityUnits", "TableName", "CeapCandidates-$programId"),
+                createMetric("AWS/DynamoDB", "ConsumedWriteCapacityUnits", "TableName", "CeapCandidates-$programId")
             ))
             .width(12)
             .height(6)
@@ -149,8 +149,8 @@ class ObservabilityDashboard(
         return GraphWidget.Builder.create()
             .title("Capacity Metrics - $programId")
             .left(listOf(
-                createMetric("AWS/Lambda", "ConcurrentExecutions", "FunctionName", "SolicitationPlatform-ETL-$programId"),
-                createMetric("AWS/Lambda", "Duration", "FunctionName", "SolicitationPlatform-Serve-$programId")
+                createMetric("AWS/Lambda", "ConcurrentExecutions", "FunctionName", "CeapPlatform-ETL-$programId"),
+                createMetric("AWS/Lambda", "Duration", "FunctionName", "CeapPlatform-Serve-$programId")
             ))
             .width(12)
             .height(6)
@@ -174,13 +174,13 @@ class ObservabilityDashboard(
         val metric = Metric.Builder.create()
             .namespace("AWS/Lambda")
             .metricName("Duration")
-            .dimensionsMap(mapOf("FunctionName" to "SolicitationPlatform-Serve-$programId"))
+            .dimensionsMap(mapOf("FunctionName" to "CeapPlatform-Serve-$programId"))
             .statistic("p99")
             .period(Duration.minutes(5))
             .build()
         
         val alarm = Alarm.Builder.create(this, "ApiLatencyAlarm")
-            .alarmName("SolicitationPlatform-ApiLatency-$programId")
+            .alarmName("CeapPlatform-ApiLatency-$programId")
             .alarmDescription("API latency exceeds 30ms at P99")
             .metric(metric)
             .threshold(30.0)
@@ -198,7 +198,7 @@ class ObservabilityDashboard(
      */
     private fun createWorkflowFailureAlarm() {
         val metric = Metric.Builder.create()
-            .namespace("SolicitationPlatform/Workflow")
+            .namespace("CeapPlatform/Workflow")
             .metricName("TotalErrors")
             .dimensionsMap(mapOf("ProgramId" to programId))
             .statistic("Sum")
@@ -206,7 +206,7 @@ class ObservabilityDashboard(
             .build()
         
         val alarm = Alarm.Builder.create(this, "WorkflowFailureAlarm")
-            .alarmName("SolicitationPlatform-WorkflowFailure-$programId")
+            .alarmName("CeapPlatform-WorkflowFailure-$programId")
             .alarmDescription("Workflow errors exceed threshold")
             .metric(metric)
             .threshold(10.0)
@@ -224,7 +224,7 @@ class ObservabilityDashboard(
      */
     private fun createDataQualityAlarm() {
         val metric = Metric.Builder.create()
-            .namespace("SolicitationPlatform/Workflow")
+            .namespace("CeapPlatform/Workflow")
             .metricName("ErrorCount")
             .dimensionsMap(mapOf(
                 "ProgramId" to programId,
@@ -235,7 +235,7 @@ class ObservabilityDashboard(
             .build()
         
         val alarm = Alarm.Builder.create(this, "DataQualityAlarm")
-            .alarmName("SolicitationPlatform-DataQuality-$programId")
+            .alarmName("CeapPlatform-DataQuality-$programId")
             .alarmDescription("Data validation errors exceed threshold")
             .metric(metric)
             .threshold(100.0)
