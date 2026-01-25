@@ -218,3 +218,84 @@ The implementation follows five phases:
 - The bottom-up approach ensures the codebase remains compilable at each step
 - All file paths are relative to the `infrastructure/` directory
 - Line numbers are approximate and may shift as edits are made
+
+
+## Phase 7: Update Project-Wide Configuration
+
+- [ ] 12. Update Build Configuration
+  - [ ] 12.1 Update Gradle group in root build.gradle.kts
+    - Update `build.gradle.kts` line 7: Change `group = "com.solicitation"` to `group = "com.ceap"`
+    - _Requirements: 16.1_
+  
+  - [ ] 12.2 Write unit test for Gradle group update
+    - Test that root build.gradle.kts uses `group = "com.ceap"`
+    - Test that root build.gradle.kts does not use `group = "com.solicitation"`
+    - _Requirements: 16.1_
+
+- [ ] 13. Update Deployment Scripts
+  - [ ] 13.1 Update deploy-lambda.sh configuration
+    - Update line 9: Change `STACK_NAME="solicitation-platform-lambda-functions"` to `STACK_NAME="ceap-platform-lambda-functions"`
+    - Update line 12: Change `PROJECT_NAME="${PROJECT_NAME:-solicitation-platform}"` to `PROJECT_NAME="${PROJECT_NAME:-ceap-platform}"`
+    - _Requirements: 17.1, 17.3_
+  
+  - [ ] 13.2 Update deploy-dynamodb.sh configuration
+    - Update line 18: Change `STACK_NAME="solicitation-platform-dynamodb-${ENVIRONMENT}"` to `STACK_NAME="ceap-platform-dynamodb-${ENVIRONMENT}"`
+    - Update line 49: Change `Application=SolicitationPlatform` to `Application=CeapPlatform`
+    - _Requirements: 17.2, 20.1_
+  
+  - [ ] 13.3 Update deploy.sh configuration and CloudFormation references
+    - Update line 38: Change `PROJECT_NAME="solicitation-platform"` to `PROJECT_NAME="ceap-platform"`
+    - Update line 213: Change `REACTIVE_SOLICITATION_ARN` variable name to `REACTIVE_CEAP_ARN`
+    - Update line 215: Change output key query from `ReactiveSolicitationStateMachineArn` to `ReactiveCeapStateMachineArn`
+    - Update line 245: Change `REACTIVE_SOLICITATION_ARN` variable name to `REACTIVE_CEAP_ARN`
+    - Update line 247: Change output key query from `ReactiveSolicitationStateMachineArn` to `ReactiveCeapStateMachineArn`
+    - Update line 263: Change parameter name from `ReactiveSolicitationStateMachineArn` to `ReactiveCeapStateMachineArn`
+    - _Requirements: 17.3, 19.1, 19.2_
+  
+  - [ ] 13.4 Update build.sh configuration
+    - Update lines 133-137: Change module names from `solicitation-workflow-*` to `ceap-workflow-*`
+    - Update line 168: Change sed pattern from `'s/solicitation-workflow-//'` to `'s/ceap-workflow-//'`
+    - _Requirements: 17.4_
+
+- [ ] 14. Update Script Documentation
+  - [ ] 14.1 Update deploy-cdk.sh header
+    - Update line 4: Change "CDK Deployment Script for Solicitation Platform" to "CDK Deployment Script for CEAP Platform"
+    - _Requirements: 18.1_
+  
+  - [ ] 14.2 Update build.sh header and output
+    - Update line 4: Change "Build Script for General Solicitation Platform" to "Build Script for Customer Engagement & Action Platform (CEAP)"
+    - Update line 72: Change "Building Solicitation Platform" to "Building CEAP Platform"
+    - _Requirements: 18.2_
+  
+  - [ ] 14.3 Update deploy.sh header and output
+    - Update line 4: Change "Deployment Script for General Solicitation Platform" to "Deployment Script for Customer Engagement & Action Platform (CEAP)"
+    - Update line 84: Change "Deploying Solicitation Platform" to "Deploying CEAP Platform"
+    - _Requirements: 18.1_
+
+- [ ] 15. Write Comprehensive Tests for Project-Wide Changes
+  - [ ] 15.1 Write unit tests for build configuration updates
+    - Test that root build.gradle.kts uses correct group
+    - Test that deployment scripts use correct stack names
+    - Test that deployment scripts use correct project names
+    - _Requirements: 16.1, 17.1, 17.2, 17.3_
+  
+  - [ ] 15.2 Write property test for project-wide terminology removal
+    - **Property 6: Project-Wide Legacy Terminology Removal**
+    - **Validates: Requirements 16.1, 17.1-17.4, 18.1-18.2, 19.1-19.2, 20.1**
+    - Search all configuration and script files for "solicitation"
+    - Verify zero matches in functional code (excluding test documentation)
+    - _Requirements: 16.1, 17.1, 17.2, 17.3, 17.4, 18.1, 18.2, 19.1, 19.2, 20.1_
+
+- [ ] 16. Final Project-Wide Verification
+  - [ ] 16.1 Run full project build
+    - Run `./gradlew build` to verify all modules compile
+    - Verify no compilation errors
+    - _Requirements: 14.1, 16.1_
+  
+  - [ ] 16.2 Verify deployment scripts are functional
+    - Verify all deployment scripts reference correct resource names
+    - Verify no broken references to old "solicitation" names
+    - _Requirements: 17.1, 17.2, 17.3, 17.4, 19.1, 19.2_
+
+- [ ] 17. Final Project-Wide Checkpoint
+  - Ensure all tests pass, verify no "solicitation" references remain in functional code

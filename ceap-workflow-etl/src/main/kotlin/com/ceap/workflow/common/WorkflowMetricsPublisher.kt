@@ -24,7 +24,7 @@ class WorkflowMetricsPublisher {
     
     private val logger = LoggerFactory.getLogger(WorkflowMetricsPublisher::class.java)
     private val cloudWatchClient: CloudWatchClient = CloudWatchClient.create()
-    private val namespace = "SolicitationPlatform/Workflow"
+    private val namespace = "CeapPlatform/Workflow"
     
     /**
      * Publish ETL stage metrics

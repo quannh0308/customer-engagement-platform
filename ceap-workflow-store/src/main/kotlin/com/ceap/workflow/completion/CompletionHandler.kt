@@ -116,7 +116,7 @@ class CompletionHandler : RequestHandler<CompletionInput, CompletionResponse> {
             )
             
             val event = PutEventsRequestEntry.builder()
-                .source("solicitation.workflow")
+                .source("ceap.workflow")
                 .detailType("WorkflowCompleted")
                 .detail(objectMapper.writeValueAsString(eventDetail))
                 .build()

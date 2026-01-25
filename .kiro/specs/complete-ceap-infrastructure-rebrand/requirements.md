@@ -162,3 +162,48 @@ The project is in development phase, so breaking changes are acceptable. All cha
 1. WHEN a class is renamed, THE System SHALL update all import statements that reference the class
 2. WHEN a construct is renamed, THE System SHALL update all instantiations of the construct
 3. WHEN a resource name is changed, THE System SHALL update all references to that resource in configuration files
+
+### Requirement 16: Update Gradle Group Configuration
+
+**User Story:** As a developer, I want the Gradle group configuration to use CEAP branding, so that published artifacts are correctly identified.
+
+#### Acceptance Criteria
+
+1. THE System SHALL update the root `build.gradle.kts` group from `com.solicitation` to `com.ceap`
+
+### Requirement 17: Update Deployment Script Configuration
+
+**User Story:** As a DevOps engineer, I want deployment scripts to use CEAP branding, so that deployment operations are clearly identified.
+
+#### Acceptance Criteria
+
+1. WHEN deploying Lambda functions, THE System SHALL use stack name `ceap-platform-lambda-functions` instead of `solicitation-platform-lambda-functions`
+2. WHEN deploying DynamoDB tables, THE System SHALL use stack name pattern `ceap-platform-dynamodb-$envName` instead of `solicitation-platform-dynamodb-$envName`
+3. WHEN referencing the project, THE System SHALL use project name `ceap-platform` instead of `solicitation-platform`
+4. WHEN building Lambda modules, THE System SHALL reference module names with `ceap-workflow-*` pattern instead of `solicitation-workflow-*` pattern
+
+### Requirement 18: Update Script Documentation
+
+**User Story:** As a developer, I want script documentation to use CEAP branding, so that script purposes are clearly described.
+
+#### Acceptance Criteria
+
+1. WHEN documenting deployment scripts, THE System SHALL replace "Solicitation Platform" with "CEAP Platform" in headers and descriptions
+2. WHEN documenting build scripts, THE System SHALL replace "General Solicitation Platform" with "Customer Engagement & Action Platform (CEAP)"
+
+### Requirement 19: Update CloudFormation Output References
+
+**User Story:** As a DevOps engineer, I want CloudFormation output references to use CEAP branding, so that stack outputs are correctly identified.
+
+#### Acceptance Criteria
+
+1. WHEN querying CloudFormation outputs, THE System SHALL use output key `ReactiveCeapStateMachineArn` instead of `ReactiveSolicitationStateMachineArn`
+2. WHEN passing parameters to EventBridge deployment, THE System SHALL use parameter name `ReactiveCeapStateMachineArn` instead of `ReactiveSolicitationStateMachineArn`
+
+### Requirement 20: Update CloudFormation Tag Values
+
+**User Story:** As a DevOps engineer, I want CloudFormation resource tags to use CEAP branding, so that AWS resources are properly categorized.
+
+#### Acceptance Criteria
+
+1. WHEN tagging DynamoDB resources, THE System SHALL use tag value `CeapPlatform` instead of `SolicitationPlatform`

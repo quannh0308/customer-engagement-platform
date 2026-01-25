@@ -6,10 +6,10 @@
 set -e
 
 # Configuration
-STACK_NAME="solicitation-platform-lambda-functions"
+STACK_NAME="ceap-platform-lambda-functions"
 TEMPLATE_FILE="lambda-functions.yaml"
 ENVIRONMENT="${ENVIRONMENT:-dev}"
-PROJECT_NAME="${PROJECT_NAME:-solicitation-platform}"
+PROJECT_NAME="${PROJECT_NAME:-ceap-platform}"
 AWS_REGION="${AWS_REGION:-us-east-1}"
 
 # Colors for output

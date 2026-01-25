@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ###############################################################################
-# Build Script for General Solicitation Platform
+# Build Script for Customer Engagement & Action Platform (CEAP)
 #
 # This script builds the multi-module Maven project and creates deployment
 # packages for all 5 Lambda functions.
@@ -69,7 +69,7 @@ if [[ ! "$ENVIRONMENT" =~ ^(dev|staging|prod)$ ]]; then
 fi
 
 echo -e "${BLUE}========================================${NC}"
-echo -e "${BLUE}Building Solicitation Platform${NC}"
+echo -e "${BLUE}Building CEAP Platform${NC}"
 echo -e "${BLUE}Environment: $ENVIRONMENT${NC}"
 echo -e "${BLUE}========================================${NC}"
 echo ""
@@ -130,11 +130,11 @@ echo ""
 echo -e "${YELLOW}Verifying Lambda deployment packages...${NC}"
 
 LAMBDA_MODULES=(
-    "solicitation-workflow-etl"
-    "solicitation-workflow-filter"
-    "solicitation-workflow-score"
-    "solicitation-workflow-store"
-    "solicitation-workflow-reactive"
+    "ceap-workflow-etl"
+    "ceap-workflow-filter"
+    "ceap-workflow-score"
+    "ceap-workflow-store"
+    "ceap-workflow-reactive"
 )
 
 ALL_JARS_EXIST=true
@@ -165,7 +165,7 @@ mkdir -p "$DEPLOY_DIR"
 # Copy Lambda JARs to deployment directory
 for module in "${LAMBDA_MODULES[@]}"; do
     JAR_FILE="$module/build/libs/$module-1.0.0-SNAPSHOT.jar"
-    LAMBDA_NAME=$(echo "$module" | sed 's/solicitation-workflow-//')
+    LAMBDA_NAME=$(echo "$module" | sed 's/ceap-workflow-//')
     cp "$JAR_FILE" "$DEPLOY_DIR/${LAMBDA_NAME}-lambda.jar"
 done
 

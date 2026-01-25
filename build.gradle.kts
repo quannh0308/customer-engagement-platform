@@ -4,7 +4,7 @@ plugins {
 }
 
 allprojects {
-    group = "com.solicitation"
+    group = "com.ceap"
     version = "1.0.0-SNAPSHOT"
 
     repositories {

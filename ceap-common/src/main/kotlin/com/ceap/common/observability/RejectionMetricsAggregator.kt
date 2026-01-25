@@ -21,7 +21,7 @@ import java.util.concurrent.atomic.AtomicInteger
  */
 class RejectionMetricsAggregator(
     private val cloudWatchClient: CloudWatchClient = CloudWatchClient.create(),
-    private val namespace: String = "SolicitationPlatform/Rejections"
+    private val namespace: String = "CeapPlatform/Rejections"
 ) {
     
     private val logger = LoggerFactory.getLogger(RejectionMetricsAggregator::class.java)

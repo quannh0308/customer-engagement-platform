@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ###############################################################################
-# Deployment Script for General Solicitation Platform
+# Deployment Script for Customer Engagement & Action Platform (CEAP)
 #
 # This script deploys the infrastructure and Lambda functions to AWS.
 #
@@ -35,7 +35,7 @@ NC='\033[0m' # No Color
 ENVIRONMENT="dev"
 AWS_REGION="us-east-1"
 AWS_PROFILE="default"
-PROJECT_NAME="solicitation-platform"
+PROJECT_NAME="ceap-platform"
 STACK_ONLY=false
 LAMBDA_ONLY=false
 
@@ -81,7 +81,7 @@ if [[ ! "$ENVIRONMENT" =~ ^(dev|staging|prod)$ ]]; then
 fi
 
 echo -e "${BLUE}========================================${NC}"
-echo -e "${BLUE}Deploying Solicitation Platform${NC}"
+echo -e "${BLUE}Deploying CEAP Platform${NC}"
 echo -e "${BLUE}Environment: $ENVIRONMENT${NC}"
 echo -e "${BLUE}Region: $AWS_REGION${NC}"
 echo -e "${BLUE}========================================${NC}"
@@ -210,9 +210,9 @@ if [ "$LAMBDA_ONLY" = false ]; then
         --region "$AWS_REGION" \
         --profile "$AWS_PROFILE" 2>/dev/null || echo "")
     
-    REACTIVE_SOLICITATION_ARN=$(aws cloudformation describe-stacks \
+    REACTIVE_CEAP_ARN=$(aws cloudformation describe-stacks \
         --stack-name "$PROJECT_NAME-stepfunctions-$ENVIRONMENT" \
-        --query "Stacks[0].Outputs[?OutputKey=='ReactiveSolicitationStateMachineArn'].OutputValue" \
+        --query "Stacks[0].Outputs[?OutputKey=='ReactiveCeapStateMachineArn'].OutputValue" \
         --output text \
         --region "$AWS_REGION" \
         --profile "$AWS_PROFILE" 2>/dev/null || echo "")
@@ -242,9 +242,9 @@ if [ "$LAMBDA_ONLY" = false ]; then
         --region "$AWS_REGION" \
         --profile "$AWS_PROFILE")
     
-    REACTIVE_SOLICITATION_ARN=$(aws cloudformation describe-stacks \
+    REACTIVE_CEAP_ARN=$(aws cloudformation describe-stacks \
         --stack-name "$STEPFUNCTIONS_STACK_NAME" \
-        --query "Stacks[0].Outputs[?OutputKey=='ReactiveSolicitationStateMachineArn'].OutputValue" \
+        --query "Stacks[0].Outputs[?OutputKey=='ReactiveCeapStateMachineArn'].OutputValue" \
         --output text \
         --region "$AWS_REGION" \
         --profile "$AWS_PROFILE")
@@ -260,7 +260,7 @@ if [ "$LAMBDA_ONLY" = false ]; then
             Environment="$ENVIRONMENT" \
             ProjectName="$PROJECT_NAME" \
             BatchIngestionStateMachineArn="$BATCH_INGESTION_ARN" \
-            ReactiveSolicitationStateMachineArn="$REACTIVE_SOLICITATION_ARN" \
+            ReactiveCeapStateMachineArn="$REACTIVE_CEAP_ARN" \
         --capabilities CAPABILITY_NAMED_IAM \
         --region "$AWS_REGION" \
         --profile "$AWS_PROFILE"

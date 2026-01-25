@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Deploy DynamoDB tables for General Solicitation Platform
+# Deploy DynamoDB tables for Customer Engagement & Action Platform (CEAP)
 # Usage: ./deploy-dynamodb.sh [environment]
 # Example: ./deploy-dynamodb.sh dev
 
@@ -15,7 +15,7 @@ if [[ ! "$ENVIRONMENT" =~ ^(dev|staging|prod)$ ]]; then
     exit 1
 fi
 
-STACK_NAME="solicitation-platform-dynamodb-${ENVIRONMENT}"
+STACK_NAME="ceap-platform-dynamodb-${ENVIRONMENT}"
 TEMPLATE_FILE="dynamodb-tables.yaml"
 
 echo "=========================================="
@@ -46,7 +46,7 @@ aws cloudformation deploy \
     --parameter-overrides Environment="$ENVIRONMENT" \
     --tags \
         Environment="$ENVIRONMENT" \
-        Application=SolicitationPlatform \
+        Application=CeapPlatform \
         ManagedBy=CloudFormation \
     --no-fail-on-empty-changeset
 

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ###############################################################################
-# CDK Deployment Script for Solicitation Platform
+# CDK Deployment Script for CEAP Platform
 #
 # This script deploys the infrastructure using AWS CDK (Kotlin).
 #

@@ -29,7 +29,7 @@ class ProgramCostTracker(
 ) {
     
     private val logger = LoggerFactory.getLogger(ProgramCostTracker::class.java)
-    private val namespace = "SolicitationPlatform/Costs"
+    private val namespace = "CeapPlatform/Costs"
     
     /**
      * Tracks cost metrics per program.

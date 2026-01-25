@@ -23,7 +23,7 @@ interface IEventDeduplicationTracker {
  */
 open class EventDeduplicationTracker(
     private val deduplicationWindowSeconds: Long = 300, // 5 minutes default
-    private val tableName: String = System.getenv("DEDUPLICATION_TABLE") ?: "solicitation-event-deduplication"
+    private val tableName: String = System.getenv("DEDUPLICATION_TABLE") ?: "ceap-event-deduplication"
 ) : IEventDeduplicationTracker {
     
     private val logger = LoggerFactory.getLogger(EventDeduplicationTracker::class.java)
