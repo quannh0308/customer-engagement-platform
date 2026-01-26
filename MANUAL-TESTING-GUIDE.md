@@ -55,18 +55,8 @@ aws stepfunctions get-execution-history \
 ```bash
 aws lambda invoke \
   --function-name $(aws lambda list-functions --query 'Functions[?contains(FunctionName, `ReactiveLambda`)].FunctionName' --output text) \
-  --payload '{
-    "detail": {
-      "customerId": "CUST-TEST-001",
-      "eventType": "OrderDelivered",
-      "subjectType": "product",
-      "subjectId": "PROD-12345",
-      "programId": "product-reviews",
-      "marketplace": "US",
-      "eventDate": "2026-01-27T00:00:00Z",
-      "metadata": {}
-    }
-  }' \
+  --cli-binary-format raw-in-base64-out \
+  --payload '{"detail":{"customerId":"CUST-TEST-001","eventType":"OrderDelivered","subjectType":"product","subjectId":"PROD-12345","programId":"product-reviews","marketplace":"US","eventDate":"2026-01-27T00:00:00Z","metadata":{}}}' \
   response.json && cat response.json && rm response.json
 ```
 
