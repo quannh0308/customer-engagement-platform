@@ -84,22 +84,22 @@ class ReactiveHandler(
             filters = listOf(
                 FilterConfig(
                     filterId = "eligibility",
-                    filterType = "ELIGIBILITY",
+                    filterType = "eligibility",
                     enabled = true,
-                    parameters = emptyMap(),
+                    parameters = mapOf("checkTimingWindow" to false),
                     order = 1
                 ),
                 FilterConfig(
                     filterId = "trust",
-                    filterType = "TRUST",
-                    enabled = true,
+                    filterType = "trust",
+                    enabled = false,  // Disable trust filter in reactive mode (no scores yet)
                     parameters = emptyMap(),
                     order = 2
                 ),
                 FilterConfig(
                     filterId = "quality",
-                    filterType = "QUALITY",
-                    enabled = true,
+                    filterType = "quality",
+                    enabled = false,  // Disable quality filter in reactive mode (no scores yet)
                     parameters = emptyMap(),
                     order = 3
                 )

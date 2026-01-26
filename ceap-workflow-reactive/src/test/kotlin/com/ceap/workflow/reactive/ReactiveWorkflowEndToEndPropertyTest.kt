@@ -15,7 +15,12 @@ import java.time.Instant
  */
 class ReactiveWorkflowEndToEndPropertyTest {
     
-    private val handler = ReactiveHandler()
+    private val mockRepository = MockCandidateRepository()
+    private val mockDeduplicationTracker = MockEventDeduplicationTracker()
+    private val handler = ReactiveHandler(
+        candidateRepository = mockRepository,
+        deduplicationTracker = mockDeduplicationTracker
+    )
     
     @Property(tries = 50)
     fun `reactive workflow creates candidate within sub-second latency`(
@@ -24,6 +29,10 @@ class ReactiveWorkflowEndToEndPropertyTest {
         @ForAll("validProgramIds") programId: String,
         @ForAll("validMarketplaces") marketplace: String
     ): Boolean {
+        // Clear state before each test
+        mockRepository.clear()
+        mockDeduplicationTracker.clear()
+        
         // Given: Valid customer event
         val input = mapOf(
             "detail" to mapOf(
@@ -70,6 +79,10 @@ class ReactiveWorkflowEndToEndPropertyTest {
         @ForAll("validProgramIds") programId: String,
         @ForAll("validMarketplaces") marketplace: String
     ): Boolean {
+        // Clear state before each test
+        mockRepository.clear()
+        mockDeduplicationTracker.clear()
+        
         // Given: Valid customer event
         val input = mapOf(
             "detail" to mapOf(
@@ -111,6 +124,10 @@ class ReactiveWorkflowEndToEndPropertyTest {
         @ForAll("validProgramIds") programId: String,
         @ForAll("validMarketplaces") marketplace: String
     ): Boolean {
+        // Clear state before each test
+        mockRepository.clear()
+        mockDeduplicationTracker.clear()
+        
         // Given: Valid customer event
         val input = mapOf(
             "detail" to mapOf(

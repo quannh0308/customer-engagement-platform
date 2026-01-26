@@ -23,14 +23,14 @@ class FilterChainExecutor(
     private val logger = LoggerFactory.getLogger(FilterChainExecutor::class.java)
     
     init {
-        // Configure all filters
-        val filterConfigMap = config.filters.associateBy { it.filterId }
+        // Configure all filters by matching filter type to config
+        val filterConfigMap = config.filters.associateBy { it.filterType }
         filters.forEach { filter ->
-            val filterConfig = filterConfigMap[filter.getFilterId()]
+            val filterConfig = filterConfigMap[filter.getFilterType()]
             if (filterConfig != null) {
                 filter.configure(filterConfig)
             } else {
-                logger.warn("No configuration found for filter: ${filter.getFilterId()}")
+                logger.warn("No configuration found for filter type: ${filter.getFilterType()}")
             }
         }
     }
