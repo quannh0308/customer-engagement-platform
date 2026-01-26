@@ -41,11 +41,12 @@ object DynamoDBConfig {
     
     /**
      * Table name constants.
+     * Reads from environment variables with fallback to defaults.
      */
     object TableNames {
-        const val CANDIDATES = "ceap-candidates"
-        const val PROGRAM_CONFIG = "ceap-program-config"
-        const val SCORE_CACHE = "ceap-score-cache"
+        val CANDIDATES = System.getenv("CANDIDATES_TABLE") ?: "ceap-candidates"
+        val PROGRAM_CONFIG = System.getenv("PROGRAM_CONFIG_TABLE") ?: "ceap-program-config"
+        val SCORE_CACHE = System.getenv("SCORE_CACHE_TABLE") ?: "ceap-score-cache"
     }
     
     /**
