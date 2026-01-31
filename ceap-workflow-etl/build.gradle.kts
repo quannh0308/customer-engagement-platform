@@ -14,6 +14,7 @@ dependencies {
     implementation("com.amazonaws:aws-lambda-java-events:3.11.3")
     
     // AWS SDK v2
+    implementation("software.amazon.awssdk:s3:2.20.26")
     implementation("software.amazon.awssdk:cloudwatch:2.20.26")
     implementation("software.amazon.awssdk:eventbridge:2.20.26")
     
