@@ -103,7 +103,7 @@ Each task builds on previous work, with checkpoints to validate progress. The im
 - [x] 4. Checkpoint - Validate base infrastructure
   - Ensure all tests pass, ask the user if questions arise.
 
-- [-] 5. Migrate existing Lambda functions to use base handler
+- [x] 5. Migrate existing Lambda functions to use base handler
   - [x] 5.1 Refactor ETL Lambda to extend WorkflowLambdaHandler
     - Implement processData method with existing ETL logic
     - Remove direct S3 client usage (handled by base class)
@@ -137,18 +137,18 @@ Each task builds on previous work, with checkpoints to validate progress. The im
     - **Property 11: Independent Testability**
     - **Validates: Requirements 3.5**
 
-- [-] 5.9 Git commit and push Task 5 changes
+- [x] 5.9 Git commit and push Task 5 changes
   - Commit message: "refactor: migrate Lambda functions to use base handler"
   - Push to remote repository
 
-- [~] 6. Implement Express workflow CDK infrastructure
-  - [ ] 6.1 Create WorkflowType enum and configuration data classes
+- [x] 6. Implement Express workflow CDK infrastructure
+  - [x] 6.1 Create WorkflowType enum and configuration data classes
     - Define WorkflowType (EXPRESS, STANDARD)
     - Define WorkflowConfiguration with all required fields
     - Define WorkflowStepType sealed class (Lambda, Glue)
     - _Requirements: 6.3_
   
-  - [ ] 6.2 Implement createExpressWorkflow function
+  - [x] 6.2 Implement createExpressWorkflow function
     - Create Lambda invoke tasks with execution context payload
     - Chain tasks sequentially
     - Configure retry logic (2 attempts, 20s interval, 2x backoff)
@@ -156,7 +156,7 @@ Each task builds on previous work, with checkpoints to validate progress. The im
     - Enable CloudWatch Logs and X-Ray tracing
     - _Requirements: 4.1, 4.4, 4.5, 4.6, 4.7_
   
-  - [ ] 6.3 Create EventBridge Pipe for Express workflow
+  - [x] 6.3 Create EventBridge Pipe for Express workflow
     - Connect SQS queue to Step Function
     - Use REQUEST_RESPONSE invocation type
     - Configure batch size = 1
@@ -184,15 +184,15 @@ Each task builds on previous work, with checkpoints to validate progress. The im
     - Test IAM permissions
     - _Requirements: 12.4_
 
-- [ ] 6.9 Git commit and push Task 6 changes
+- [x] 6.9 Git commit and push Task 6 changes
   - Commit message: "feat: implement Express workflow CDK infrastructure"
   - Push to remote repository
 
-- [~] 7. Checkpoint - Validate Express workflow
+- [x] 7. Checkpoint - Validate Express workflow
   - Ensure all tests pass, ask the user if questions arise.
 
-- [~] 8. Implement Standard workflow CDK infrastructure
-  - [ ] 8.1 Implement createStandardWorkflow function
+- [-] 8. Implement Standard workflow CDK infrastructure
+  - [x] 8.1 Implement createStandardWorkflow function
     - Support mixing Lambda and Glue steps
     - Create Lambda invoke tasks with execution context
     - Create Glue job tasks with RUN_JOB integration pattern
@@ -201,13 +201,13 @@ Each task builds on previous work, with checkpoints to validate progress. The im
     - Enable CloudWatch Logs and X-Ray tracing
     - _Requirements: 5.1, 5.3, 5.4, 5.5, 5.7_
   
-  - [ ] 8.2 Create EventBridge Pipe for Standard workflow
+  - [x] 8.2 Create EventBridge Pipe for Standard workflow
     - Connect SQS queue to Step Function
     - Use FIRE_AND_FORGET invocation type
     - Configure batch size = 1
     - _Requirements: 5.2_
   
-  - [ ] 8.3 Create EventBridge rule for failure detection
+  - [x] 8.3 Create EventBridge rule for failure detection
     - Monitor execution status changes (FAILED, TIMED_OUT, ABORTED)
     - Trigger SNS topic or Lambda for alerts
     - _Requirements: 8.7_
@@ -234,7 +234,7 @@ Each task builds on previous work, with checkpoints to validate progress. The im
     - Test EventBridge failure detection rule
     - _Requirements: 12.4_
 
-- [ ] 8.9 Git commit and push Task 8 changes
+- [-] 8.9 Git commit and push Task 8 changes
   - Commit message: "feat: implement Standard workflow CDK infrastructure"
   - Push to remote repository
 
