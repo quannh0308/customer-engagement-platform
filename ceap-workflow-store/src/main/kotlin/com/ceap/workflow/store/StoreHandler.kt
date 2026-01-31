@@ -1,16 +1,14 @@
 package com.ceap.workflow.store
 
-import com.amazonaws.services.lambda.runtime.Context
-import com.amazonaws.services.lambda.runtime.RequestHandler
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.node.ArrayNode
+import com.fasterxml.jackson.databind.node.ObjectNode
+import com.fasterxml.jackson.module.kotlin.readValue
 import com.ceap.model.Candidate
 import com.ceap.storage.BatchWriteResult
 import com.ceap.storage.CandidateRepository
-import com.ceap.storage.FailedItem
+import com.ceap.workflow.common.WorkflowLambdaHandler
 import com.ceap.workflow.common.WorkflowMetricsPublisher
-import org.slf4j.LoggerFactory
 
 /**
  * Lambda handler for Store stage of batch ingestion workflow.
@@ -21,12 +19,13 @@ import org.slf4j.LoggerFactory
  * - Track storage metrics
  * - Return final workflow results
  * 
- * Validates: Requirements 5.2, 8.1
+ * Extends WorkflowLambdaHandler to leverage S3-based orchestration pattern.
+ * S3 I/O is handled by base class - this class focuses on storage business logic.
+ * 
+ * Validates: Requirements 3.3, 3.4, 3.5, 5.2, 8.1
  */
-class StoreHandler : RequestHandler<Map<String, Any>, StoreResponse> {
+class StoreHandler : WorkflowLambdaHandler() {
     
-    private val logger = LoggerFactory.getLogger(StoreHandler::class.java)
-    private val objectMapper: ObjectMapper = jacksonObjectMapper()
     private val metricsPublisher = WorkflowMetricsPublisher()
     
     // Create a mock repository for testing
@@ -75,140 +74,125 @@ class StoreHandler : RequestHandler<Map<String, Any>, StoreResponse> {
         }
     }
     
-    override fun handleRequest(input: Map<String, Any>, context: Context): StoreResponse {
-        val requestId = context.awsRequestId
-        val startTime = System.currentTimeMillis()
+    /**
+     * Process input data by storing candidates to DynamoDB.
+     * 
+     * Input structure (from previous Score stage):
+     * {
+     *   "candidates": [...],
+     *   "metrics": {...},
+     *   "programId": "string",
+     *   "marketplace": "string"
+     * }
+     * 
+     * Output structure (final stage):
+     * {
+     *   "metrics": {...},
+     *   "programId": "string",
+     *   "marketplace": "string",
+     *   "success": boolean
+     * }
+     */
+    override fun processData(input: JsonNode): JsonNode {
+        logger.info("Processing Store stage: input keys={}", input.fieldNames().asSequence().toList())
         
-        try {
-            // Manually deserialize input to StoreInput
-            val storeInput = objectMapper.convertValue(input, StoreInput::class.java)
-            
-            logger.info("Starting Store stage: requestId={}, candidateCount={}, programId={}", 
-                requestId, storeInput.candidates.size, storeInput.programId)
-            
-            val candidates = storeInput.candidates
-            val programId = storeInput.programId
-            val marketplace = storeInput.marketplace
-            val executionId = storeInput.executionId
-            
-            if (candidates.isEmpty()) {
-                logger.info("No candidates to store")
-                return StoreResponse(
-                    metrics = StoreMetrics(
-                        inputCount = 0,
-                        storedCount = 0,
-                        failedCount = 0
-                    ),
-                    programId = programId,
-                    marketplace = marketplace,
-                    executionId = executionId,
-                    success = true
-                )
-            }
-            
-            logger.info("Storing candidates: candidateCount={}", candidates.size)
-            
-            // Create candidate repository
-            val candidateRepository = createCandidateRepository()
-            
-            // Batch write candidates to DynamoDB
-            var storedCount = 0
-            var failedCount = 0
-            val failedCandidates = mutableListOf<String>()
-            
-            // Process candidates in batches (DynamoDB batch write limit is 25)
-            val batchSize = 25
-            val batches = candidates.chunked(batchSize)
-            
-            for ((batchIndex, batch) in batches.withIndex()) {
-                try {
-                    logger.debug("Processing batch: batchIndex={}, batchSize={}", batchIndex, batch.size)
-                    
-                    // Write batch to DynamoDB
-                    val result = candidateRepository.batchWrite(batch)
-                    storedCount += result.successfulItems.size
-                    failedCount += result.failedItems.size
-                    
-                    // Track failed candidates
-                    result.failedItems.forEach { failedItem ->
-                        failedCandidates.add("${failedItem.candidate.customerId}:${failedItem.candidate.subject.id}")
-                    }
-                    
-                } catch (e: Exception) {
-                    logger.error("Batch write failed: batchIndex={}, batchSize={}, error={}", 
-                        batchIndex, batch.size, e.message)
-                    
-                    // Mark all candidates in batch as failed
-                    failedCount += batch.size
-                    batch.forEach { candidate ->
-                        failedCandidates.add("${candidate.customerId}:${candidate.subject.id}")
-                    }
+        // Extract data from input
+        val candidatesNode = input.get("candidates")
+            ?: throw IllegalArgumentException("candidates is required")
+        val programId = input.get("programId")?.asText()
+            ?: throw IllegalArgumentException("programId is required")
+        val marketplace = input.get("marketplace")?.asText()
+            ?: throw IllegalArgumentException("marketplace is required")
+        
+        // Deserialize candidates
+        val candidates: List<Candidate> = objectMapper.readValue(candidatesNode.toString())
+        
+        logger.info("Starting Store stage: candidateCount={}, programId={}", 
+            candidates.size, programId)
+        
+        if (candidates.isEmpty()) {
+            logger.info("No candidates to store")
+            return buildOutput(0, 0, 0, emptyList(), programId, marketplace, true)
+        }
+        
+        logger.info("Storing candidates: candidateCount={}", candidates.size)
+        
+        // Create candidate repository
+        val candidateRepository = createCandidateRepository()
+        
+        // Batch write candidates to DynamoDB
+        var storedCount = 0
+        var failedCount = 0
+        val failedCandidates = mutableListOf<String>()
+        
+        // Process candidates in batches (DynamoDB batch write limit is 25)
+        val batchSize = 25
+        val batches = candidates.chunked(batchSize)
+        
+        for ((batchIndex, batch) in batches.withIndex()) {
+            try {
+                logger.debug("Processing batch: batchIndex={}, batchSize={}", batchIndex, batch.size)
+                
+                // Write batch to DynamoDB
+                val result = candidateRepository.batchWrite(batch)
+                storedCount += result.successfulItems.size
+                failedCount += result.failedItems.size
+                
+                // Track failed candidates
+                result.failedItems.forEach { failedItem ->
+                    failedCandidates.add("${failedItem.candidate.customerId}:${failedItem.candidate.subject.id}")
+                }
+                
+            } catch (e: Exception) {
+                logger.error("Batch write failed: batchIndex={}, batchSize={}, error={}", 
+                    batchIndex, batch.size, e.message)
+                
+                // Mark all candidates in batch as failed
+                failedCount += batch.size
+                batch.forEach { candidate ->
+                    failedCandidates.add("${candidate.customerId}:${candidate.subject.id}")
                 }
             }
-            
-            logger.info("Storage completed: inputCount={}, storedCount={}, failedCount={}, failedCandidates={}", 
-                candidates.size, storedCount, failedCount, failedCandidates)
-            
-            // Publish metrics
-            val duration = System.currentTimeMillis() - startTime
-            metricsPublisher.publishStoreMetrics(
-                programId = programId,
-                marketplace = marketplace,
-                inputCount = candidates.size,
-                storedCount = storedCount,
-                failedCount = failedCount,
-                durationMs = duration
-            )
-            
-            // Return response with storage metrics
-            return StoreResponse(
-                metrics = StoreMetrics(
-                    inputCount = candidates.size,
-                    storedCount = storedCount,
-                    failedCount = failedCount,
-                    failedCandidates = failedCandidates
-                ),
-                programId = programId,
-                marketplace = marketplace,
-                executionId = executionId,
-                success = failedCount == 0
-            )
-            
-        } catch (e: Exception) {
-            logger.error("Store stage failed", e)
-            throw RuntimeException("Store stage failed: ${e.message}", e)
         }
+        
+        logger.info("Storage completed: inputCount={}, storedCount={}, failedCount={}, failedCandidates={}", 
+            candidates.size, storedCount, failedCount, failedCandidates)
+        
+        // Publish metrics
+        metricsPublisher.publishStoreMetrics(
+            programId = programId,
+            marketplace = marketplace,
+            inputCount = candidates.size,
+            storedCount = storedCount,
+            failedCount = failedCount,
+            durationMs = 0 // Duration tracked by base handler
+        )
+        
+        // Build output JSON (final stage)
+        return buildOutput(candidates.size, storedCount, failedCount, 
+            failedCandidates, programId, marketplace, failedCount == 0)
+    }
+    
+    private fun buildOutput(
+        inputCount: Int,
+        storedCount: Int,
+        failedCount: Int,
+        failedCandidates: List<String>,
+        programId: String,
+        marketplace: String,
+        success: Boolean
+    ): JsonNode {
+        val output = objectMapper.createObjectNode()
+        output.set<ObjectNode>("metrics", objectMapper.createObjectNode().apply {
+            put("inputCount", inputCount)
+            put("storedCount", storedCount)
+            put("failedCount", failedCount)
+            set<ArrayNode>("failedCandidates", objectMapper.valueToTree(failedCandidates))
+        })
+        output.put("programId", programId)
+        output.put("marketplace", marketplace)
+        output.put("success", success)
+        return output
     }
 }
 
-/**
- * Input to Store stage
- */
-@JsonIgnoreProperties(ignoreUnknown = true)
-data class StoreInput(
-    val candidates: List<Candidate>,
-    val programId: String,
-    val marketplace: String,
-    val executionId: String
-)
-
-/**
- * Response from Store stage
- */
-data class StoreResponse(
-    val metrics: StoreMetrics,
-    val programId: String,
-    val marketplace: String,
-    val executionId: String,
-    val success: Boolean
-)
-
-/**
- * Metrics from Store stage
- */
-data class StoreMetrics(
-    val inputCount: Int,
-    val storedCount: Int,
-    val failedCount: Int,
-    val failedCandidates: List<String> = emptyList()
-)

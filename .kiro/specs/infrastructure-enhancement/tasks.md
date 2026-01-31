@@ -15,7 +15,7 @@ Each task builds on previous work, with checkpoints to validate progress. The im
 
 ## Tasks
 
-- [ ] 1. Update Lambda function naming in CDK constructs
+- [x] 1. Update Lambda function naming in CDK constructs
   - Modify CDK Lambda constructs to use explicit `functionName` property
   - Follow pattern: `{StackName}-{Environment}-{FunctionPurpose}`
   - Update all 5 Lambda functions (ETL, Filter, Score, Store, Reactive)
@@ -26,14 +26,18 @@ Each task builds on previous work, with checkpoints to validate progress. The im
   - **Property 1: Lambda Function Name Format**
   - **Validates: Requirements 1.1, 1.2, 1.3, 1.4**
 
-- [ ] 2. Create S3 workflow bucket infrastructure
-  - [ ] 2.1 Create S3 bucket with CDK
+- [x] 1.2 Git commit and push Task 1 changes
+  - Commit message: "feat: update Lambda function naming in CDK constructs"
+  - Push to remote repository
+
+- [x] 2. Create S3 workflow bucket infrastructure
+  - [x] 2.1 Create S3 bucket with CDK
     - Define bucket with naming convention: `ceap-workflow-{environment}-{accountId}`
     - Configure S3-managed encryption
     - Block all public access
     - _Requirements: 2.5, 2.7_
   
-  - [ ] 2.2 Implement S3 lifecycle policy
+  - [x] 2.2 Implement S3 lifecycle policy
     - Add lifecycle rule to delete objects under `executions/` prefix after 7 days
     - _Requirements: 2.7_
   
@@ -41,7 +45,7 @@ Each task builds on previous work, with checkpoints to validate progress. The im
     - **Property 7: S3 Lifecycle Policy**
     - **Validates: Requirements 2.7**
   
-  - [ ] 2.4 Configure IAM permissions for S3 access
+  - [x] 2.4 Configure IAM permissions for S3 access
     - Grant read/write permissions to Lambda execution roles
     - Follow least-privilege principles
     - _Requirements: 11.2, 11.9_
@@ -50,16 +54,20 @@ Each task builds on previous work, with checkpoints to validate progress. The im
     - **Property 40: S3 IAM Permissions**
     - **Validates: Requirements 11.2**
 
-- [ ] 3. Implement base Lambda handler with S3 integration
-  - [ ] 3.1 Create ExecutionContext data class
+- [x] 2.6 Git commit and push Task 2 changes
+  - Commit message: "feat: create S3 workflow bucket infrastructure"
+  - Push to remote repository
+
+- [x] 3. Implement base Lambda handler with S3 integration
+  - [x] 3.1 Create ExecutionContext data class
     - Define fields: executionId, currentStage, previousStage, workflowBucket, initialData
     - _Requirements: 2.1_
   
-  - [ ] 3.2 Create StageResult data class
+  - [x] 3.2 Create StageResult data class
     - Define fields: status, stage, recordsProcessed, errorMessage
     - _Requirements: 8.4_
   
-  - [ ] 3.3 Implement WorkflowLambdaHandler abstract base class
+  - [x] 3.3 Implement WorkflowLambdaHandler abstract base class
     - Implement S3 input reading logic (convention-based path)
     - Implement S3 output writing logic (convention-based path)
     - Handle first stage (use initialData instead of S3)
@@ -88,28 +96,32 @@ Each task builds on previous work, with checkpoints to validate progress. The im
     - Test first stage vs non-first stage behavior
     - _Requirements: 12.1_
 
-- [ ] 4. Checkpoint - Validate base infrastructure
+- [x] 3.9 Git commit and push Task 3 changes
+  - Commit message: "feat: implement base Lambda handler with S3 integration"
+  - Push to remote repository
+
+- [x] 4. Checkpoint - Validate base infrastructure
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 5. Migrate existing Lambda functions to use base handler
-  - [ ] 5.1 Refactor ETL Lambda to extend WorkflowLambdaHandler
+- [-] 5. Migrate existing Lambda functions to use base handler
+  - [x] 5.1 Refactor ETL Lambda to extend WorkflowLambdaHandler
     - Implement processData method with existing ETL logic
     - Remove direct S3 client usage (handled by base class)
     - _Requirements: 3.3, 3.4, 3.5_
   
-  - [ ] 5.2 Refactor Filter Lambda to extend WorkflowLambdaHandler
+  - [x] 5.2 Refactor Filter Lambda to extend WorkflowLambdaHandler
     - Implement processData method with existing filter logic
     - _Requirements: 3.3, 3.4, 3.5_
   
-  - [ ] 5.3 Refactor Score Lambda to extend WorkflowLambdaHandler
+  - [x] 5.3 Refactor Score Lambda to extend WorkflowLambdaHandler
     - Implement processData method with existing scoring logic
     - _Requirements: 3.3, 3.4, 3.5_
   
-  - [ ] 5.4 Refactor Store Lambda to extend WorkflowLambdaHandler
+  - [x] 5.4 Refactor Store Lambda to extend WorkflowLambdaHandler
     - Implement processData method with existing storage logic
     - _Requirements: 3.3, 3.4, 3.5_
   
-  - [ ] 5.5 Refactor Reactive Lambda to extend WorkflowLambdaHandler
+  - [x] 5.5 Refactor Reactive Lambda to extend WorkflowLambdaHandler
     - Implement processData method with existing reactive logic
     - _Requirements: 3.3, 3.4, 3.5_
   
@@ -125,7 +137,11 @@ Each task builds on previous work, with checkpoints to validate progress. The im
     - **Property 11: Independent Testability**
     - **Validates: Requirements 3.5**
 
-- [ ] 6. Implement Express workflow CDK infrastructure
+- [-] 5.9 Git commit and push Task 5 changes
+  - Commit message: "refactor: migrate Lambda functions to use base handler"
+  - Push to remote repository
+
+- [~] 6. Implement Express workflow CDK infrastructure
   - [ ] 6.1 Create WorkflowType enum and configuration data classes
     - Define WorkflowType (EXPRESS, STANDARD)
     - Define WorkflowConfiguration with all required fields
@@ -168,10 +184,14 @@ Each task builds on previous work, with checkpoints to validate progress. The im
     - Test IAM permissions
     - _Requirements: 12.4_
 
-- [ ] 7. Checkpoint - Validate Express workflow
+- [ ] 6.9 Git commit and push Task 6 changes
+  - Commit message: "feat: implement Express workflow CDK infrastructure"
+  - Push to remote repository
+
+- [~] 7. Checkpoint - Validate Express workflow
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 8. Implement Standard workflow CDK infrastructure
+- [~] 8. Implement Standard workflow CDK infrastructure
   - [ ] 8.1 Implement createStandardWorkflow function
     - Support mixing Lambda and Glue steps
     - Create Lambda invoke tasks with execution context
@@ -214,7 +234,11 @@ Each task builds on previous work, with checkpoints to validate progress. The im
     - Test EventBridge failure detection rule
     - _Requirements: 12.4_
 
-- [ ] 9. Implement Glue job integration
+- [ ] 8.9 Git commit and push Task 8 changes
+  - Commit message: "feat: implement Standard workflow CDK infrastructure"
+  - Push to remote repository
+
+- [~] 9. Implement Glue job integration
   - [ ] 9.1 Create Glue job PySpark script template
     - Read arguments from Step Functions (execution-id, input/output paths)
     - Read input from S3 using input-bucket and input-key
@@ -244,7 +268,11 @@ Each task builds on previous work, with checkpoints to validate progress. The im
     - **Property 28: Glue Job Positioning Flexibility**
     - **Validates: Requirements 7.1**
 
-- [ ] 10. Implement workflow type selection and validation
+- [ ] 9.7 Git commit and push Task 9 changes
+  - Commit message: "feat: implement Glue job integration"
+  - Push to remote repository
+
+- [~] 10. Implement workflow type selection and validation
   - [ ] 10.1 Add workflow type validation logic
     - Validate Express workflows don't contain Glue steps
     - Provide clear error messages for invalid configurations
@@ -267,7 +295,11 @@ Each task builds on previous work, with checkpoints to validate progress. The im
     - **Property 27: Automatic Invocation Type Configuration**
     - **Validates: Requirements 6.5**
 
-- [ ] 11. Checkpoint - Validate Standard workflow and Glue integration
+- [ ] 10.6 Git commit and push Task 10 changes
+  - Commit message: "feat: implement workflow type selection and validation"
+  - Push to remote repository
+
+- [~] 11. Checkpoint - Validate Standard workflow and Glue integration
   - Ensure all tests pass, ask the user if questions arise.
 
 - [ ] 12. Implement error handling and retry logic
@@ -319,6 +351,10 @@ Each task builds on previous work, with checkpoints to validate progress. The im
     - Test retry exhaustion scenario
     - _Requirements: 12.7_
 
+- [ ] 12.11 Git commit and push Task 12 changes
+  - Commit message: "feat: implement error handling and retry logic"
+  - Push to remote repository
+
 - [ ] 13. Implement observability features
   - [ ] 13.1 Configure CloudWatch Logs for Step Functions
     - Enable logs with includeExecutionData=true
@@ -347,6 +383,10 @@ Each task builds on previous work, with checkpoints to validate progress. The im
     - **Property 37: Lambda S3 Path Logging**
     - **Validates: Requirements 9.6**
 
+- [ ] 13.7 Git commit and push Task 13 changes
+  - Commit message: "feat: implement observability features"
+  - Push to remote repository
+
 - [ ] 14. Implement backward compatibility features
   - [ ] 14.1 Add support for dual naming patterns
     - Allow both old (auto-generated) and new (explicit) naming
@@ -365,6 +405,10 @@ Each task builds on previous work, with checkpoints to validate progress. The im
   - [ ]* 14.4 Write property test for incremental stage migration
     - **Property 39: Incremental Stage Migration**
     - **Validates: Requirements 10.3**
+
+- [ ] 14.5 Git commit and push Task 14 changes
+  - Commit message: "feat: implement backward compatibility features"
+  - Push to remote repository
 
 - [ ] 15. Implement remaining infrastructure components
   - [ ] 15.1 Configure EventBridge Pipe in CDK
@@ -385,6 +429,10 @@ Each task builds on previous work, with checkpoints to validate progress. The im
   - [ ]* 15.4 Write property test for least-privilege IAM roles
     - **Property 42: Least-Privilege IAM Roles**
     - **Validates: Requirements 11.9**
+
+- [ ] 15.5 Git commit and push Task 15 changes
+  - Commit message: "feat: implement remaining infrastructure components"
+  - Push to remote repository
 
 - [ ] 16. Checkpoint - Validate complete infrastructure
   - Ensure all tests pass, ask the user if questions arise.
@@ -431,6 +479,10 @@ Each task builds on previous work, with checkpoints to validate progress. The im
     - Verify Lambda logs contain execution context
     - _Requirements: 12.6_
 
+- [ ] 17.7 Git commit and push Task 17 changes
+  - Commit message: "test: add integration tests"
+  - Push to remote repository
+
 - [ ] 18. Write remaining property tests
   - [ ]* 18.1 Write property test for S3 organization by execution ID
     - **Property 5: S3 Organization by Execution ID**
@@ -447,6 +499,10 @@ Each task builds on previous work, with checkpoints to validate progress. The im
   - [ ]* 18.4 Write property test for Express workflow failure handling
     - **Property 14: Express Workflow Failure Handling**
     - **Validates: Requirements 4.3**
+
+- [ ] 18.5 Git commit and push Task 18 changes
+  - Commit message: "test: add remaining property tests"
+  - Push to remote repository
 
 - [ ] 19. Final checkpoint - Comprehensive testing
   - Ensure all tests pass, ask the user if questions arise.
@@ -468,6 +524,10 @@ Each task builds on previous work, with checkpoints to validate progress. The im
     - Create CDK deployment commands
     - Create rollback procedures
     - Create smoke test scripts for post-deployment validation
+
+- [ ] 20.4 Git commit and push Task 20 changes
+  - Commit message: "docs: update documentation and deployment preparation"
+  - Push to remote repository
 
 ## Notes
 

@@ -1,15 +1,12 @@
 package com.ceap.workflow.score
 
-import com.amazonaws.services.lambda.runtime.Context
-import com.amazonaws.services.lambda.runtime.RequestHandler
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.node.ArrayNode
+import com.fasterxml.jackson.databind.node.ObjectNode
+import com.fasterxml.jackson.module.kotlin.readValue
 import com.ceap.model.Candidate
-import com.ceap.model.Score
+import com.ceap.workflow.common.WorkflowLambdaHandler
 import com.ceap.workflow.common.WorkflowMetricsPublisher
-import org.slf4j.LoggerFactory
-import java.time.Instant
 
 /**
  * Lambda handler for Score stage of batch ingestion workflow.
@@ -20,143 +17,143 @@ import java.time.Instant
  * - Attach scores to candidates
  * - Track scoring metrics
  * 
- * Validates: Requirements 3.2, 3.3, 8.1
+ * Extends WorkflowLambdaHandler to leverage S3-based orchestration pattern.
+ * S3 I/O is handled by base class - this class focuses on scoring business logic.
+ * 
+ * Validates: Requirements 3.2, 3.3, 3.4, 3.5, 8.1
  */
-class ScoreHandler : RequestHandler<Map<String, Any>, ScoreResponse> {
+class ScoreHandler : WorkflowLambdaHandler() {
     
-    private val logger = LoggerFactory.getLogger(ScoreHandler::class.java)
-    private val objectMapper: ObjectMapper = jacksonObjectMapper()
     private val metricsPublisher = WorkflowMetricsPublisher()
     
-    override fun handleRequest(input: Map<String, Any>, context: Context): ScoreResponse {
-        val requestId = context.awsRequestId
-        val startTime = System.currentTimeMillis()
+    /**
+     * Process input data by scoring candidates.
+     * 
+     * Input structure (from previous Filter stage):
+     * {
+     *   "candidates": [...],
+     *   "rejectedCandidates": [...],
+     *   "metrics": {...},
+     *   "programId": "string",
+     *   "marketplace": "string"
+     * }
+     * 
+     * Output structure (for next stage):
+     * {
+     *   "candidates": [...],  // With scores attached
+     *   "metrics": {...},
+     *   "programId": "string",
+     *   "marketplace": "string"
+     * }
+     */
+    override fun processData(input: JsonNode): JsonNode {
+        logger.info("Processing Score stage: input keys={}", input.fieldNames().asSequence().toList())
         
-        try {
-            // Manually deserialize input to ScoreInput
-            val scoreInput = objectMapper.convertValue(input, ScoreInput::class.java)
-            
-            logger.info("Starting Score stage: requestId={}, candidateCount={}, programId={}", 
-                requestId, scoreInput.candidates.size, scoreInput.programId)
-            
-            val candidates = scoreInput.candidates
-            val programId = scoreInput.programId
-            val marketplace = scoreInput.marketplace
-            val executionId = scoreInput.executionId
-            
-            if (candidates.isEmpty()) {
-                logger.info("No candidates to score")
-                return ScoreResponse(
-                    candidates = emptyList(),
-                    metrics = ScoreMetrics(
-                        inputCount = 0,
-                        scoredCount = 0,
-                        fallbackCount = 0,
-                        errorCount = 0
-                    ),
-                    programId = programId,
-                    marketplace = marketplace,
-                    executionId = executionId
-                )
-            }
-            
-            logger.info("Scoring candidates: candidateCount={}", candidates.size)
-            
-            // Score candidates (simplified for now - in production would use MultiModelScorer)
-            val scoredCandidates = mutableListOf<Candidate>()
-            var scoredCount = 0
-            var fallbackCount = 0
-            var errorCount = 0
-            
-            for (candidate in candidates) {
-                try {
-                    // For now, just pass through candidates with empty scores
-                    // In production, this would call MultiModelScorer
-                    val scoredCandidate = candidate.copy(
-                        scores = emptyMap()
-                    )
-                    
-                    scoredCandidates.add(scoredCandidate)
-                    scoredCount++
-                    
-                } catch (e: Exception) {
-                    logger.error("Failed to score candidate: customerId={}, subjectId={}, error={}", 
-                        candidate.customerId, candidate.subject.id, e.message)
-                    errorCount++
-                    
-                    // Add candidate with empty scores (fallback)
-                    val scoredCandidate = candidate.copy(
-                        scores = emptyMap()
-                    )
-                    scoredCandidates.add(scoredCandidate)
-                    fallbackCount++
-                }
-            }
-            
-            logger.info("Scoring completed: inputCount={}, scoredCount={}, fallbackCount={}, errorCount={}", 
-                candidates.size, scoredCount, fallbackCount, errorCount)
-            
-            // Publish metrics
-            val duration = System.currentTimeMillis() - startTime
-            metricsPublisher.publishScoreMetrics(
-                programId = programId,
-                marketplace = marketplace,
-                inputCount = candidates.size,
-                scoredCount = scoredCount,
-                fallbackCount = fallbackCount,
-                errorCount = errorCount,
-                durationMs = duration
-            )
-            
-            // Return response with scored candidates and metrics
-            return ScoreResponse(
-                candidates = scoredCandidates,
-                metrics = ScoreMetrics(
-                    inputCount = candidates.size,
-                    scoredCount = scoredCount,
-                    fallbackCount = fallbackCount,
-                    errorCount = errorCount
-                ),
-                programId = programId,
-                marketplace = marketplace,
-                executionId = executionId
-            )
-            
-        } catch (e: Exception) {
-            logger.error("Score stage failed", e)
-            throw RuntimeException("Score stage failed: ${e.message}", e)
+        // Extract data from input
+        val candidatesNode = input.get("candidates")
+            ?: throw IllegalArgumentException("candidates is required")
+        val programId = input.get("programId")?.asText()
+            ?: throw IllegalArgumentException("programId is required")
+        val marketplace = input.get("marketplace")?.asText()
+            ?: throw IllegalArgumentException("marketplace is required")
+        
+        // Deserialize candidates
+        val candidates: List<Candidate> = objectMapper.readValue(candidatesNode.toString())
+        
+        logger.info("Starting Score stage: candidateCount={}, programId={}", 
+            candidates.size, programId)
+        
+        if (candidates.isEmpty()) {
+            logger.info("No candidates to score")
+            return buildEmptyOutput(programId, marketplace)
         }
+        
+        logger.info("Scoring candidates: candidateCount={}", candidates.size)
+        
+        // Score candidates (simplified for now - in production would use MultiModelScorer)
+        val scoredCandidates = mutableListOf<Candidate>()
+        var scoredCount = 0
+        var fallbackCount = 0
+        var errorCount = 0
+        
+        for (candidate in candidates) {
+            try {
+                // For now, just pass through candidates with empty scores
+                // In production, this would call MultiModelScorer
+                val scoredCandidate = candidate.copy(
+                    scores = emptyMap()
+                )
+                
+                scoredCandidates.add(scoredCandidate)
+                scoredCount++
+                
+            } catch (e: Exception) {
+                logger.error("Failed to score candidate: customerId={}, subjectId={}, error={}", 
+                    candidate.customerId, candidate.subject.id, e.message)
+                errorCount++
+                
+                // Add candidate with empty scores (fallback)
+                val scoredCandidate = candidate.copy(
+                    scores = emptyMap()
+                )
+                scoredCandidates.add(scoredCandidate)
+                fallbackCount++
+            }
+        }
+        
+        logger.info("Scoring completed: inputCount={}, scoredCount={}, fallbackCount={}, errorCount={}", 
+            candidates.size, scoredCount, fallbackCount, errorCount)
+        
+        // Publish metrics
+        metricsPublisher.publishScoreMetrics(
+            programId = programId,
+            marketplace = marketplace,
+            inputCount = candidates.size,
+            scoredCount = scoredCount,
+            fallbackCount = fallbackCount,
+            errorCount = errorCount,
+            durationMs = 0 // Duration tracked by base handler
+        )
+        
+        // Build output JSON for next stage
+        return buildOutput(scoredCandidates, candidates.size, scoredCount, 
+            fallbackCount, errorCount, programId, marketplace)
+    }
+    
+    private fun buildEmptyOutput(programId: String, marketplace: String): JsonNode {
+        val output = objectMapper.createObjectNode()
+        output.set<ArrayNode>("candidates", objectMapper.createArrayNode())
+        output.set<ObjectNode>("metrics", objectMapper.createObjectNode().apply {
+            put("inputCount", 0)
+            put("scoredCount", 0)
+            put("fallbackCount", 0)
+            put("errorCount", 0)
+        })
+        output.put("programId", programId)
+        output.put("marketplace", marketplace)
+        return output
+    }
+    
+    private fun buildOutput(
+        scoredCandidates: List<Candidate>,
+        inputCount: Int,
+        scoredCount: Int,
+        fallbackCount: Int,
+        errorCount: Int,
+        programId: String,
+        marketplace: String
+    ): JsonNode {
+        val output = objectMapper.createObjectNode()
+        output.set<ArrayNode>("candidates", objectMapper.valueToTree(scoredCandidates))
+        output.set<ObjectNode>("metrics", objectMapper.createObjectNode().apply {
+            put("inputCount", inputCount)
+            put("scoredCount", scoredCount)
+            put("fallbackCount", fallbackCount)
+            put("errorCount", errorCount)
+        })
+        output.put("programId", programId)
+        output.put("marketplace", marketplace)
+        return output
     }
 }
 
-/**
- * Input to Score stage
- */
-@JsonIgnoreProperties(ignoreUnknown = true)
-data class ScoreInput(
-    val candidates: List<Candidate>,
-    val programId: String,
-    val marketplace: String,
-    val executionId: String
-)
-
-/**
- * Response from Score stage
- */
-data class ScoreResponse(
-    val candidates: List<Candidate>,
-    val metrics: ScoreMetrics,
-    val programId: String,
-    val marketplace: String,
-    val executionId: String
-)
-
-/**
- * Metrics from Score stage
- */
-data class ScoreMetrics(
-    val inputCount: Int,
-    val scoredCount: Int,
-    val fallbackCount: Int,
-    val errorCount: Int
-)

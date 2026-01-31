@@ -193,7 +193,9 @@ class ConsolidatedTemplateStructureTest {
             "ETLLambdaArnOutput",
             "FilterLambdaArnOutput",
             "ScoreLambdaArnOutput",
-            "StoreLambdaArnOutput"
+            "StoreLambdaArnOutput",
+            "WorkflowBucketNameOutput",
+            "WorkflowBucketArnOutput"
         )
         
         expectedOutputs.forEach { outputName ->

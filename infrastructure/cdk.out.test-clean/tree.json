@@ -1,0 +1,2600 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "CeapDatabase-dev": {
+        "id": "CeapDatabase-dev",
+        "path": "CeapDatabase-dev",
+        "children": {
+          "CandidatesTable": {
+            "id": "CandidatesTable",
+            "path": "CeapDatabase-dev/CandidatesTable",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "CeapDatabase-dev/CandidatesTable/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::DynamoDB::Table",
+                  "aws:cdk:cloudformation:props": {
+                    "attributeDefinitions": [
+                      {
+                        "attributeName": "PK",
+                        "attributeType": "S"
+                      },
+                      {
+                        "attributeName": "SK",
+                        "attributeType": "S"
+                      },
+                      {
+                        "attributeName": "GSI1PK",
+                        "attributeType": "S"
+                      },
+                      {
+                        "attributeName": "GSI1SK",
+                        "attributeType": "S"
+                      },
+                      {
+                        "attributeName": "GSI2PK",
+                        "attributeType": "S"
+                      },
+                      {
+                        "attributeName": "GSI2SK",
+                        "attributeType": "S"
+                      }
+                    ],
+                    "billingMode": "PAY_PER_REQUEST",
+                    "globalSecondaryIndexes": [
+                      {
+                        "indexName": "ProgramChannelIndex",
+                        "keySchema": [
+                          {
+                            "attributeName": "GSI1PK",
+                            "keyType": "HASH"
+                          },
+                          {
+                            "attributeName": "GSI1SK",
+                            "keyType": "RANGE"
+                          }
+                        ],
+                        "projection": {
+                          "projectionType": "ALL"
+                        }
+                      },
+                      {
+                        "indexName": "ProgramDateIndex",
+                        "keySchema": [
+                          {
+                            "attributeName": "GSI2PK",
+                            "keyType": "HASH"
+                          },
+                          {
+                            "attributeName": "GSI2SK",
+                            "keyType": "RANGE"
+                          }
+                        ],
+                        "projection": {
+                          "projectionType": "ALL"
+                        }
+                      }
+                    ],
+                    "keySchema": [
+                      {
+                        "attributeName": "PK",
+                        "keyType": "HASH"
+                      },
+                      {
+                        "attributeName": "SK",
+                        "keyType": "RANGE"
+                      }
+                    ],
+                    "pointInTimeRecoverySpecification": {
+                      "pointInTimeRecoveryEnabled": true
+                    },
+                    "sseSpecification": {
+                      "sseEnabled": true
+                    },
+                    "tableName": "Candidates-dev",
+                    "timeToLiveSpecification": {
+                      "attributeName": "ttl",
+                      "enabled": true
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_dynamodb.CfnTable",
+                  "version": "2.167.1"
+                }
+              },
+              "ScalingRole": {
+                "id": "ScalingRole",
+                "path": "CeapDatabase-dev/CandidatesTable/ScalingRole",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "2.167.1"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_dynamodb.Table",
+              "version": "2.167.1"
+            }
+          },
+          "ProgramConfigTable": {
+            "id": "ProgramConfigTable",
+            "path": "CeapDatabase-dev/ProgramConfigTable",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "CeapDatabase-dev/ProgramConfigTable/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::DynamoDB::Table",
+                  "aws:cdk:cloudformation:props": {
+                    "attributeDefinitions": [
+                      {
+                        "attributeName": "PK",
+                        "attributeType": "S"
+                      },
+                      {
+                        "attributeName": "SK",
+                        "attributeType": "S"
+                      }
+                    ],
+                    "billingMode": "PAY_PER_REQUEST",
+                    "keySchema": [
+                      {
+                        "attributeName": "PK",
+                        "keyType": "HASH"
+                      },
+                      {
+                        "attributeName": "SK",
+                        "keyType": "RANGE"
+                      }
+                    ],
+                    "pointInTimeRecoverySpecification": {
+                      "pointInTimeRecoveryEnabled": true
+                    },
+                    "sseSpecification": {
+                      "sseEnabled": true
+                    },
+                    "tableName": "ProgramConfig-dev"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_dynamodb.CfnTable",
+                  "version": "2.167.1"
+                }
+              },
+              "ScalingRole": {
+                "id": "ScalingRole",
+                "path": "CeapDatabase-dev/ProgramConfigTable/ScalingRole",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "2.167.1"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_dynamodb.Table",
+              "version": "2.167.1"
+            }
+          },
+          "ScoreCacheTable": {
+            "id": "ScoreCacheTable",
+            "path": "CeapDatabase-dev/ScoreCacheTable",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "CeapDatabase-dev/ScoreCacheTable/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::DynamoDB::Table",
+                  "aws:cdk:cloudformation:props": {
+                    "attributeDefinitions": [
+                      {
+                        "attributeName": "PK",
+                        "attributeType": "S"
+                      },
+                      {
+                        "attributeName": "SK",
+                        "attributeType": "S"
+                      }
+                    ],
+                    "billingMode": "PAY_PER_REQUEST",
+                    "keySchema": [
+                      {
+                        "attributeName": "PK",
+                        "keyType": "HASH"
+                      },
+                      {
+                        "attributeName": "SK",
+                        "keyType": "RANGE"
+                      }
+                    ],
+                    "pointInTimeRecoverySpecification": {
+                      "pointInTimeRecoveryEnabled": true
+                    },
+                    "sseSpecification": {
+                      "sseEnabled": true
+                    },
+                    "tableName": "ScoreCache-dev",
+                    "timeToLiveSpecification": {
+                      "attributeName": "ttl",
+                      "enabled": true
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_dynamodb.CfnTable",
+                  "version": "2.167.1"
+                }
+              },
+              "ScalingRole": {
+                "id": "ScalingRole",
+                "path": "CeapDatabase-dev/ScoreCacheTable/ScalingRole",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "2.167.1"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_dynamodb.Table",
+              "version": "2.167.1"
+            }
+          },
+          "CandidatesTableNameOutput": {
+            "id": "CandidatesTableNameOutput",
+            "path": "CeapDatabase-dev/CandidatesTableNameOutput",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "2.167.1"
+            }
+          },
+          "CandidatesTableArnOutput": {
+            "id": "CandidatesTableArnOutput",
+            "path": "CeapDatabase-dev/CandidatesTableArnOutput",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "2.167.1"
+            }
+          },
+          "ProgramConfigTableNameOutput": {
+            "id": "ProgramConfigTableNameOutput",
+            "path": "CeapDatabase-dev/ProgramConfigTableNameOutput",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "2.167.1"
+            }
+          },
+          "ProgramConfigTableArnOutput": {
+            "id": "ProgramConfigTableArnOutput",
+            "path": "CeapDatabase-dev/ProgramConfigTableArnOutput",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "2.167.1"
+            }
+          },
+          "ScoreCacheTableNameOutput": {
+            "id": "ScoreCacheTableNameOutput",
+            "path": "CeapDatabase-dev/ScoreCacheTableNameOutput",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "2.167.1"
+            }
+          },
+          "ScoreCacheTableArnOutput": {
+            "id": "ScoreCacheTableArnOutput",
+            "path": "CeapDatabase-dev/ScoreCacheTableArnOutput",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "2.167.1"
+            }
+          },
+          "CDKMetadata": {
+            "id": "CDKMetadata",
+            "path": "CeapDatabase-dev/CDKMetadata",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "CeapDatabase-dev/CDKMetadata/Default",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnResource",
+                  "version": "2.167.1"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "CeapDatabase-dev/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "2.167.1"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "CeapDatabase-dev/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "2.167.1"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "2.167.1"
+        }
+      },
+      "CeapDataPlatform-dev": {
+        "id": "CeapDataPlatform-dev",
+        "path": "CeapDataPlatform-dev",
+        "children": {
+          "DatabaseStackName": {
+            "id": "DatabaseStackName",
+            "path": "CeapDataPlatform-dev/DatabaseStackName",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "2.167.1"
+            }
+          },
+          "ETLLambda": {
+            "id": "ETLLambda",
+            "path": "CeapDataPlatform-dev/ETLLambda",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "CeapDataPlatform-dev/ETLLambda/ServiceRole",
+                "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "CeapDataPlatform-dev/ETLLambda/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "2.167.1"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "CeapDataPlatform-dev/ETLLambda/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "2.167.1"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "CeapDataPlatform-dev/ETLLambda/ServiceRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "CeapDataPlatform-dev/ETLLambda/ServiceRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": [
+                                    "dynamodb:GetItem",
+                                    "dynamodb:PutItem",
+                                    "dynamodb:Query",
+                                    "dynamodb:Scan"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::ImportValue": {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          {
+                                            "Ref": "DatabaseStackName"
+                                          },
+                                          "-CandidatesTableArn"
+                                        ]
+                                      ]
+                                    }
+                                  }
+                                },
+                                {
+                                  "Action": [
+                                    "dynamodb:GetItem",
+                                    "dynamodb:Query"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::ImportValue": {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          {
+                                            "Ref": "DatabaseStackName"
+                                          },
+                                          "-ProgramConfigTableArn"
+                                        ]
+                                      ]
+                                    }
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "ETLLambdaServiceRoleDefaultPolicy450142D6",
+                            "roles": [
+                              {
+                                "Ref": "ETLLambdaServiceRole91516A56"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "2.167.1"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "2.167.1"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "2.167.1"
+                }
+              },
+              "Code": {
+                "id": "Code",
+                "path": "CeapDataPlatform-dev/ETLLambda/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "CeapDataPlatform-dev/ETLLambda/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "2.167.1"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "CeapDataPlatform-dev/ETLLambda/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "2.167.1"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "2.167.1"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "CeapDataPlatform-dev/ETLLambda/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "s3Bucket": "cdk-hnb659fds-assets-728093470684-us-east-1",
+                      "s3Key": "e38f6ed38c1f1a818651b2e1025d53da83aaebc4348014fd1b5561534733e670.jar"
+                    },
+                    "environment": {
+                      "variables": {
+                        "ENVIRONMENT": "dev",
+                        "CANDIDATES_TABLE": {
+                          "Fn::ImportValue": {
+                            "Fn::Join": [
+                              "",
+                              [
+                                {
+                                  "Ref": "DatabaseStackName"
+                                },
+                                "-CandidatesTableName"
+                              ]
+                            ]
+                          }
+                        },
+                        "PROGRAM_CONFIG_TABLE": {
+                          "Fn::ImportValue": {
+                            "Fn::Join": [
+                              "",
+                              [
+                                {
+                                  "Ref": "DatabaseStackName"
+                                },
+                                "-ProgramConfigTableName"
+                              ]
+                            ]
+                          }
+                        },
+                        "BATCH_SIZE": "1000",
+                        "LOG_LEVEL": "INFO"
+                      }
+                    },
+                    "handler": "com.ceap.workflow.etl.ETLHandler::handleRequest",
+                    "memorySize": 1024,
+                    "role": {
+                      "Fn::GetAtt": [
+                        "ETLLambdaServiceRole91516A56",
+                        "Arn"
+                      ]
+                    },
+                    "runtime": "java17",
+                    "timeout": 300
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                  "version": "2.167.1"
+                }
+              },
+              "LogRetention": {
+                "id": "LogRetention",
+                "path": "CeapDataPlatform-dev/ETLLambda/LogRetention",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "CeapDataPlatform-dev/ETLLambda/LogRetention/Resource",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnResource",
+                      "version": "2.167.1"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_logs.LogRetention",
+                  "version": "2.167.1"
+                }
+              },
+              "LogGroup": {
+                "id": "LogGroup",
+                "path": "CeapDataPlatform-dev/ETLLambda/LogGroup",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "2.167.1"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_lambda.Function",
+              "version": "2.167.1"
+            }
+          },
+          "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a": {
+            "id": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a",
+            "path": "CeapDataPlatform-dev/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a",
+            "children": {
+              "Code": {
+                "id": "Code",
+                "path": "CeapDataPlatform-dev/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "CeapDataPlatform-dev/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "2.167.1"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "CeapDataPlatform-dev/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "2.167.1"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "2.167.1"
+                }
+              },
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "CeapDataPlatform-dev/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole",
+                "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "CeapDataPlatform-dev/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "2.167.1"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "CeapDataPlatform-dev/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "2.167.1"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "CeapDataPlatform-dev/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "CeapDataPlatform-dev/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": [
+                                    "logs:DeleteRetentionPolicy",
+                                    "logs:PutRetentionPolicy"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": "*"
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB",
+                            "roles": [
+                              {
+                                "Ref": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "2.167.1"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "2.167.1"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "2.167.1"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "CeapDataPlatform-dev/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Resource",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnResource",
+                  "version": "2.167.1"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "FilterLambda": {
+            "id": "FilterLambda",
+            "path": "CeapDataPlatform-dev/FilterLambda",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "CeapDataPlatform-dev/FilterLambda/ServiceRole",
+                "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "CeapDataPlatform-dev/FilterLambda/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "2.167.1"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "CeapDataPlatform-dev/FilterLambda/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "2.167.1"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "CeapDataPlatform-dev/FilterLambda/ServiceRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "CeapDataPlatform-dev/FilterLambda/ServiceRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": [
+                                    "dynamodb:GetItem",
+                                    "dynamodb:Query"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::ImportValue": {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          {
+                                            "Ref": "DatabaseStackName"
+                                          },
+                                          "-ProgramConfigTableArn"
+                                        ]
+                                      ]
+                                    }
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "FilterLambdaServiceRoleDefaultPolicyA5050364",
+                            "roles": [
+                              {
+                                "Ref": "FilterLambdaServiceRoleBE2F350F"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "2.167.1"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "2.167.1"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "2.167.1"
+                }
+              },
+              "Code": {
+                "id": "Code",
+                "path": "CeapDataPlatform-dev/FilterLambda/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "CeapDataPlatform-dev/FilterLambda/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "2.167.1"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "CeapDataPlatform-dev/FilterLambda/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "2.167.1"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "2.167.1"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "CeapDataPlatform-dev/FilterLambda/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "s3Bucket": "cdk-hnb659fds-assets-728093470684-us-east-1",
+                      "s3Key": "d54789a66a620c03b2df2fa8e16caa93c4fe99a665917fe1f8f27a40efc9f42c.jar"
+                    },
+                    "environment": {
+                      "variables": {
+                        "ENVIRONMENT": "dev",
+                        "PROGRAM_CONFIG_TABLE": {
+                          "Fn::ImportValue": {
+                            "Fn::Join": [
+                              "",
+                              [
+                                {
+                                  "Ref": "DatabaseStackName"
+                                },
+                                "-ProgramConfigTableName"
+                              ]
+                            ]
+                          }
+                        },
+                        "LOG_LEVEL": "INFO"
+                      }
+                    },
+                    "handler": "com.ceap.workflow.filter.FilterHandler::handleRequest",
+                    "memorySize": 512,
+                    "role": {
+                      "Fn::GetAtt": [
+                        "FilterLambdaServiceRoleBE2F350F",
+                        "Arn"
+                      ]
+                    },
+                    "runtime": "java17",
+                    "timeout": 60
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                  "version": "2.167.1"
+                }
+              },
+              "LogRetention": {
+                "id": "LogRetention",
+                "path": "CeapDataPlatform-dev/FilterLambda/LogRetention",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "CeapDataPlatform-dev/FilterLambda/LogRetention/Resource",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnResource",
+                      "version": "2.167.1"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_logs.LogRetention",
+                  "version": "2.167.1"
+                }
+              },
+              "LogGroup": {
+                "id": "LogGroup",
+                "path": "CeapDataPlatform-dev/FilterLambda/LogGroup",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "2.167.1"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_lambda.Function",
+              "version": "2.167.1"
+            }
+          },
+          "ScoreLambda": {
+            "id": "ScoreLambda",
+            "path": "CeapDataPlatform-dev/ScoreLambda",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "CeapDataPlatform-dev/ScoreLambda/ServiceRole",
+                "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "CeapDataPlatform-dev/ScoreLambda/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "2.167.1"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "CeapDataPlatform-dev/ScoreLambda/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "2.167.1"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "CeapDataPlatform-dev/ScoreLambda/ServiceRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "CeapDataPlatform-dev/ScoreLambda/ServiceRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": [
+                                    "dynamodb:GetItem",
+                                    "dynamodb:PutItem",
+                                    "dynamodb:Query"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::ImportValue": {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          {
+                                            "Ref": "DatabaseStackName"
+                                          },
+                                          "-ScoreCacheTableArn"
+                                        ]
+                                      ]
+                                    }
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "ScoreLambdaServiceRoleDefaultPolicyB3CC1451",
+                            "roles": [
+                              {
+                                "Ref": "ScoreLambdaServiceRole4FE6E68C"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "2.167.1"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "2.167.1"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "2.167.1"
+                }
+              },
+              "Code": {
+                "id": "Code",
+                "path": "CeapDataPlatform-dev/ScoreLambda/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "CeapDataPlatform-dev/ScoreLambda/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "2.167.1"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "CeapDataPlatform-dev/ScoreLambda/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "2.167.1"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "2.167.1"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "CeapDataPlatform-dev/ScoreLambda/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "s3Bucket": "cdk-hnb659fds-assets-728093470684-us-east-1",
+                      "s3Key": "2175cc88ab14e5ffd5c9a3fbabed5bab38ad379eb22fcbc33579ec1440920983.jar"
+                    },
+                    "environment": {
+                      "variables": {
+                        "ENVIRONMENT": "dev",
+                        "SCORE_CACHE_TABLE": {
+                          "Fn::ImportValue": {
+                            "Fn::Join": [
+                              "",
+                              [
+                                {
+                                  "Ref": "DatabaseStackName"
+                                },
+                                "-ScoreCacheTableName"
+                              ]
+                            ]
+                          }
+                        },
+                        "CACHE_TTL_HOURS": "24",
+                        "LOG_LEVEL": "INFO"
+                      }
+                    },
+                    "handler": "com.ceap.workflow.score.ScoreHandler::handleRequest",
+                    "memorySize": 1024,
+                    "role": {
+                      "Fn::GetAtt": [
+                        "ScoreLambdaServiceRole4FE6E68C",
+                        "Arn"
+                      ]
+                    },
+                    "runtime": "java17",
+                    "timeout": 120
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                  "version": "2.167.1"
+                }
+              },
+              "LogRetention": {
+                "id": "LogRetention",
+                "path": "CeapDataPlatform-dev/ScoreLambda/LogRetention",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "CeapDataPlatform-dev/ScoreLambda/LogRetention/Resource",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnResource",
+                      "version": "2.167.1"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_logs.LogRetention",
+                  "version": "2.167.1"
+                }
+              },
+              "LogGroup": {
+                "id": "LogGroup",
+                "path": "CeapDataPlatform-dev/ScoreLambda/LogGroup",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "2.167.1"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_lambda.Function",
+              "version": "2.167.1"
+            }
+          },
+          "StoreLambda": {
+            "id": "StoreLambda",
+            "path": "CeapDataPlatform-dev/StoreLambda",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "CeapDataPlatform-dev/StoreLambda/ServiceRole",
+                "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "CeapDataPlatform-dev/StoreLambda/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "2.167.1"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "CeapDataPlatform-dev/StoreLambda/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "2.167.1"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "CeapDataPlatform-dev/StoreLambda/ServiceRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "CeapDataPlatform-dev/StoreLambda/ServiceRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": [
+                                    "dynamodb:BatchWriteItem",
+                                    "dynamodb:PutItem"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::ImportValue": {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          {
+                                            "Ref": "DatabaseStackName"
+                                          },
+                                          "-CandidatesTableArn"
+                                        ]
+                                      ]
+                                    }
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "StoreLambdaServiceRoleDefaultPolicy8D0625A8",
+                            "roles": [
+                              {
+                                "Ref": "StoreLambdaServiceRole2269A608"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "2.167.1"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "2.167.1"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "2.167.1"
+                }
+              },
+              "Code": {
+                "id": "Code",
+                "path": "CeapDataPlatform-dev/StoreLambda/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "CeapDataPlatform-dev/StoreLambda/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "2.167.1"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "CeapDataPlatform-dev/StoreLambda/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "2.167.1"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "2.167.1"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "CeapDataPlatform-dev/StoreLambda/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "s3Bucket": "cdk-hnb659fds-assets-728093470684-us-east-1",
+                      "s3Key": "bb320b92510c530b64fa26037583696fd02f4c563bd3ea3c49019138038f2b82.jar"
+                    },
+                    "environment": {
+                      "variables": {
+                        "ENVIRONMENT": "dev",
+                        "CANDIDATES_TABLE": {
+                          "Fn::ImportValue": {
+                            "Fn::Join": [
+                              "",
+                              [
+                                {
+                                  "Ref": "DatabaseStackName"
+                                },
+                                "-CandidatesTableName"
+                              ]
+                            ]
+                          }
+                        },
+                        "BATCH_SIZE": "25",
+                        "LOG_LEVEL": "INFO"
+                      }
+                    },
+                    "handler": "com.ceap.workflow.store.StoreHandler::handleRequest",
+                    "memorySize": 512,
+                    "role": {
+                      "Fn::GetAtt": [
+                        "StoreLambdaServiceRole2269A608",
+                        "Arn"
+                      ]
+                    },
+                    "runtime": "java17",
+                    "timeout": 60
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                  "version": "2.167.1"
+                }
+              },
+              "LogRetention": {
+                "id": "LogRetention",
+                "path": "CeapDataPlatform-dev/StoreLambda/LogRetention",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "CeapDataPlatform-dev/StoreLambda/LogRetention/Resource",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnResource",
+                      "version": "2.167.1"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_logs.LogRetention",
+                  "version": "2.167.1"
+                }
+              },
+              "LogGroup": {
+                "id": "LogGroup",
+                "path": "CeapDataPlatform-dev/StoreLambda/LogGroup",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "2.167.1"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_lambda.Function",
+              "version": "2.167.1"
+            }
+          },
+          "ETLTask": {
+            "id": "ETLTask",
+            "path": "CeapDataPlatform-dev/ETLTask",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_stepfunctions_tasks.LambdaInvoke",
+              "version": "2.167.1"
+            }
+          },
+          "ETLFailed": {
+            "id": "ETLFailed",
+            "path": "CeapDataPlatform-dev/ETLFailed",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_stepfunctions.Fail",
+              "version": "2.167.1"
+            }
+          },
+          "FilterTask": {
+            "id": "FilterTask",
+            "path": "CeapDataPlatform-dev/FilterTask",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_stepfunctions_tasks.LambdaInvoke",
+              "version": "2.167.1"
+            }
+          },
+          "FilterFailed": {
+            "id": "FilterFailed",
+            "path": "CeapDataPlatform-dev/FilterFailed",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_stepfunctions.Fail",
+              "version": "2.167.1"
+            }
+          },
+          "ScoreTask": {
+            "id": "ScoreTask",
+            "path": "CeapDataPlatform-dev/ScoreTask",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_stepfunctions_tasks.LambdaInvoke",
+              "version": "2.167.1"
+            }
+          },
+          "ScoreFailed": {
+            "id": "ScoreFailed",
+            "path": "CeapDataPlatform-dev/ScoreFailed",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_stepfunctions.Fail",
+              "version": "2.167.1"
+            }
+          },
+          "StoreTask": {
+            "id": "StoreTask",
+            "path": "CeapDataPlatform-dev/StoreTask",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_stepfunctions_tasks.LambdaInvoke",
+              "version": "2.167.1"
+            }
+          },
+          "StoreFailed": {
+            "id": "StoreFailed",
+            "path": "CeapDataPlatform-dev/StoreFailed",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_stepfunctions.Fail",
+              "version": "2.167.1"
+            }
+          },
+          "WorkflowSuccess": {
+            "id": "WorkflowSuccess",
+            "path": "CeapDataPlatform-dev/WorkflowSuccess",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_stepfunctions.Succeed",
+              "version": "2.167.1"
+            }
+          },
+          "BatchIngestionWorkflow": {
+            "id": "BatchIngestionWorkflow",
+            "path": "CeapDataPlatform-dev/BatchIngestionWorkflow",
+            "children": {
+              "Role": {
+                "id": "Role",
+                "path": "CeapDataPlatform-dev/BatchIngestionWorkflow/Role",
+                "children": {
+                  "ImportRole": {
+                    "id": "ImportRole",
+                    "path": "CeapDataPlatform-dev/BatchIngestionWorkflow/Role/ImportRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "2.167.1"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "CeapDataPlatform-dev/BatchIngestionWorkflow/Role/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "states.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "2.167.1"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "CeapDataPlatform-dev/BatchIngestionWorkflow/Role/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "CeapDataPlatform-dev/BatchIngestionWorkflow/Role/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "lambda:InvokeFunction",
+                                  "Effect": "Allow",
+                                  "Resource": [
+                                    {
+                                      "Fn::GetAtt": [
+                                        "ETLLambdaFunction49DD508A",
+                                        "Arn"
+                                      ]
+                                    },
+                                    {
+                                      "Fn::GetAtt": [
+                                        "FilterLambdaFunction29040EBB",
+                                        "Arn"
+                                      ]
+                                    },
+                                    {
+                                      "Fn::GetAtt": [
+                                        "ScoreLambdaFunction04AD330A",
+                                        "Arn"
+                                      ]
+                                    },
+                                    {
+                                      "Fn::GetAtt": [
+                                        "StoreLambdaFunction7FC1576D",
+                                        "Arn"
+                                      ]
+                                    },
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          {
+                                            "Fn::GetAtt": [
+                                              "ETLLambdaFunction49DD508A",
+                                              "Arn"
+                                            ]
+                                          },
+                                          ":*"
+                                        ]
+                                      ]
+                                    },
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          {
+                                            "Fn::GetAtt": [
+                                              "FilterLambdaFunction29040EBB",
+                                              "Arn"
+                                            ]
+                                          },
+                                          ":*"
+                                        ]
+                                      ]
+                                    },
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          {
+                                            "Fn::GetAtt": [
+                                              "ScoreLambdaFunction04AD330A",
+                                              "Arn"
+                                            ]
+                                          },
+                                          ":*"
+                                        ]
+                                      ]
+                                    },
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          {
+                                            "Fn::GetAtt": [
+                                              "StoreLambdaFunction7FC1576D",
+                                              "Arn"
+                                            ]
+                                          },
+                                          ":*"
+                                        ]
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "BatchIngestionWorkflowRoleDefaultPolicy303960A8",
+                            "roles": [
+                              {
+                                "Ref": "BatchIngestionWorkflowRole795419FF"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "2.167.1"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "2.167.1"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "2.167.1"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "CeapDataPlatform-dev/BatchIngestionWorkflow/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::StepFunctions::StateMachine",
+                  "aws:cdk:cloudformation:props": {
+                    "definitionString": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "{\"StartAt\":\"ETLTask\",\"States\":{\"ETLTask\":{\"Next\":\"FilterTask\",\"Retry\":[{\"ErrorEquals\":[\"Lambda.ClientExecutionTimeoutException\",\"Lambda.ServiceException\",\"Lambda.AWSLambdaException\",\"Lambda.SdkClientException\"],\"IntervalSeconds\":2,\"MaxAttempts\":6,\"BackoffRate\":2},{\"ErrorEquals\":[\"States.TaskFailed\",\"States.Timeout\",\"Lambda.ServiceException\"],\"IntervalSeconds\":1,\"MaxAttempts\":5,\"BackoffRate\":2}],\"Catch\":[{\"ErrorEquals\":[\"States.ALL\"],\"ResultPath\":\"$.error\",\"Next\":\"ETLFailed\"}],\"Type\":\"Task\",\"OutputPath\":\"$.Payload\",\"Resource\":\"arn:",
+                          {
+                            "Ref": "AWS::Partition"
+                          },
+                          ":states:::lambda:invoke\",\"Parameters\":{\"FunctionName\":\"",
+                          {
+                            "Fn::GetAtt": [
+                              "ETLLambdaFunction49DD508A",
+                              "Arn"
+                            ]
+                          },
+                          "\",\"Payload.$\":\"$\"}},\"FilterTask\":{\"Next\":\"ScoreTask\",\"Retry\":[{\"ErrorEquals\":[\"Lambda.ClientExecutionTimeoutException\",\"Lambda.ServiceException\",\"Lambda.AWSLambdaException\",\"Lambda.SdkClientException\"],\"IntervalSeconds\":2,\"MaxAttempts\":6,\"BackoffRate\":2},{\"ErrorEquals\":[\"States.TaskFailed\",\"States.Timeout\",\"Lambda.ServiceException\"],\"IntervalSeconds\":1,\"MaxAttempts\":5,\"BackoffRate\":2}],\"Catch\":[{\"ErrorEquals\":[\"States.ALL\"],\"ResultPath\":\"$.error\",\"Next\":\"FilterFailed\"}],\"Type\":\"Task\",\"OutputPath\":\"$.Payload\",\"Resource\":\"arn:",
+                          {
+                            "Ref": "AWS::Partition"
+                          },
+                          ":states:::lambda:invoke\",\"Parameters\":{\"FunctionName\":\"",
+                          {
+                            "Fn::GetAtt": [
+                              "FilterLambdaFunction29040EBB",
+                              "Arn"
+                            ]
+                          },
+                          "\",\"Payload.$\":\"$\"}},\"ScoreTask\":{\"Next\":\"StoreTask\",\"Retry\":[{\"ErrorEquals\":[\"Lambda.ClientExecutionTimeoutException\",\"Lambda.ServiceException\",\"Lambda.AWSLambdaException\",\"Lambda.SdkClientException\"],\"IntervalSeconds\":2,\"MaxAttempts\":6,\"BackoffRate\":2},{\"ErrorEquals\":[\"States.TaskFailed\",\"States.Timeout\",\"Lambda.ServiceException\"],\"IntervalSeconds\":1,\"MaxAttempts\":5,\"BackoffRate\":2}],\"Catch\":[{\"ErrorEquals\":[\"States.ALL\"],\"ResultPath\":\"$.error\",\"Next\":\"ScoreFailed\"}],\"Type\":\"Task\",\"OutputPath\":\"$.Payload\",\"Resource\":\"arn:",
+                          {
+                            "Ref": "AWS::Partition"
+                          },
+                          ":states:::lambda:invoke\",\"Parameters\":{\"FunctionName\":\"",
+                          {
+                            "Fn::GetAtt": [
+                              "ScoreLambdaFunction04AD330A",
+                              "Arn"
+                            ]
+                          },
+                          "\",\"Payload.$\":\"$\"}},\"StoreTask\":{\"Next\":\"WorkflowSuccess\",\"Retry\":[{\"ErrorEquals\":[\"Lambda.ClientExecutionTimeoutException\",\"Lambda.ServiceException\",\"Lambda.AWSLambdaException\",\"Lambda.SdkClientException\"],\"IntervalSeconds\":2,\"MaxAttempts\":6,\"BackoffRate\":2},{\"ErrorEquals\":[\"States.TaskFailed\",\"States.Timeout\",\"Lambda.ServiceException\"],\"IntervalSeconds\":1,\"MaxAttempts\":5,\"BackoffRate\":2}],\"Catch\":[{\"ErrorEquals\":[\"States.ALL\"],\"ResultPath\":\"$.error\",\"Next\":\"StoreFailed\"}],\"Type\":\"Task\",\"OutputPath\":\"$.Payload\",\"Resource\":\"arn:",
+                          {
+                            "Ref": "AWS::Partition"
+                          },
+                          ":states:::lambda:invoke\",\"Parameters\":{\"FunctionName\":\"",
+                          {
+                            "Fn::GetAtt": [
+                              "StoreLambdaFunction7FC1576D",
+                              "Arn"
+                            ]
+                          },
+                          "\",\"Payload.$\":\"$\"}},\"WorkflowSuccess\":{\"Type\":\"Succeed\",\"Comment\":\"Batch ingestion workflow completed successfully\"},\"StoreFailed\":{\"Type\":\"Fail\",\"Error\":\"StoreError\",\"Cause\":\"Store stage failed after retries\"},\"ScoreFailed\":{\"Type\":\"Fail\",\"Error\":\"ScoreError\",\"Cause\":\"Score stage failed after retries\"},\"FilterFailed\":{\"Type\":\"Fail\",\"Error\":\"FilterError\",\"Cause\":\"Filter stage failed after retries\"},\"ETLFailed\":{\"Type\":\"Fail\",\"Error\":\"ETLError\",\"Cause\":\"ETL stage failed after retries\"}},\"TimeoutSeconds\":14400}"
+                        ]
+                      ]
+                    },
+                    "roleArn": {
+                      "Fn::GetAtt": [
+                        "BatchIngestionWorkflowRole795419FF",
+                        "Arn"
+                      ]
+                    },
+                    "stateMachineName": "CeapBatchIngestion-dev"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_stepfunctions.CfnStateMachine",
+                  "version": "2.167.1"
+                }
+              },
+              "EventsRole": {
+                "id": "EventsRole",
+                "path": "CeapDataPlatform-dev/BatchIngestionWorkflow/EventsRole",
+                "children": {
+                  "ImportEventsRole": {
+                    "id": "ImportEventsRole",
+                    "path": "CeapDataPlatform-dev/BatchIngestionWorkflow/EventsRole/ImportEventsRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "2.167.1"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "CeapDataPlatform-dev/BatchIngestionWorkflow/EventsRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "events.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "2.167.1"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "CeapDataPlatform-dev/BatchIngestionWorkflow/EventsRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "CeapDataPlatform-dev/BatchIngestionWorkflow/EventsRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "states:StartExecution",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Ref": "BatchIngestionWorkflow10186577"
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "BatchIngestionWorkflowEventsRoleDefaultPolicy4877400A",
+                            "roles": [
+                              {
+                                "Ref": "BatchIngestionWorkflowEventsRole60B03235"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "2.167.1"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "2.167.1"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "2.167.1"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_stepfunctions.StateMachine",
+              "version": "2.167.1"
+            }
+          },
+          "BatchIngestionSchedule": {
+            "id": "BatchIngestionSchedule",
+            "path": "CeapDataPlatform-dev/BatchIngestionSchedule",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "CeapDataPlatform-dev/BatchIngestionSchedule/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Events::Rule",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "CeapBatchIngestion-dev",
+                    "scheduleExpression": "cron(0 2 * * ? *)",
+                    "state": "ENABLED",
+                    "targets": [
+                      {
+                        "id": "Target0",
+                        "arn": {
+                          "Ref": "BatchIngestionWorkflow10186577"
+                        },
+                        "roleArn": {
+                          "Fn::GetAtt": [
+                            "BatchIngestionWorkflowEventsRole60B03235",
+                            "Arn"
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_events.CfnRule",
+                  "version": "2.167.1"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_events.Rule",
+              "version": "2.167.1"
+            }
+          },
+          "BatchIngestionWorkflowArnOutput": {
+            "id": "BatchIngestionWorkflowArnOutput",
+            "path": "CeapDataPlatform-dev/BatchIngestionWorkflowArnOutput",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "2.167.1"
+            }
+          },
+          "BatchIngestionWorkflowNameOutput": {
+            "id": "BatchIngestionWorkflowNameOutput",
+            "path": "CeapDataPlatform-dev/BatchIngestionWorkflowNameOutput",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "2.167.1"
+            }
+          },
+          "ETLLambdaArnOutput": {
+            "id": "ETLLambdaArnOutput",
+            "path": "CeapDataPlatform-dev/ETLLambdaArnOutput",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "2.167.1"
+            }
+          },
+          "FilterLambdaArnOutput": {
+            "id": "FilterLambdaArnOutput",
+            "path": "CeapDataPlatform-dev/FilterLambdaArnOutput",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "2.167.1"
+            }
+          },
+          "ScoreLambdaArnOutput": {
+            "id": "ScoreLambdaArnOutput",
+            "path": "CeapDataPlatform-dev/ScoreLambdaArnOutput",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "2.167.1"
+            }
+          },
+          "StoreLambdaArnOutput": {
+            "id": "StoreLambdaArnOutput",
+            "path": "CeapDataPlatform-dev/StoreLambdaArnOutput",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "2.167.1"
+            }
+          },
+          "CDKMetadata": {
+            "id": "CDKMetadata",
+            "path": "CeapDataPlatform-dev/CDKMetadata",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "CeapDataPlatform-dev/CDKMetadata/Default",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnResource",
+                  "version": "2.167.1"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "CeapDataPlatform-dev/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "2.167.1"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "CeapDataPlatform-dev/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "2.167.1"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "2.167.1"
+        }
+      },
+      "CeapServingAPI-dev": {
+        "id": "CeapServingAPI-dev",
+        "path": "CeapServingAPI-dev",
+        "children": {
+          "DatabaseStackName": {
+            "id": "DatabaseStackName",
+            "path": "CeapServingAPI-dev/DatabaseStackName",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "2.167.1"
+            }
+          },
+          "DataPlatformStackName": {
+            "id": "DataPlatformStackName",
+            "path": "CeapServingAPI-dev/DataPlatformStackName",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "2.167.1"
+            }
+          },
+          "DeduplicationTable": {
+            "id": "DeduplicationTable",
+            "path": "CeapServingAPI-dev/DeduplicationTable",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "CeapServingAPI-dev/DeduplicationTable/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::DynamoDB::Table",
+                  "aws:cdk:cloudformation:props": {
+                    "attributeDefinitions": [
+                      {
+                        "attributeName": "deduplicationKey",
+                        "attributeType": "S"
+                      }
+                    ],
+                    "billingMode": "PAY_PER_REQUEST",
+                    "keySchema": [
+                      {
+                        "attributeName": "deduplicationKey",
+                        "keyType": "HASH"
+                      }
+                    ],
+                    "tableName": "ceap-event-deduplication-dev",
+                    "timeToLiveSpecification": {
+                      "attributeName": "ttl",
+                      "enabled": true
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_dynamodb.CfnTable",
+                  "version": "2.167.1"
+                }
+              },
+              "ScalingRole": {
+                "id": "ScalingRole",
+                "path": "CeapServingAPI-dev/DeduplicationTable/ScalingRole",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "2.167.1"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_dynamodb.Table",
+              "version": "2.167.1"
+            }
+          },
+          "ReactiveLambda": {
+            "id": "ReactiveLambda",
+            "path": "CeapServingAPI-dev/ReactiveLambda",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "CeapServingAPI-dev/ReactiveLambda/ServiceRole",
+                "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "CeapServingAPI-dev/ReactiveLambda/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "2.167.1"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "CeapServingAPI-dev/ReactiveLambda/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "2.167.1"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "CeapServingAPI-dev/ReactiveLambda/ServiceRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "CeapServingAPI-dev/ReactiveLambda/ServiceRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": [
+                                    "dynamodb:GetItem",
+                                    "dynamodb:PutItem",
+                                    "dynamodb:Query",
+                                    "dynamodb:UpdateItem"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": [
+                                    {
+                                      "Fn::GetAtt": [
+                                        "DeduplicationTableAD30DFB7",
+                                        "Arn"
+                                      ]
+                                    },
+                                    {
+                                      "Fn::ImportValue": {
+                                        "Fn::Join": [
+                                          "",
+                                          [
+                                            {
+                                              "Ref": "DatabaseStackName"
+                                            },
+                                            "-CandidatesTableArn"
+                                          ]
+                                        ]
+                                      }
+                                    },
+                                    {
+                                      "Fn::ImportValue": {
+                                        "Fn::Join": [
+                                          "",
+                                          [
+                                            {
+                                              "Ref": "DatabaseStackName"
+                                            },
+                                            "-ProgramConfigTableArn"
+                                          ]
+                                        ]
+                                      }
+                                    },
+                                    {
+                                      "Fn::ImportValue": {
+                                        "Fn::Join": [
+                                          "",
+                                          [
+                                            {
+                                              "Ref": "DatabaseStackName"
+                                            },
+                                            "-ScoreCacheTableArn"
+                                          ]
+                                        ]
+                                      }
+                                    }
+                                  ]
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "ReactiveLambdaServiceRoleDefaultPolicyFBE00476",
+                            "roles": [
+                              {
+                                "Ref": "ReactiveLambdaServiceRole9270F6F2"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "2.167.1"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "2.167.1"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "2.167.1"
+                }
+              },
+              "Code": {
+                "id": "Code",
+                "path": "CeapServingAPI-dev/ReactiveLambda/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "CeapServingAPI-dev/ReactiveLambda/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "2.167.1"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "CeapServingAPI-dev/ReactiveLambda/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "2.167.1"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "2.167.1"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "CeapServingAPI-dev/ReactiveLambda/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "s3Bucket": "cdk-hnb659fds-assets-728093470684-us-east-1",
+                      "s3Key": "5e0faddfed91d810a48d95dc63213bb2b64bc07f7d764340772ab0d9459f980d.jar"
+                    },
+                    "environment": {
+                      "variables": {
+                        "ENVIRONMENT": "dev",
+                        "CANDIDATES_TABLE": {
+                          "Fn::ImportValue": {
+                            "Fn::Join": [
+                              "",
+                              [
+                                {
+                                  "Ref": "DatabaseStackName"
+                                },
+                                "-CandidatesTableName"
+                              ]
+                            ]
+                          }
+                        },
+                        "PROGRAM_CONFIG_TABLE": {
+                          "Fn::ImportValue": {
+                            "Fn::Join": [
+                              "",
+                              [
+                                {
+                                  "Ref": "DatabaseStackName"
+                                },
+                                "-ProgramConfigTableName"
+                              ]
+                            ]
+                          }
+                        },
+                        "SCORE_CACHE_TABLE": {
+                          "Fn::ImportValue": {
+                            "Fn::Join": [
+                              "",
+                              [
+                                {
+                                  "Ref": "DatabaseStackName"
+                                },
+                                "-ScoreCacheTableName"
+                              ]
+                            ]
+                          }
+                        },
+                        "DEDUPLICATION_TABLE": {
+                          "Ref": "DeduplicationTableAD30DFB7"
+                        },
+                        "LOG_LEVEL": "INFO"
+                      }
+                    },
+                    "handler": "com.ceap.workflow.reactive.ReactiveHandler::handleRequest",
+                    "memorySize": 1024,
+                    "role": {
+                      "Fn::GetAtt": [
+                        "ReactiveLambdaServiceRole9270F6F2",
+                        "Arn"
+                      ]
+                    },
+                    "runtime": "java17",
+                    "timeout": 60
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                  "version": "2.167.1"
+                }
+              },
+              "LogRetention": {
+                "id": "LogRetention",
+                "path": "CeapServingAPI-dev/ReactiveLambda/LogRetention",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "CeapServingAPI-dev/ReactiveLambda/LogRetention/Resource",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnResource",
+                      "version": "2.167.1"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_logs.LogRetention",
+                  "version": "2.167.1"
+                }
+              },
+              "LogGroup": {
+                "id": "LogGroup",
+                "path": "CeapServingAPI-dev/ReactiveLambda/LogGroup",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "2.167.1"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_lambda.Function",
+              "version": "2.167.1"
+            }
+          },
+          "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a": {
+            "id": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a",
+            "path": "CeapServingAPI-dev/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a",
+            "children": {
+              "Code": {
+                "id": "Code",
+                "path": "CeapServingAPI-dev/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "CeapServingAPI-dev/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "2.167.1"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "CeapServingAPI-dev/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "2.167.1"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "2.167.1"
+                }
+              },
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "CeapServingAPI-dev/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole",
+                "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "CeapServingAPI-dev/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "2.167.1"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "CeapServingAPI-dev/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "2.167.1"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "CeapServingAPI-dev/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "CeapServingAPI-dev/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": [
+                                    "logs:DeleteRetentionPolicy",
+                                    "logs:PutRetentionPolicy"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": "*"
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB",
+                            "roles": [
+                              {
+                                "Ref": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "2.167.1"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "2.167.1"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "2.167.1"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "CeapServingAPI-dev/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Resource",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnResource",
+                  "version": "2.167.1"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "CustomerEventRule": {
+            "id": "CustomerEventRule",
+            "path": "CeapServingAPI-dev/CustomerEventRule",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "CeapServingAPI-dev/CustomerEventRule/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Events::Rule",
+                  "aws:cdk:cloudformation:props": {
+                    "description": "Routes customer events to reactive ceap workflow",
+                    "eventPattern": {
+                      "detail-type": [
+                        "OrderDelivered",
+                        "ProductPurchased",
+                        "VideoWatched",
+                        "TrackPlayed",
+                        "ServiceCompleted",
+                        "EventAttended"
+                      ],
+                      "source": [
+                        "ceap.customer-events"
+                      ]
+                    },
+                    "name": "ceap-customer-events-dev",
+                    "state": "ENABLED",
+                    "targets": [
+                      {
+                        "id": "Target0",
+                        "arn": {
+                          "Fn::GetAtt": [
+                            "ReactiveLambdaFunction89310B25",
+                            "Arn"
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_events.CfnRule",
+                  "version": "2.167.1"
+                }
+              },
+              "AllowEventRuleCeapServingAPIdevReactiveLambda68523DC5": {
+                "id": "AllowEventRuleCeapServingAPIdevReactiveLambda68523DC5",
+                "path": "CeapServingAPI-dev/CustomerEventRule/AllowEventRuleCeapServingAPIdevReactiveLambda68523DC5",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                  "aws:cdk:cloudformation:props": {
+                    "action": "lambda:InvokeFunction",
+                    "functionName": {
+                      "Fn::GetAtt": [
+                        "ReactiveLambdaFunction89310B25",
+                        "Arn"
+                      ]
+                    },
+                    "principal": "events.amazonaws.com",
+                    "sourceArn": {
+                      "Fn::GetAtt": [
+                        "CustomerEventRuleC528982C",
+                        "Arn"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
+                  "version": "2.167.1"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_events.Rule",
+              "version": "2.167.1"
+            }
+          },
+          "ReactiveLambdaArnOutput": {
+            "id": "ReactiveLambdaArnOutput",
+            "path": "CeapServingAPI-dev/ReactiveLambdaArnOutput",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "2.167.1"
+            }
+          },
+          "ReactiveLambdaNameOutput": {
+            "id": "ReactiveLambdaNameOutput",
+            "path": "CeapServingAPI-dev/ReactiveLambdaNameOutput",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "2.167.1"
+            }
+          },
+          "CustomerEventRuleArnOutput": {
+            "id": "CustomerEventRuleArnOutput",
+            "path": "CeapServingAPI-dev/CustomerEventRuleArnOutput",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "2.167.1"
+            }
+          },
+          "DeduplicationTableNameOutput": {
+            "id": "DeduplicationTableNameOutput",
+            "path": "CeapServingAPI-dev/DeduplicationTableNameOutput",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "2.167.1"
+            }
+          },
+          "DeduplicationTableArnOutput": {
+            "id": "DeduplicationTableArnOutput",
+            "path": "CeapServingAPI-dev/DeduplicationTableArnOutput",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "2.167.1"
+            }
+          },
+          "CDKMetadata": {
+            "id": "CDKMetadata",
+            "path": "CeapServingAPI-dev/CDKMetadata",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "CeapServingAPI-dev/CDKMetadata/Default",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnResource",
+                  "version": "2.167.1"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "CeapServingAPI-dev/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "2.167.1"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "CeapServingAPI-dev/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "2.167.1"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "2.167.1"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.3.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "2.167.1"
+    }
+  }
+}

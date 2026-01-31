@@ -1,7 +1,7 @@
 package com.ceap.workflow.reactive
 
-import com.amazonaws.services.lambda.runtime.Context
-import com.amazonaws.services.lambda.runtime.RequestHandler
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ceap.filters.FilterChainExecutor
 import com.ceap.filters.Filter
 import com.ceap.filters.EligibilityFilter
@@ -24,7 +24,7 @@ import com.ceap.scoring.ScoreCacheRepository
 import com.ceap.scoring.FeatureMap
 import com.ceap.storage.CandidateRepository
 import com.ceap.storage.DynamoDBCandidateRepository
-import org.slf4j.LoggerFactory
+import com.ceap.workflow.common.WorkflowLambdaHandler
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 import java.time.Instant
 import kotlinx.coroutines.runBlocking
@@ -61,16 +61,18 @@ class DefaultScoringProvider : BaseScoringProvider() {
  * - Store eligible candidates immediately
  * - Track deduplication
  * 
- * Validates: Requirements 9.1, 9.2, 9.3, 9.4, 9.5
+ * Extends WorkflowLambdaHandler to leverage S3-based orchestration pattern.
+ * S3 I/O is handled by base class - this class focuses on reactive processing logic.
+ * 
+ * Validates: Requirements 3.3, 3.4, 3.5, 9.1, 9.2, 9.3, 9.4, 9.5
  */
 class ReactiveHandler(
     private val candidateRepository: CandidateRepository? = null,
     private val deduplicationTracker: IEventDeduplicationTracker? = null,
     private val filterChainExecutor: FilterChainExecutor? = null,
     private val multiModelScorer: MultiModelScorer? = null
-) : RequestHandler<Map<String, Any>, ReactiveResponse> {
+) : WorkflowLambdaHandler() {
     
-    private val logger = LoggerFactory.getLogger(ReactiveHandler::class.java)
     private val dynamoDbClient = DynamoDbClient.builder().build()
     
     // Initialize filter chain with default filters
@@ -131,11 +133,35 @@ class ReactiveHandler(
     
     private val defaultDeduplicationTracker = EventDeduplicationTracker()
     
-    override fun handleRequest(input: Map<String, Any>, context: Context): ReactiveResponse {
-        val requestId = context.awsRequestId
+    /**
+     * Process input data by handling reactive customer event.
+     * 
+     * Input structure (from EventBridge):
+     * {
+     *   "detail": {
+     *     "customerId": "string",
+     *     "eventType": "string",
+     *     "subjectType": "string",
+     *     "subjectId": "string",
+     *     "programId": "string",
+     *     "marketplace": "string",
+     *     "eventDate": "string",
+     *     "metadata": {...}
+     *   }
+     * }
+     * 
+     * Output structure:
+     * {
+     *   "success": boolean,
+     *   "candidateCreated": boolean,
+     *   "candidateId": "string" (optional),
+     *   "reason": "string" (optional)
+     * }
+     */
+    override fun processData(input: JsonNode): JsonNode {
         val startTime = System.currentTimeMillis()
         
-        logger.info("Starting reactive workflow: requestId={}, input={}", requestId, input)
+        logger.info("Processing reactive workflow: input keys={}", input.fieldNames().asSequence().toList())
         
         try {
             // Parse event from EventBridge
@@ -149,16 +175,11 @@ class ReactiveHandler(
             if (tracker.isDuplicate(event)) {
                 logger.info("Duplicate event detected, skipping: customerId={}, subjectId={}", 
                     event.customerId, event.subjectId)
-                return ReactiveResponse(
-                    success = true,
-                    candidateCreated = false,
-                    reason = "Duplicate event within deduplication window",
-                    executionTimeMs = System.currentTimeMillis() - startTime
-                )
+                return buildResponse(true, false, null, "Duplicate event within deduplication window")
             }
             
             // Create candidate from event
-            val candidate = createCandidateFromEvent(event, requestId)
+            val candidate = createCandidateFromEvent(event)
             
             logger.info("Created candidate: customerId={}, subjectId={}", 
                 candidate.customerId, candidate.subject.id)
@@ -175,12 +196,7 @@ class ReactiveHandler(
                 // Track deduplication even for rejected candidates
                 tracker.track(event)
                 
-                return ReactiveResponse(
-                    success = true,
-                    candidateCreated = false,
-                    reason = "Rejected by filter: ${rejection?.reason}",
-                    executionTimeMs = System.currentTimeMillis() - startTime
-                )
+                return buildResponse(true, false, null, "Rejected by filter: ${rejection?.reason}")
             }
             
             val eligibleCandidate = filterResult.candidate
@@ -210,61 +226,54 @@ class ReactiveHandler(
             // Track deduplication
             tracker.track(event)
             
-            val executionTime = System.currentTimeMillis() - startTime
+            val candidateId = "${scoredCandidate.customerId}:${scoredCandidate.subject.id}"
             
-            logger.info("Reactive workflow completed: customerId={}, subjectId={}, executionTimeMs={}", 
-                scoredCandidate.customerId, scoredCandidate.subject.id, executionTime)
+            logger.info("Reactive workflow completed: customerId={}, subjectId={}", 
+                scoredCandidate.customerId, scoredCandidate.subject.id)
             
-            return ReactiveResponse(
-                success = true,
-                candidateCreated = true,
-                candidateId = "${scoredCandidate.customerId}:${scoredCandidate.subject.id}",
-                executionTimeMs = executionTime
-            )
+            return buildResponse(true, true, candidateId, null)
             
         } catch (e: Exception) {
             logger.error("Reactive workflow failed", e)
-            val executionTime = System.currentTimeMillis() - startTime
-            return ReactiveResponse(
-                success = false,
-                candidateCreated = false,
-                reason = "Error: ${e.message}",
-                executionTimeMs = executionTime
-            )
+            return buildResponse(false, false, null, "Error: ${e.message}")
         }
     }
     
     /**
      * Parse customer event from EventBridge input
      */
-    private fun parseCustomerEvent(input: Map<String, Any>): CustomerEvent {
+    private fun parseCustomerEvent(input: JsonNode): CustomerEvent {
         // EventBridge wraps the event in a detail field
-        val detail = input["detail"] as? Map<String, Any> 
+        val detail = input.get("detail")
             ?: throw IllegalArgumentException("Missing 'detail' field in event")
         
         return CustomerEvent(
-            customerId = detail["customerId"] as? String 
+            customerId = detail.get("customerId")?.asText()
                 ?: throw IllegalArgumentException("Missing customerId"),
-            eventType = detail["eventType"] as? String 
+            eventType = detail.get("eventType")?.asText()
                 ?: throw IllegalArgumentException("Missing eventType"),
-            subjectType = detail["subjectType"] as? String 
+            subjectType = detail.get("subjectType")?.asText()
                 ?: throw IllegalArgumentException("Missing subjectType"),
-            subjectId = detail["subjectId"] as? String 
+            subjectId = detail.get("subjectId")?.asText()
                 ?: throw IllegalArgumentException("Missing subjectId"),
-            programId = detail["programId"] as? String 
+            programId = detail.get("programId")?.asText()
                 ?: throw IllegalArgumentException("Missing programId"),
-            marketplace = detail["marketplace"] as? String 
+            marketplace = detail.get("marketplace")?.asText()
                 ?: throw IllegalArgumentException("Missing marketplace"),
-            eventDate = detail["eventDate"] as? String 
+            eventDate = detail.get("eventDate")?.asText()
                 ?: Instant.now().toString(),
-            metadata = detail["metadata"] as? Map<String, Any> ?: emptyMap()
+            metadata = if (detail.has("metadata")) {
+                objectMapper.convertValue(detail.get("metadata"), Map::class.java) as Map<String, Any>
+            } else {
+                emptyMap()
+            }
         )
     }
     
     /**
      * Create candidate from customer event
      */
-    private fun createCandidateFromEvent(event: CustomerEvent, executionId: String): Candidate {
+    private fun createCandidateFromEvent(event: CustomerEvent): Candidate {
         val now = Instant.now()
         val expiresAt = now.plusSeconds(30 * 24 * 60 * 60) // 30 days TTL
         
@@ -298,10 +307,28 @@ class ReactiveHandler(
                 expiresAt = expiresAt,
                 version = 1L,
                 sourceConnectorId = "reactive-workflow",
-                workflowExecutionId = executionId
+                workflowExecutionId = null
             ),
             rejectionHistory = null
         )
+    }
+    
+    private fun buildResponse(
+        success: Boolean,
+        candidateCreated: Boolean,
+        candidateId: String?,
+        reason: String?
+    ): JsonNode {
+        val output = objectMapper.createObjectNode()
+        output.put("success", success)
+        output.put("candidateCreated", candidateCreated)
+        if (candidateId != null) {
+            output.put("candidateId", candidateId)
+        }
+        if (reason != null) {
+            output.put("reason", reason)
+        }
+        return output
     }
 }
 
@@ -319,13 +346,3 @@ data class CustomerEvent(
     val metadata: Map<String, Any>
 )
 
-/**
- * Response from reactive workflow
- */
-data class ReactiveResponse(
-    val success: Boolean,
-    val candidateCreated: Boolean,
-    val candidateId: String? = null,
-    val reason: String? = null,
-    val executionTimeMs: Long
-)

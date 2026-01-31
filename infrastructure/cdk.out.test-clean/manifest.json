@@ -1,0 +1,558 @@
+{
+  "version": "38.0.1",
+  "artifacts": {
+    "CeapDatabase-dev.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "CeapDatabase-dev.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "CeapDatabase-dev": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://728093470684/us-east-1",
+      "properties": {
+        "templateFile": "CeapDatabase-dev.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "notificationArns": [],
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::728093470684:role/cdk-hnb659fds-deploy-role-728093470684-us-east-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::728093470684:role/cdk-hnb659fds-cfn-exec-role-728093470684-us-east-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-728093470684-us-east-1/ccef36582660a40aa6d106edd3bc182eef78307370a12423bb6d14b7b0750ab6.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "CeapDatabase-dev.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::728093470684:role/cdk-hnb659fds-lookup-role-728093470684-us-east-1",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "CeapDatabase-dev.assets"
+      ],
+      "metadata": {
+        "/CeapDatabase-dev/CandidatesTable": [
+          {
+            "type": "aws:cdk:hasPhysicalName",
+            "data": {
+              "Ref": "CandidatesTableB438AE0C"
+            }
+          }
+        ],
+        "/CeapDatabase-dev/CandidatesTable/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CandidatesTableB438AE0C"
+          }
+        ],
+        "/CeapDatabase-dev/ProgramConfigTable": [
+          {
+            "type": "aws:cdk:hasPhysicalName",
+            "data": {
+              "Ref": "ProgramConfigTableE4B88D2D"
+            }
+          }
+        ],
+        "/CeapDatabase-dev/ProgramConfigTable/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ProgramConfigTableE4B88D2D"
+          }
+        ],
+        "/CeapDatabase-dev/ScoreCacheTable": [
+          {
+            "type": "aws:cdk:hasPhysicalName",
+            "data": {
+              "Ref": "ScoreCacheTable789CCB88"
+            }
+          }
+        ],
+        "/CeapDatabase-dev/ScoreCacheTable/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ScoreCacheTable789CCB88"
+          }
+        ],
+        "/CeapDatabase-dev/CandidatesTableNameOutput": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CandidatesTableNameOutput"
+          }
+        ],
+        "/CeapDatabase-dev/CandidatesTableArnOutput": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CandidatesTableArnOutput"
+          }
+        ],
+        "/CeapDatabase-dev/ProgramConfigTableNameOutput": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ProgramConfigTableNameOutput"
+          }
+        ],
+        "/CeapDatabase-dev/ProgramConfigTableArnOutput": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ProgramConfigTableArnOutput"
+          }
+        ],
+        "/CeapDatabase-dev/ScoreCacheTableNameOutput": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ScoreCacheTableNameOutput"
+          }
+        ],
+        "/CeapDatabase-dev/ScoreCacheTableArnOutput": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ScoreCacheTableArnOutput"
+          }
+        ],
+        "/CeapDatabase-dev/CDKMetadata/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadata"
+          }
+        ],
+        "/CeapDatabase-dev/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/CeapDatabase-dev/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "CeapDatabase-dev"
+    },
+    "CeapDataPlatform-dev.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "CeapDataPlatform-dev.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "CeapDataPlatform-dev": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://728093470684/us-east-1",
+      "properties": {
+        "templateFile": "CeapDataPlatform-dev.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "notificationArns": [],
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::728093470684:role/cdk-hnb659fds-deploy-role-728093470684-us-east-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::728093470684:role/cdk-hnb659fds-cfn-exec-role-728093470684-us-east-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-728093470684-us-east-1/8c9b69208d73c289ccc1d69a9b59b1fadc3cfd0105fb4505b67cb70ef30720f6.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "CeapDataPlatform-dev.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::728093470684:role/cdk-hnb659fds-lookup-role-728093470684-us-east-1",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "CeapDatabase-dev",
+        "CeapDataPlatform-dev.assets"
+      ],
+      "metadata": {
+        "/CeapDataPlatform-dev/DatabaseStackName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DatabaseStackName"
+          }
+        ],
+        "/CeapDataPlatform-dev/ETLLambda/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ETLLambdaServiceRole91516A56"
+          }
+        ],
+        "/CeapDataPlatform-dev/ETLLambda/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ETLLambdaServiceRoleDefaultPolicy450142D6"
+          }
+        ],
+        "/CeapDataPlatform-dev/ETLLambda/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ETLLambdaFunction49DD508A"
+          }
+        ],
+        "/CeapDataPlatform-dev/ETLLambda/LogRetention/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ETLLambdaLogRetentionDDEAEAF3"
+          }
+        ],
+        "/CeapDataPlatform-dev/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB"
+          }
+        ],
+        "/CeapDataPlatform-dev/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB"
+          }
+        ],
+        "/CeapDataPlatform-dev/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A"
+          }
+        ],
+        "/CeapDataPlatform-dev/FilterLambda/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FilterLambdaServiceRoleBE2F350F"
+          }
+        ],
+        "/CeapDataPlatform-dev/FilterLambda/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FilterLambdaServiceRoleDefaultPolicyA5050364"
+          }
+        ],
+        "/CeapDataPlatform-dev/FilterLambda/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FilterLambdaFunction29040EBB"
+          }
+        ],
+        "/CeapDataPlatform-dev/FilterLambda/LogRetention/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FilterLambdaLogRetention06A6DAC7"
+          }
+        ],
+        "/CeapDataPlatform-dev/ScoreLambda/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ScoreLambdaServiceRole4FE6E68C"
+          }
+        ],
+        "/CeapDataPlatform-dev/ScoreLambda/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ScoreLambdaServiceRoleDefaultPolicyB3CC1451"
+          }
+        ],
+        "/CeapDataPlatform-dev/ScoreLambda/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ScoreLambdaFunction04AD330A"
+          }
+        ],
+        "/CeapDataPlatform-dev/ScoreLambda/LogRetention/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ScoreLambdaLogRetention1E7FB3AB"
+          }
+        ],
+        "/CeapDataPlatform-dev/StoreLambda/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StoreLambdaServiceRole2269A608"
+          }
+        ],
+        "/CeapDataPlatform-dev/StoreLambda/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StoreLambdaServiceRoleDefaultPolicy8D0625A8"
+          }
+        ],
+        "/CeapDataPlatform-dev/StoreLambda/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StoreLambdaFunction7FC1576D"
+          }
+        ],
+        "/CeapDataPlatform-dev/StoreLambda/LogRetention/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StoreLambdaLogRetention696988F1"
+          }
+        ],
+        "/CeapDataPlatform-dev/BatchIngestionWorkflow/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BatchIngestionWorkflowRole795419FF"
+          }
+        ],
+        "/CeapDataPlatform-dev/BatchIngestionWorkflow/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BatchIngestionWorkflowRoleDefaultPolicy303960A8"
+          }
+        ],
+        "/CeapDataPlatform-dev/BatchIngestionWorkflow/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BatchIngestionWorkflow10186577"
+          }
+        ],
+        "/CeapDataPlatform-dev/BatchIngestionWorkflow/EventsRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BatchIngestionWorkflowEventsRole60B03235"
+          }
+        ],
+        "/CeapDataPlatform-dev/BatchIngestionWorkflow/EventsRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BatchIngestionWorkflowEventsRoleDefaultPolicy4877400A"
+          }
+        ],
+        "/CeapDataPlatform-dev/BatchIngestionSchedule/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BatchIngestionSchedule3D278ACF"
+          }
+        ],
+        "/CeapDataPlatform-dev/BatchIngestionWorkflowArnOutput": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BatchIngestionWorkflowArnOutput"
+          }
+        ],
+        "/CeapDataPlatform-dev/BatchIngestionWorkflowNameOutput": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BatchIngestionWorkflowNameOutput"
+          }
+        ],
+        "/CeapDataPlatform-dev/ETLLambdaArnOutput": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ETLLambdaArnOutput"
+          }
+        ],
+        "/CeapDataPlatform-dev/FilterLambdaArnOutput": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FilterLambdaArnOutput"
+          }
+        ],
+        "/CeapDataPlatform-dev/ScoreLambdaArnOutput": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ScoreLambdaArnOutput"
+          }
+        ],
+        "/CeapDataPlatform-dev/StoreLambdaArnOutput": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StoreLambdaArnOutput"
+          }
+        ],
+        "/CeapDataPlatform-dev/CDKMetadata/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadata"
+          }
+        ],
+        "/CeapDataPlatform-dev/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/CeapDataPlatform-dev/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "CeapDataPlatform-dev"
+    },
+    "CeapServingAPI-dev.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "CeapServingAPI-dev.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "CeapServingAPI-dev": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://728093470684/us-east-1",
+      "properties": {
+        "templateFile": "CeapServingAPI-dev.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "notificationArns": [],
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::728093470684:role/cdk-hnb659fds-deploy-role-728093470684-us-east-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::728093470684:role/cdk-hnb659fds-cfn-exec-role-728093470684-us-east-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-728093470684-us-east-1/091f11bb54c48e4a6df127070de9f5579f4533485e92ce7c69bbca6d5724cd45.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "CeapServingAPI-dev.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::728093470684:role/cdk-hnb659fds-lookup-role-728093470684-us-east-1",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "CeapDatabase-dev",
+        "CeapServingAPI-dev.assets"
+      ],
+      "metadata": {
+        "/CeapServingAPI-dev/DatabaseStackName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DatabaseStackName"
+          }
+        ],
+        "/CeapServingAPI-dev/DataPlatformStackName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DataPlatformStackName"
+          }
+        ],
+        "/CeapServingAPI-dev/DeduplicationTable": [
+          {
+            "type": "aws:cdk:hasPhysicalName",
+            "data": {
+              "Ref": "DeduplicationTableAD30DFB7"
+            }
+          }
+        ],
+        "/CeapServingAPI-dev/DeduplicationTable/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeduplicationTableAD30DFB7"
+          }
+        ],
+        "/CeapServingAPI-dev/ReactiveLambda/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ReactiveLambdaServiceRole9270F6F2"
+          }
+        ],
+        "/CeapServingAPI-dev/ReactiveLambda/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ReactiveLambdaServiceRoleDefaultPolicyFBE00476"
+          }
+        ],
+        "/CeapServingAPI-dev/ReactiveLambda/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ReactiveLambdaFunction89310B25"
+          }
+        ],
+        "/CeapServingAPI-dev/ReactiveLambda/LogRetention/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ReactiveLambdaLogRetentionD23EA20B"
+          }
+        ],
+        "/CeapServingAPI-dev/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB"
+          }
+        ],
+        "/CeapServingAPI-dev/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB"
+          }
+        ],
+        "/CeapServingAPI-dev/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A"
+          }
+        ],
+        "/CeapServingAPI-dev/CustomerEventRule/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomerEventRuleC528982C"
+          }
+        ],
+        "/CeapServingAPI-dev/CustomerEventRule/AllowEventRuleCeapServingAPIdevReactiveLambda68523DC5": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomerEventRuleAllowEventRuleCeapServingAPIdevReactiveLambda68523DC59DCAB655"
+          }
+        ],
+        "/CeapServingAPI-dev/ReactiveLambdaArnOutput": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ReactiveLambdaArnOutput"
+          }
+        ],
+        "/CeapServingAPI-dev/ReactiveLambdaNameOutput": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ReactiveLambdaNameOutput"
+          }
+        ],
+        "/CeapServingAPI-dev/CustomerEventRuleArnOutput": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomerEventRuleArnOutput"
+          }
+        ],
+        "/CeapServingAPI-dev/DeduplicationTableNameOutput": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeduplicationTableNameOutput"
+          }
+        ],
+        "/CeapServingAPI-dev/DeduplicationTableArnOutput": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeduplicationTableArnOutput"
+          }
+        ],
+        "/CeapServingAPI-dev/CDKMetadata/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadata"
+          }
+        ],
+        "/CeapServingAPI-dev/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/CeapServingAPI-dev/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "CeapServingAPI-dev"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

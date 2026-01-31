@@ -1,19 +1,15 @@
 package com.ceap.workflow.filter
 
-import com.amazonaws.services.lambda.runtime.Context
-import com.amazonaws.services.lambda.runtime.RequestHandler
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.node.ArrayNode
+import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.ceap.filters.*
 import com.ceap.model.Candidate
-import com.ceap.model.RejectionRecord
 import com.ceap.model.config.FilterChainConfig
 import com.ceap.model.config.FilterConfig
+import com.ceap.workflow.common.WorkflowLambdaHandler
 import com.ceap.workflow.common.WorkflowMetricsPublisher
-import org.slf4j.LoggerFactory
-import java.time.Instant
 
 /**
  * Lambda handler for Filter stage of batch ingestion workflow.
@@ -24,12 +20,13 @@ import java.time.Instant
  * - Pass eligible candidates to next stage
  * - Publish filter metrics
  * 
- * Validates: Requirements 4.1, 4.2, 8.1
+ * Extends WorkflowLambdaHandler to leverage S3-based orchestration pattern.
+ * S3 I/O is handled by base class - this class focuses on filtering business logic.
+ * 
+ * Validates: Requirements 3.3, 3.4, 3.5, 4.1, 4.2, 8.1
  */
-class FilterHandler : RequestHandler<Map<String, Any>, FilterResponse> {
+class FilterHandler : WorkflowLambdaHandler() {
     
-    private val logger = LoggerFactory.getLogger(FilterHandler::class.java)
-    private val objectMapper: ObjectMapper = jacksonObjectMapper()
     private val metricsPublisher = WorkflowMetricsPublisher()
     
     // Create default filter chain with all filters
@@ -77,132 +74,141 @@ class FilterHandler : RequestHandler<Map<String, Any>, FilterResponse> {
         return FilterChainExecutor(filters, config)
     }
     
-    override fun handleRequest(input: Map<String, Any>, context: Context): FilterResponse {
-        val requestId = context.awsRequestId
-        val startTime = System.currentTimeMillis()
+    /**
+     * Process input data by executing filter chain on candidates.
+     * 
+     * Input structure (from previous ETL stage):
+     * {
+     *   "candidates": [...],
+     *   "metrics": {...},
+     *   "programId": "string",
+     *   "marketplace": "string"
+     * }
+     * 
+     * Output structure (for next stage):
+     * {
+     *   "candidates": [...],  // Only passed candidates
+     *   "rejectedCandidates": [...],
+     *   "metrics": {...},
+     *   "programId": "string",
+     *   "marketplace": "string"
+     * }
+     */
+    override fun processData(input: JsonNode): JsonNode {
+        logger.info("Processing Filter stage: input keys={}", input.fieldNames().asSequence().toList())
         
-        try {
-            // Manually deserialize input to FilterInput
-            val filterInput = objectMapper.convertValue(input, FilterInput::class.java)
+        // Extract data from input
+        val candidatesNode = input.get("candidates")
+            ?: throw IllegalArgumentException("candidates is required")
+        val programId = input.get("programId")?.asText()
+            ?: throw IllegalArgumentException("programId is required")
+        val marketplace = input.get("marketplace")?.asText()
+            ?: throw IllegalArgumentException("marketplace is required")
+        
+        // Deserialize candidates
+        val candidates: List<Candidate> = objectMapper.readValue(candidatesNode.toString())
+        
+        logger.info("Starting Filter stage: candidateCount={}, programId={}", 
+            candidates.size, programId)
+        
+        if (candidates.isEmpty()) {
+            logger.info("No candidates to filter")
+            return buildEmptyOutput(programId, marketplace)
+        }
+        
+        logger.info("Executing filter chain: candidateCount={}", candidates.size)
+        
+        // Create filter chain executor
+        val filterChainExecutor = createFilterChainExecutor()
+        
+        // Execute filter chain on each candidate
+        val passedCandidates = mutableListOf<Candidate>()
+        val rejectedCandidates = mutableListOf<RejectedCandidateInfo>()
+        val rejectionReasons = mutableMapOf<String, Int>()
+        
+        for (candidate in candidates) {
+            val result = filterChainExecutor.execute(candidate)
             
-            logger.info("Starting Filter stage: requestId={}, candidateCount={}, programId={}", 
-                requestId, filterInput.candidates.size, filterInput.programId)
-            
-            val candidates = filterInput.candidates
-            val programId = filterInput.programId
-            val marketplace = filterInput.marketplace
-            val executionId = filterInput.executionId
-            
-            if (candidates.isEmpty()) {
-                logger.info("No candidates to filter")
-                return FilterResponse(
-                    candidates = emptyList(),
-                    rejectedCandidates = emptyList(),
-                    metrics = FilterMetrics(
-                        inputCount = 0,
-                        passedCount = 0,
-                        rejectedCount = 0,
-                        rejectionReasons = emptyMap()
-                    ),
-                    programId = programId,
-                    marketplace = marketplace,
-                    executionId = executionId
-                )
-            }
-            
-            logger.info("Executing filter chain: candidateCount={}", candidates.size)
-            
-            // Create filter chain executor
-            val filterChainExecutor = createFilterChainExecutor()
-            
-            // Execute filter chain on each candidate
-            val passedCandidates = mutableListOf<Candidate>()
-            val rejectedCandidates = mutableListOf<RejectedCandidateInfo>()
-            val rejectionReasons = mutableMapOf<String, Int>()
-            
-            for (candidate in candidates) {
-                val result = filterChainExecutor.execute(candidate)
-                
-                if (result.passed) {
-                    passedCandidates.add(result.candidate)
-                } else {
-                    // Track rejection reasons
-                    for (rejection in result.rejectionHistory) {
-                        val reasonCode = rejection.reasonCode
-                        rejectionReasons[reasonCode] = rejectionReasons.getOrDefault(reasonCode, 0) + 1
-                        
-                        rejectedCandidates.add(
-                            RejectedCandidateInfo(
-                                customerId = candidate.customerId,
-                                subjectId = candidate.subject.id,
-                                filterId = rejection.filterId,
-                                reason = rejection.reason,
-                                reasonCode = rejection.reasonCode
-                            )
+            if (result.passed) {
+                passedCandidates.add(result.candidate)
+            } else {
+                // Track rejection reasons
+                for (rejection in result.rejectionHistory) {
+                    val reasonCode = rejection.reasonCode
+                    rejectionReasons[reasonCode] = rejectionReasons.getOrDefault(reasonCode, 0) + 1
+                    
+                    rejectedCandidates.add(
+                        RejectedCandidateInfo(
+                            customerId = candidate.customerId,
+                            subjectId = candidate.subject.id,
+                            filterId = rejection.filterId,
+                            reason = rejection.reason,
+                            reasonCode = rejection.reasonCode
                         )
-                    }
+                    )
                 }
             }
-            
-            logger.info("Filter chain completed: inputCount={}, passedCount={}, rejectedCount={}, rejectionReasons={}", 
-                candidates.size, passedCandidates.size, rejectedCandidates.size, rejectionReasons)
-            
-            // Publish metrics
-            val duration = System.currentTimeMillis() - startTime
-            metricsPublisher.publishFilterMetrics(
-                programId = programId,
-                marketplace = marketplace,
-                inputCount = candidates.size,
-                passedCount = passedCandidates.size,
-                rejectedCount = rejectedCandidates.size,
-                rejectionReasons = rejectionReasons,
-                durationMs = duration
-            )
-            
-            // Return response with passed candidates and metrics
-            return FilterResponse(
-                candidates = passedCandidates,
-                rejectedCandidates = rejectedCandidates,
-                metrics = FilterMetrics(
-                    inputCount = candidates.size,
-                    passedCount = passedCandidates.size,
-                    rejectedCount = rejectedCandidates.size,
-                    rejectionReasons = rejectionReasons
-                ),
-                programId = programId,
-                marketplace = marketplace,
-                executionId = executionId
-            )
-            
-        } catch (e: Exception) {
-            logger.error("Filter stage failed", e)
-            throw RuntimeException("Filter stage failed: ${e.message}", e)
         }
+        
+        logger.info("Filter chain completed: inputCount={}, passedCount={}, rejectedCount={}, rejectionReasons={}", 
+            candidates.size, passedCandidates.size, rejectedCandidates.size, rejectionReasons)
+        
+        // Publish metrics
+        metricsPublisher.publishFilterMetrics(
+            programId = programId,
+            marketplace = marketplace,
+            inputCount = candidates.size,
+            passedCount = passedCandidates.size,
+            rejectedCount = rejectedCandidates.size,
+            rejectionReasons = rejectionReasons,
+            durationMs = 0 // Duration tracked by base handler
+        )
+        
+        // Build output JSON for next stage
+        return buildOutput(passedCandidates, rejectedCandidates, candidates.size, 
+            passedCandidates.size, rejectedCandidates.size, rejectionReasons, 
+            programId, marketplace)
+    }
+    
+    private fun buildEmptyOutput(programId: String, marketplace: String): JsonNode {
+        val output = objectMapper.createObjectNode()
+        output.set<ArrayNode>("candidates", objectMapper.createArrayNode())
+        output.set<ArrayNode>("rejectedCandidates", objectMapper.createArrayNode())
+        output.set<ObjectNode>("metrics", objectMapper.createObjectNode().apply {
+            put("inputCount", 0)
+            put("passedCount", 0)
+            put("rejectedCount", 0)
+            set<ObjectNode>("rejectionReasons", objectMapper.createObjectNode())
+        })
+        output.put("programId", programId)
+        output.put("marketplace", marketplace)
+        return output
+    }
+    
+    private fun buildOutput(
+        passedCandidates: List<Candidate>,
+        rejectedCandidates: List<RejectedCandidateInfo>,
+        inputCount: Int,
+        passedCount: Int,
+        rejectedCount: Int,
+        rejectionReasons: Map<String, Int>,
+        programId: String,
+        marketplace: String
+    ): JsonNode {
+        val output = objectMapper.createObjectNode()
+        output.set<ArrayNode>("candidates", objectMapper.valueToTree(passedCandidates))
+        output.set<ArrayNode>("rejectedCandidates", objectMapper.valueToTree(rejectedCandidates))
+        output.set<ObjectNode>("metrics", objectMapper.createObjectNode().apply {
+            put("inputCount", inputCount)
+            put("passedCount", passedCount)
+            put("rejectedCount", rejectedCount)
+            set<ObjectNode>("rejectionReasons", objectMapper.valueToTree(rejectionReasons))
+        })
+        output.put("programId", programId)
+        output.put("marketplace", marketplace)
+        return output
     }
 }
-
-/**
- * Input to Filter stage
- */
-@JsonIgnoreProperties(ignoreUnknown = true)
-data class FilterInput(
-    val candidates: List<Candidate>,
-    val programId: String,
-    val marketplace: String,
-    val executionId: String
-)
-
-/**
- * Response from Filter stage
- */
-data class FilterResponse(
-    val candidates: List<Candidate>,
-    val rejectedCandidates: List<RejectedCandidateInfo>,
-    val metrics: FilterMetrics,
-    val programId: String,
-    val marketplace: String,
-    val executionId: String
-)
 
 /**
  * Information about a rejected candidate
@@ -215,12 +221,3 @@ data class RejectedCandidateInfo(
     val reasonCode: String
 )
 
-/**
- * Metrics from Filter stage
- */
-data class FilterMetrics(
-    val inputCount: Int,
-    val passedCount: Int,
-    val rejectedCount: Int,
-    val rejectionReasons: Map<String, Int>
-)
