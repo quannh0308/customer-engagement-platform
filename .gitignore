@@ -89,8 +89,10 @@ samconfig.toml
 
 # CDK
 cdk.out/
+cdk.out.consolidated/
 *.assets.json
 *.template.json
+*.lock
 
 # jqwik property-based testing
 .jqwik-database
