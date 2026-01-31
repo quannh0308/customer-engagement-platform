@@ -105,33 +105,33 @@ This plan consolidates the CEAP platform from 7 CloudFormation stacks to 3 stack
 - [x] 4. Checkpoint - Ensure all validation tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 5. Create migration and deployment scripts
-  - [ ] 5.1 Create deployment script for 3-stack architecture
+- [x] 5. Create migration and deployment scripts
+  - [x] 5.1 Create deployment script for 3-stack architecture
     - Script to deploy CeapDatabase-dev first
     - Script to deploy CeapDataPlatform-dev and CeapServingAPI-dev in parallel
     - Add parameter passing for cross-stack references
     - Add deployment status monitoring
     - _Requirements: 7.3, 7.4_
   
-  - [ ] 5.2 Create resource validation script
+  - [x] 5.2 Create resource validation script
     - Script to compare resources between old and new stacks
     - Generate detailed resource inventory reports
     - Validate resource counts match
     - Validate resource configurations match
     - _Requirements: 5.3_
   
-  - [ ] 5.3 Create rollback script
+  - [x] 5.3 Create rollback script
     - Script to redeploy original 7-stack configuration
     - Add validation checks before rollback
     - Add rollback status monitoring
     - Document rollback procedure
     - _Requirements: 5.1, 5.5_
   
-  - [ ] 5.4 Write property test for resource validation before cleanup
+  - [x] 5.4 Write property test for resource validation before cleanup
     - **Property 5: Resource Validation Before Cleanup**
     - **Validates: Requirements 5.3**
   
-  - [ ] 5.5 Write unit tests for migration scripts
+  - [x] 5.5 Write unit tests for migration scripts
     - Test deployment script logic
     - Test validation script logic
     - Test rollback script logic

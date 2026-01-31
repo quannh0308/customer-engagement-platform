@@ -513,9 +513,7 @@
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                   "aws:cdk:cloudformation:props": {
                     "code": {
-                      "s3Bucket": {
-                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
-                      },
+                      "s3Bucket": "cdk-hnb659fds-assets-728093470684-us-east-1",
                       "s3Key": "2f4c98af7b60497c86202ca2fa41046dee9ff8264ed8f236ac9e0cd77d82293e.jar"
                     },
                     "environment": {
@@ -891,9 +889,7 @@
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                   "aws:cdk:cloudformation:props": {
                     "code": {
-                      "s3Bucket": {
-                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
-                      },
+                      "s3Bucket": "cdk-hnb659fds-assets-728093470684-us-east-1",
                       "s3Key": "d54789a66a620c03b2df2fa8e16caa93c4fe99a665917fe1f8f27a40efc9f42c.jar"
                     },
                     "environment": {
@@ -1113,9 +1109,7 @@
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                   "aws:cdk:cloudformation:props": {
                     "code": {
-                      "s3Bucket": {
-                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
-                      },
+                      "s3Bucket": "cdk-hnb659fds-assets-728093470684-us-east-1",
                       "s3Key": "2175cc88ab14e5ffd5c9a3fbabed5bab38ad379eb22fcbc33579ec1440920983.jar"
                     },
                     "environment": {
@@ -1335,9 +1329,7 @@
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                   "aws:cdk:cloudformation:props": {
                     "code": {
-                      "s3Bucket": {
-                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
-                      },
+                      "s3Bucket": "cdk-hnb659fds-assets-728093470684-us-east-1",
                       "s3Key": "bb320b92510c530b64fa26037583696fd02f4c563bd3ea3c49019138038f2b82.jar"
                     },
                     "environment": {
@@ -2191,9 +2183,7 @@
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                   "aws:cdk:cloudformation:props": {
                     "code": {
-                      "s3Bucket": {
-                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
-                      },
+                      "s3Bucket": "cdk-hnb659fds-assets-728093470684-us-east-1",
                       "s3Key": "5e0faddfed91d810a48d95dc63213bb2b64bc07f7d764340772ab0d9459f980d.jar"
                     },
                     "environment": {
