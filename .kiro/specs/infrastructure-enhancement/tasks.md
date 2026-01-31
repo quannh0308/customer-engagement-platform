@@ -191,7 +191,7 @@ Each task builds on previous work, with checkpoints to validate progress. The im
 - [x] 7. Checkpoint - Validate Express workflow
   - Ensure all tests pass, ask the user if questions arise.
 
-- [-] 8. Implement Standard workflow CDK infrastructure
+- [x] 8. Implement Standard workflow CDK infrastructure
   - [x] 8.1 Implement createStandardWorkflow function
     - Support mixing Lambda and Glue steps
     - Create Lambda invoke tasks with execution context
@@ -234,19 +234,19 @@ Each task builds on previous work, with checkpoints to validate progress. The im
     - Test EventBridge failure detection rule
     - _Requirements: 12.4_
 
-- [-] 8.9 Git commit and push Task 8 changes
+- [x] 8.9 Git commit and push Task 8 changes
   - Commit message: "feat: implement Standard workflow CDK infrastructure"
   - Push to remote repository
 
-- [~] 9. Implement Glue job integration
-  - [ ] 9.1 Create Glue job PySpark script template
+- [-] 9. Implement Glue job integration
+  - [x] 9.1 Create Glue job PySpark script template
     - Read arguments from Step Functions (execution-id, input/output paths)
     - Read input from S3 using input-bucket and input-key
     - Implement ETL transformation logic
     - Write output to S3 using output-bucket and output-key
     - _Requirements: 5.6, 7.3, 7.4_
   
-  - [ ] 9.2 Configure Glue job in CDK
+  - [x] 9.2 Configure Glue job in CDK
     - Define Glue job with script location
     - Configure DPUs and timeout
     - Grant S3 permissions to Glue job role
@@ -268,7 +268,7 @@ Each task builds on previous work, with checkpoints to validate progress. The im
     - **Property 28: Glue Job Positioning Flexibility**
     - **Validates: Requirements 7.1**
 
-- [ ] 9.7 Git commit and push Task 9 changes
+- [-] 9.7 Git commit and push Task 9 changes
   - Commit message: "feat: implement Glue job integration"
   - Push to remote repository
 

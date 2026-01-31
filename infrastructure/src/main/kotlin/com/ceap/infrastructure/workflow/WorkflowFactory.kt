@@ -1,5 +1,7 @@
 package com.ceap.infrastructure.workflow
 
+import com.ceap.infrastructure.constructs.CeapGlueJob
+import com.ceap.infrastructure.constructs.GlueJobConfiguration
 import software.amazon.awscdk.Duration
 import software.amazon.awscdk.services.events.Rule
 import software.amazon.awscdk.services.events.EventPattern
@@ -451,5 +453,73 @@ object WorkflowFactory {
                 .build())
             .desiredState("RUNNING")  // Start the pipe immediately
             .build()
+    }
+    
+    /**
+     * Creates a Glue job for use in Standard workflows.
+     * 
+     * This is a convenience method that wraps the CeapGlueJob construct
+     * with sensible defaults for workflow integration.
+     * 
+     * The created Glue job:
+     * - Follows the same S3 path convention as Lambda functions
+     * - Receives execution context from Step Functions
+     * - Reads input from previous stage's S3 output
+     * - Writes output to its own S3 path
+     * 
+     * Example Usage:
+     * ```kotlin
+     * val glueJob = WorkflowFactory.createGlueJob(
+     *     scope = this,
+     *     id = "HeavyETLJob",
+     *     jobName = "ceap-heavy-etl-job",
+     *     scriptLocation = "s3://my-scripts-bucket/workflow_etl_template.py",
+     *     workflowBucket = workflowBucket,
+     *     numberOfWorkers = 10,
+     *     timeout = 240
+     * )
+     * ```
+     * 
+     * @param scope CDK construct scope
+     * @param id Construct ID
+     * @param jobName Name of the Glue job
+     * @param scriptLocation S3 location of the PySpark script
+     * @param workflowBucket S3 bucket for workflow intermediate storage
+     * @param glueVersion Glue version (default: "4.0")
+     * @param workerType Worker type (default: "G.1X")
+     * @param numberOfWorkers Number of workers (default: 2)
+     * @param timeout Job timeout in minutes (default: 120)
+     * @param description Job description
+     * @return Created CeapGlueJob construct
+     * 
+     * Validates: Requirement 7.1, 11.2
+     */
+    fun createGlueJob(
+        scope: Construct,
+        id: String,
+        jobName: String,
+        scriptLocation: String,
+        workflowBucket: software.amazon.awscdk.services.s3.IBucket,
+        glueVersion: String = "4.0",
+        workerType: String = "G.1X",
+        numberOfWorkers: Int = 2,
+        timeout: Int = 120,
+        description: String = "CEAP workflow Glue job for ETL processing"
+    ): CeapGlueJob {
+        return CeapGlueJob(
+            scope = scope,
+            id = id,
+            config = GlueJobConfiguration(
+                jobName = jobName,
+                scriptLocation = scriptLocation,
+                workflowBucket = workflowBucket,
+                glueVersion = glueVersion,
+                workerType = workerType,
+                numberOfWorkers = numberOfWorkers,
+                maxRetries = 0,  // Retries handled by Step Functions
+                timeout = timeout,
+                description = description
+            )
+        )
     }
 }
