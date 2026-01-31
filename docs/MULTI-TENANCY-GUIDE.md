@@ -73,18 +73,22 @@ Your AWS Account (794039325997)
 
 **Architecture**:
 ```
-Your AWS Account (794039325997)
+Your AWS Account
 ├── Client A Environment
 │   ├── CeapDatabase-client-a
-│   ├── CeapEtlWorkflow-client-a
-│   └── All stacks with "-client-a" suffix
+│   ├── CeapDataPlatform-client-a
+│   ├── CeapServingAPI-client-a
+│   └── 3 stacks with "-client-a" suffix
 ├── Client B Environment
 │   ├── CeapDatabase-client-b
-│   ├── CeapEtlWorkflow-client-b
-│   └── All stacks with "-client-b" suffix
+│   ├── CeapDataPlatform-client-b
+│   ├── CeapServingAPI-client-b
+│   └── 3 stacks with "-client-b" suffix
 └── Client C Environment
     ├── CeapDatabase-client-c
-    └── All stacks with "-client-c" suffix
+    ├── CeapDataPlatform-client-c
+    ├── CeapServingAPI-client-c
+    └── 3 stacks with "-client-c" suffix
 ```
 
 **Pros**:
@@ -98,7 +102,7 @@ Your AWS Account (794039325997)
 - ❌ **Higher cost** - Duplicate infrastructure per client
 - ❌ **More complex management** - Multiple deployments
 - ❌ **Slower updates** - Must deploy to each environment
-- ❌ **Resource limits** - AWS account limits apply (e.g., 200 CloudFormation stacks)
+- ❌ **Resource limits** - AWS account limits apply (e.g., 600 CloudFormation stacks = 200 clients with 3 stacks each)
 
 **Best For**:
 - Medium-sized clients (5-20 clients)
@@ -181,7 +185,7 @@ cdk deploy --all --context environment=prod
 
 ### Medium Clients ($10K-$100K/year)
 **Use**: Option 2 (Environment-level isolation)
-- Each client gets dedicated stacks in your account
+- Each client gets 3 dedicated stacks in your account
 - Better isolation and performance guarantees
 - Charge flat fee + usage
 
@@ -324,7 +328,7 @@ cdk deploy --all --context environment=$CLIENT_ENV
 
 ### Phase 3: Offer Environment Isolation (Option 2)
 - For clients willing to pay premium
-- Deploy dedicated stacks per client
+- Deploy 3 dedicated stacks per client
 - Charge higher tier pricing
 
 ### Phase 4: Enterprise Accounts (Option 3)
@@ -524,7 +528,7 @@ Tier 1: Standard ($100/month)
 
 Tier 2: Premium ($500/month)
 └── Option 2: Environment-level isolation
-    └── Dedicated stacks in your account
+    └── 3 dedicated stacks in your account
 
 Tier 3: Enterprise ($2,000/month + AWS costs)
 └── Option 3: Multi-account deployment

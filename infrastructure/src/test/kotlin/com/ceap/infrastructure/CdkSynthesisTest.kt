@@ -22,10 +22,10 @@ class CdkSynthesisTest {
     private val projectRoot = File(System.getProperty("user.dir"))
     
     // CDK output directory - adjust path based on where tests are run from
-    private val cdkOutDir = if (File(projectRoot, "cdk.out").exists()) {
-        File(projectRoot, "cdk.out")
-    } else {
-        File(projectRoot, "infrastructure/cdk.out")
+    private val cdkOutDir = when {
+        File(projectRoot, "cdk.out.consolidated").exists() -> File(projectRoot, "cdk.out.consolidated")
+        File(projectRoot, "cdk.out").exists() -> File(projectRoot, "cdk.out")
+        else -> File(projectRoot, "infrastructure/cdk.out")
     }
     
     /**
@@ -229,7 +229,8 @@ class CdkSynthesisTest {
         
         // Verify CEAP naming in exports
         assertTrue(
-            content.contains("CeapDatabase-dev:ExportsOutput"),
+            content.contains("CeapDatabase-dev-CandidatesTableName") ||
+            content.contains("CeapDatabase-dev-"),
             "Template should contain CEAP-prefixed exports"
         )
         

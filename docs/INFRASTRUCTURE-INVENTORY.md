@@ -1,102 +1,78 @@
 # Infrastructure Inventory - CEAP Platform
 
-**Last Updated**: January 27, 2026  
+**Last Updated**: January 31, 2026  
 **Environment**: dev  
-**AWS Account**: 794039325997  
+**Architecture**: Consolidated 3-Stack  
 **Region**: us-east-1
 
 ---
 
 ## Overview
 
-This document provides a complete inventory of all AWS resources deployed by the CEAP platform.
+This document provides a complete inventory of all AWS resources deployed by the CEAP platform using the consolidated 3-stack architecture.
+
+**Architecture Change**: Migrated from 7-stack to 3-stack architecture on January 31, 2026 for improved manageability and business alignment.
 
 ---
 
-## CloudFormation Stacks (7 Total)
+## CloudFormation Stacks (3 Total)
 
-### 1. CeapDatabase-dev
+### 1. CeapDatabase-dev (Storage Layer)
 **Purpose**: DynamoDB tables for data storage  
+**Business Capability**: Shared data foundation  
 **Resources**:
-- 3 DynamoDB tables
-- IAM roles for table access
-- CloudWatch alarms
+- 3 DynamoDB tables (Candidates, ProgramConfig, ScoreCache)
+- 6 CloudFormation exports for cross-stack references
 
-**Dependencies**: None (base stack)
+**Dependencies**: None (base stack)  
+**Deployment Time**: ~2-3 minutes
 
 ---
 
-### 2. CeapEtlWorkflow-dev
-**Purpose**: ETL (Extract, Transform, Load) workflow  
+### 2. CeapDataPlatform-dev (Write Path)
+**Purpose**: Data ingestion, transformation, scoring, and storage  
+**Business Capability**: B-2 (Building Datasets)  
 **Resources**:
-- 1 Lambda function (ETL)
-- IAM role with DynamoDB permissions
-- CloudWatch log group
-- Log retention policy
+- 4 Lambda functions (ETL, Filter, Score, Store)
+- 1 Step Functions state machine (BatchIngestionWorkflow)
+- 1 EventBridge rule (BatchIngestionSchedule)
+- 7 IAM roles
+- 4 CloudWatch log groups
 
-**Dependencies**: CeapDatabase-dev
+**Dependencies**: CeapDatabase-dev  
+**Deployment Time**: ~2-3 minutes  
+**Consolidated From**: CeapEtlWorkflow-dev, CeapFilterWorkflow-dev, CeapScoreWorkflow-dev, CeapStoreWorkflow-dev, CeapOrchestration-dev
 
 ---
 
-### 3. CeapFilterWorkflow-dev
-**Purpose**: Candidate filtering workflow  
-**Resources**:
-- 1 Lambda function (Filter)
-- IAM role with DynamoDB permissions
-- CloudWatch log group
-- Log retention policy
-
-**Dependencies**: CeapDatabase-dev
-
----
-
-### 4. CeapScoreWorkflow-dev
-**Purpose**: ML scoring workflow  
-**Resources**:
-- 1 Lambda function (Score)
-- IAM role with DynamoDB permissions
-- CloudWatch log group
-- Log retention policy
-
-**Dependencies**: CeapDatabase-dev
-
----
-
-### 5. CeapStoreWorkflow-dev
-**Purpose**: Batch storage workflow  
-**Resources**:
-- 1 Lambda function (Store)
-- IAM role with DynamoDB permissions
-- CloudWatch log group
-- Log retention policy
-
-**Dependencies**: CeapDatabase-dev
-
----
-
-### 6. CeapReactiveWorkflow-dev
-**Purpose**: Real-time event processing  
+### 3. CeapServingAPI-dev (Read Path)
+**Purpose**: Real-time event processing and serving  
+**Business Capability**: B-3 (Low-Latency Retrieval)  
 **Resources**:
 - 1 Lambda function (Reactive)
 - 1 DynamoDB table (event deduplication)
 - 1 EventBridge rule (customer events)
-- IAM role with DynamoDB permissions
-- CloudWatch log group
-- Log retention policy
+- 2 IAM roles
+- 1 CloudWatch log group
 
-**Dependencies**: CeapDatabase-dev
+**Dependencies**: CeapDatabase-dev  
+**Deployment Time**: ~2 minutes  
+**Consolidated From**: CeapReactiveWorkflow-dev
 
 ---
 
-### 7. CeapOrchestration-dev
-**Purpose**: Workflow orchestration  
-**Resources**:
-- 1 Step Functions state machine
-- 1 EventBridge rule (batch schedule)
-- IAM roles for Step Functions
-- IAM roles for EventBridge
+## Stack Dependency Graph
 
-**Dependencies**: All workflow stacks
+```
+CeapDatabase-dev (Storage Layer)
+       ↓                    ↓
+CeapDataPlatform-dev    CeapServingAPI-dev
+   (Write Path)            (Read Path)
+```
+
+**Deployment Order**:
+1. CeapDatabase-dev (must deploy first)
+2. CeapDataPlatform-dev and CeapServingAPI-dev (can deploy in parallel)
 
 ---
 
@@ -163,7 +139,8 @@ This document provides a complete inventory of all AWS resources deployed by the
 ## Lambda Functions (5 Total)
 
 ### 1. ETL Lambda
-**Full Name**: `CeapEtlWorkflow-dev-ETLLambdaFunction49DD508A-*`  
+**Full Name**: `CeapDataPlatform-dev-ETLLambdaFunction49DD508A-*`  
+**Stack**: CeapDataPlatform-dev  
 **Handler**: `com.ceap.workflow.etl.ETLHandler::handleRequest`  
 **Runtime**: Java 17  
 **Memory**: 1024 MB  
@@ -184,7 +161,8 @@ This document provides a complete inventory of all AWS resources deployed by the
 ---
 
 ### 2. Filter Lambda
-**Full Name**: `CeapFilterWorkflow-dev-FilterLambdaFunction29040EB-*`  
+**Full Name**: `CeapDataPlatform-dev-FilterLambdaFunction29040EBB-*`  
+**Stack**: CeapDataPlatform-dev  
 **Handler**: `com.ceap.workflow.filter.FilterHandler::handleRequest`  
 **Runtime**: Java 17  
 **Memory**: 512 MB  
@@ -203,7 +181,8 @@ This document provides a complete inventory of all AWS resources deployed by the
 ---
 
 ### 3. Score Lambda
-**Full Name**: `CeapScoreWorkflow-dev-ScoreLambdaFunction04AD330A-*`  
+**Full Name**: `CeapDataPlatform-dev-ScoreLambdaFunction04AD330A-*`  
+**Stack**: CeapDataPlatform-dev  
 **Handler**: `com.ceap.workflow.score.ScoreHandler::handleRequest`  
 **Runtime**: Java 17  
 **Memory**: 1024 MB  
@@ -223,7 +202,8 @@ This document provides a complete inventory of all AWS resources deployed by the
 ---
 
 ### 4. Store Lambda
-**Full Name**: `CeapStoreWorkflow-dev-StoreLambdaFunction7FC1576D-*`  
+**Full Name**: `CeapDataPlatform-dev-StoreLambdaFunction7FC1576D-*`  
+**Stack**: CeapDataPlatform-dev  
 **Handler**: `com.ceap.workflow.store.StoreHandler::handleRequest`  
 **Runtime**: Java 17  
 **Memory**: 512 MB  
@@ -243,7 +223,8 @@ This document provides a complete inventory of all AWS resources deployed by the
 ---
 
 ### 5. Reactive Lambda
-**Full Name**: `CeapReactiveWorkflow-dev-ReactiveLambdaFunction893-*`  
+**Full Name**: `CeapServingAPI-dev-ReactiveLambdaFunction89310B25-*`  
+**Stack**: CeapServingAPI-dev  
 **Handler**: `com.ceap.workflow.reactive.ReactiveHandler::handleRequest`  
 **Runtime**: Java 17  
 **Memory**: 1024 MB  
@@ -388,11 +369,11 @@ This document provides a complete inventory of all AWS resources deployed by the
 ## CloudWatch Resources
 
 ### Log Groups (5)
-1. `/aws/lambda/CeapEtlWorkflow-dev-ETLLambdaFunction*`
-2. `/aws/lambda/CeapFilterWorkflow-dev-FilterLambdaFunction*`
-3. `/aws/lambda/CeapScoreWorkflow-dev-ScoreLambdaFunction*`
-4. `/aws/lambda/CeapStoreWorkflow-dev-StoreLambdaFunction*`
-5. `/aws/lambda/CeapReactiveWorkflow-dev-ReactiveLambdaFunction*`
+1. `/aws/lambda/CeapDataPlatform-dev-ETLLambdaFunction*`
+2. `/aws/lambda/CeapDataPlatform-dev-FilterLambdaFunction*`
+3. `/aws/lambda/CeapDataPlatform-dev-ScoreLambdaFunction*`
+4. `/aws/lambda/CeapDataPlatform-dev-StoreLambdaFunction*`
+5. `/aws/lambda/CeapServingAPI-dev-ReactiveLambdaFunction*`
 
 **Retention**: 30 days  
 **Estimated Size**: 0-100 MB/day  
@@ -409,50 +390,53 @@ This document provides a complete inventory of all AWS resources deployed by the
 
 | Resource Type | Count | Purpose |
 |--------------|-------|---------|
-| **CloudFormation Stacks** | 7 | Infrastructure as code |
+| **CloudFormation Stacks** | 3 | Infrastructure as code (consolidated) |
 | **DynamoDB Tables** | 4 | Data storage |
 | **Lambda Functions** | 5 | Business logic |
 | **Step Functions** | 1 | Workflow orchestration |
 | **EventBridge Rules** | 2 | Event routing & scheduling |
-| **IAM Roles** | 12 | Permissions management |
+| **IAM Roles** | 9 | Permissions management |
 | **CloudWatch Log Groups** | 5 | Logging |
 | **CloudWatch Metrics Namespaces** | 3 | Monitoring |
 
 **Total AWS Resources**: ~40 resources
+
+**Architecture Benefits**:
+- ✅ Reduced from 7 stacks to 3 stacks
+- ✅ Clear business capability alignment (Storage, Write Path, Read Path)
+- ✅ Parallel deployment capability
+- ✅ Simplified dependency management
+- ✅ Faster deployment times (~5 minutes total)
 
 ---
 
 ## Resource Relationships
 
 ```
-CeapDatabase-dev (Base)
+CeapDatabase-dev (Storage Layer - Base Stack)
 ├── Candidates-dev (DynamoDB)
 ├── ProgramConfig-dev (DynamoDB)
 └── ScoreCache-dev (DynamoDB)
     │
-    ├─▶ CeapEtlWorkflow-dev
-    │   └── ETL Lambda → reads ProgramConfig, writes Candidates
+    ├─▶ CeapDataPlatform-dev (Write Path - Consolidated)
+    │   ├── ETL Lambda → reads ProgramConfig, writes Candidates
+    │   ├── Filter Lambda → reads ProgramConfig
+    │   ├── Score Lambda → reads/writes ScoreCache
+    │   ├── Store Lambda → writes Candidates
+    │   ├── BatchIngestionWorkflow (Step Functions)
+    │   │   └── Orchestrates: ETL → Filter → Score → Store
+    │   └── BatchIngestionSchedule (EventBridge rule)
     │
-    ├─▶ CeapFilterWorkflow-dev
-    │   └── Filter Lambda → reads ProgramConfig
-    │
-    ├─▶ CeapScoreWorkflow-dev
-    │   └── Score Lambda → reads/writes ScoreCache
-    │
-    ├─▶ CeapStoreWorkflow-dev
-    │   └── Store Lambda → writes Candidates
-    │
-    └─▶ CeapReactiveWorkflow-dev
+    └─▶ CeapServingAPI-dev (Read Path - Consolidated)
         ├── Reactive Lambda → reads/writes all tables
         ├── ceap-event-deduplication-dev (DynamoDB)
         └── ceap-customer-events-dev (EventBridge rule)
-            │
-            └─▶ CeapOrchestration-dev
-                ├── CeapBatchIngestion-dev (Step Functions)
-                │   ├── Invokes: ETL → Filter → Score → Store
-                │   └── Triggered by: EventBridge schedule
-                └── BatchIngestionSchedule (EventBridge rule)
 ```
+
+**Cross-Stack References**:
+- CeapDataPlatform-dev imports table names/ARNs from CeapDatabase-dev
+- CeapServingAPI-dev imports table names/ARNs from CeapDatabase-dev
+- All references use CloudFormation exports (Fn::ImportValue)
 
 ---
 
@@ -690,26 +674,43 @@ Reactive Lambda
 
 **Your CEAP Platform Deployment**:
 
-- **7 CloudFormation stacks** orchestrating ~40 AWS resources
+- **3 CloudFormation stacks** (consolidated from 7) orchestrating ~40 AWS resources
 - **4 DynamoDB tables** for data storage
 - **5 Lambda functions** for business logic
 - **1 Step Functions workflow** for batch orchestration
 - **2 EventBridge rules** for scheduling and event routing
 
-**Architecture**: Serverless, event-driven, highly scalable  
+**Architecture**: Serverless, event-driven, highly scalable, business-aligned  
 **Cost**: $0-10/month (dev), $10-200/month (production)  
 **Scalability**: 1M+ candidates/day, 10K+ events/second  
-**Multi-Tenancy**: Program-level isolation (single account)
+**Multi-Tenancy**: Program-level isolation (single account)  
+**Deployment Time**: ~5 minutes (3 stacks, parallel deployment)
 
 **Ready for**: Multiple clients in single AWS account with program-level isolation
+
+---
+
+## Migration History
+
+**January 31, 2026**: Consolidated from 7-stack to 3-stack architecture
+- **Before**: 7 stacks (Database + 6 workflow stacks)
+- **After**: 3 stacks (Database + DataPlatform + ServingAPI)
+- **Benefits**: Faster deployment, clearer business alignment, simplified management
+- **Migration Time**: ~5 minutes
+- **Downtime**: Zero (blue-green deployment)
 
 ---
 
 ## Quick Reference Commands
 
 ```bash
-# List all stacks
+# List all stacks (3-stack architecture)
 aws cloudformation list-stacks --stack-status-filter CREATE_COMPLETE --query 'StackSummaries[?starts_with(StackName, `Ceap`)].StackName'
+
+# View stack outputs
+aws cloudformation describe-stacks --stack-name CeapDatabase-dev --query 'Stacks[0].Outputs'
+aws cloudformation describe-stacks --stack-name CeapDataPlatform-dev --query 'Stacks[0].Outputs'
+aws cloudformation describe-stacks --stack-name CeapServingAPI-dev --query 'Stacks[0].Outputs'
 
 # List all tables
 aws dynamodb list-tables --query 'TableNames[?contains(@, `dev`)]'
@@ -723,10 +724,17 @@ aws stepfunctions list-state-machines --query 'stateMachines[?contains(name, `Ce
 # List all EventBridge rules
 aws events list-rules --query 'Rules[?contains(Name, `ceap`)].Name'
 
-# Get total resource count
-echo "Stacks: $(aws cloudformation list-stacks --stack-status-filter CREATE_COMPLETE --query 'StackSummaries[?starts_with(StackName, `Ceap`)]' | jq length)"
-echo "Tables: $(aws dynamodb list-tables --query 'TableNames[?contains(@, `dev`)]' | jq length)"
-echo "Functions: $(aws lambda list-functions --query 'Functions[?contains(FunctionName, `Ceap`)]' | jq length)"
+# Deploy consolidated infrastructure
+cd infrastructure
+./deploy-consolidated.sh dev
+
+# Validate resources
+cd infrastructure
+./validate-resources.sh dev
+
+# Rollback to previous state
+cd infrastructure
+./rollback-consolidated.sh dev
 ```
 
 ---

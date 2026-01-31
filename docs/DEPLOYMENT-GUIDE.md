@@ -1,8 +1,9 @@
 # CEAP Platform - Complete Deployment Guide
 
-**Last Updated**: January 20, 2026
+**Last Updated**: January 31, 2026
+**Architecture**: Consolidated 3-Stack
 **Audience**: Developers with no prior AWS experience
-**Time Required**: 2-3 hours for first deployment
+**Time Required**: 30-60 minutes for first deployment
 
 ---
 
@@ -337,7 +338,7 @@ cd infrastructure
 This sets up AWS resources needed for CDK deployments.
 
 ```bash
-./deploy-cdk.sh --bootstrap --environment dev --region us-east-1
+npx cdk bootstrap
 ```
 
 **What this does**:
@@ -354,68 +355,44 @@ This sets up AWS resources needed for CDK deployments.
 
 **You only need to do this once per account/region!**
 
-### Step 3: Build Lambda JARs
-
-The deployment script will do this automatically, but you can verify:
+### Step 3: Deploy Infrastructure
 
 ```bash
-cd ..
-./gradlew shadowJar
+./deploy-consolidated.sh dev
 ```
 
 **What this does**:
-- Compiles all Kotlin code
-- Runs tests
-- Creates 5 Lambda JAR files
-
-**Time**: 2-5 minutes
-
-**Expected output**:
-```
-BUILD SUCCESSFUL in 3m 45s
-```
-
-### Step 4: Deploy Infrastructure
-
-```bash
-cd infrastructure
-./deploy-cdk.sh --environment dev --region us-east-1
-```
-
-**What this does**:
-1. Builds Lambda JARs
+1. Builds the infrastructure project
 2. Synthesizes CloudFormation templates
-3. Deploys DynamoDB tables
-4. Deploys Lambda functions
-5. Deploys Step Functions workflows
-6. Deploys EventBridge rules
-7. Sets up CloudWatch logs
+3. Deploys CeapDatabase-dev (Storage Layer)
+4. Deploys CeapDataPlatform-dev and CeapServingAPI-dev in parallel (Application Layer)
+5. Sets up cross-stack references
 
-**Time**: 10-15 minutes
+**Time**: 5-10 minutes
 
 **Expected output**:
 ```
-✅ DatabaseStack-dev
-✅ EtlWorkflowStack-dev
-✅ FilterWorkflowStack-dev
-✅ ScoreWorkflowStack-dev
-✅ StoreWorkflowStack-dev
-✅ ReactiveWorkflowStack-dev
-✅ OrchestrationStack-dev
-
-========================================
+==========================================
 Deployment Complete!
-========================================
+==========================================
+
+Deployed stacks:
+  1. CeapDatabase-dev (Storage Layer)
+  2. CeapDataPlatform-dev (Write Path)
+  3. CeapServingAPI-dev (Read Path)
 ```
 
-### Step 5: Verify Deployment
+### Step 4: Verify Deployment
 
 ```bash
-# List all stacks
-cdk list --context environment=dev
+# Validate resources
+./validate-resources.sh dev
+```
 
-# Check stack status
-aws cloudformation describe-stacks --stack-name DatabaseStack-dev
+**Expected output**:
+```
+✅ All validation checks passed!
+✅ New 3-stack architecture contains all expected resources
 ```
 
 **You've deployed CEAP to AWS!** 🎉
@@ -431,34 +408,74 @@ aws cloudformation describe-stacks --stack-name DatabaseStack-dev
 aws dynamodb list-tables
 
 # Expected output:
-# - ceap-candidates-dev
-# - ceap-program-config-dev
-# - ceap-score-cache-dev
+# - Candidates-dev
+# - ProgramConfig-dev
+# - ScoreCache-dev
+# - ceap-event-deduplication-dev
 ```
 
 ### Check Lambda Functions
 
 ```bash
 # List functions
-aws lambda list-functions --query 'Functions[?starts_with(FunctionName, `ceap-platform`)].FunctionName'
+aws lambda list-functions --query 'Functions[?contains(FunctionName, `Ceap`)].FunctionName'
 
-# Expected output:
-# - ceap-platform-etl-dev
-# - ceap-platform-filter-dev
-# - ceap-platform-score-dev
-# - ceap-platform-store-dev
-# - ceap-platform-serve-dev
+# Expected output (5 functions):
+# - CeapDataPlatform-dev-ETLLambdaFunction...
+# - CeapDataPlatform-dev-FilterLambdaFunction...
+# - CeapDataPlatform-dev-ScoreLambdaFunction...
+# - CeapDataPlatform-dev-StoreLambdaFunction...
+# - CeapServingAPI-dev-ReactiveLambdaFunction...
+```
+
+### Check CloudFormation Stacks
+
+```bash
+# List all CEAP stacks
+aws cloudformation list-stacks --stack-status-filter CREATE_COMPLETE \
+  --query 'StackSummaries[?starts_with(StackName, `Ceap`)].StackName'
+
+# Expected output (3 stacks):
+# - CeapDatabase-dev
+# - CeapDataPlatform-dev
+# - CeapServingAPI-dev
 ```
 
 ### Check in AWS Console
 
 1. Go to https://console.aws.amazon.com
 2. Make sure you're in the correct region (top-right corner)
-3. Search for "DynamoDB" - you should see 3 tables
-4. Search for "Lambda" - you should see 5 functions
-5. Search for "Step Functions" - you should see workflows
+3. Search for "CloudFormation" - you should see 3 stacks
+4. Search for "DynamoDB" - you should see 4 tables
+5. Search for "Lambda" - you should see 5 functions
+6. Search for "Step Functions" - you should see 1 state machine
 
 **Everything deployed successfully!** ✅
+
+---
+
+## Understanding the 3-Stack Architecture
+
+### Stack 1: CeapDatabase-dev (Storage Layer)
+- **Purpose**: Shared data foundation
+- **Contains**: 3 DynamoDB tables
+- **Exports**: Table names and ARNs for other stacks
+
+### Stack 2: CeapDataPlatform-dev (Write Path)
+- **Purpose**: Data ingestion and processing
+- **Contains**: 4 Lambda functions, 1 Step Functions workflow, 1 EventBridge rule
+- **Business Capability**: Building datasets (ETL, Filter, Score, Store, Orchestration)
+
+### Stack 3: CeapServingAPI-dev (Read Path)
+- **Purpose**: Real-time event processing
+- **Contains**: 1 Lambda function, 1 DynamoDB table, 1 EventBridge rule
+- **Business Capability**: Low-latency retrieval and reactive processing
+
+**Benefits of 3-Stack Architecture**:
+- ✅ Faster deployment (~5 minutes vs 15 minutes)
+- ✅ Clear business alignment
+- ✅ Parallel deployment capability
+- ✅ Simplified dependency management
 
 ---
 
@@ -517,12 +534,12 @@ cat ~/.aws/credentials
 
 **Solution**:
 ```bash
-# Update existing stack
-cdk deploy --context environment=dev
+# Update existing stacks
+./deploy-consolidated.sh dev
 
 # Or delete and redeploy
-cdk destroy --context environment=dev
-cdk deploy --context environment=dev
+./rollback-consolidated.sh dev
+./deploy-consolidated.sh dev
 ```
 
 ### Issue: "Bootstrap required"
@@ -531,7 +548,8 @@ cdk deploy --context environment=dev
 
 **Solution**:
 ```bash
-./deploy-cdk.sh --bootstrap --environment dev
+cd infrastructure
+npx cdk bootstrap
 ```
 
 
@@ -586,11 +604,12 @@ Or check in AWS Console:
 
 **When not using dev environment**:
 ```bash
-# Delete all resources
-cdk destroy --all --context environment=dev
+# Delete application stacks (keeps database with data)
+cd infrastructure
+./rollback-consolidated.sh dev
 
 # Redeploy when needed
-./deploy-cdk.sh --environment dev
+./deploy-consolidated.sh dev
 ```
 
 **Cost optimization features already configured**:
@@ -598,6 +617,7 @@ cdk destroy --all --context environment=dev
 - ✅ TTL enabled (automatic data cleanup)
 - ✅ Serverless architecture (no idle costs)
 - ✅ Efficient Lambda memory sizing
+- ✅ Consolidated stacks (reduced CloudFormation costs)
 
 ---
 
@@ -606,16 +626,15 @@ cdk destroy --all --context environment=dev
 ### Deploying to Staging
 
 ```bash
-./deploy-cdk.sh --environment staging --region us-east-1
+./deploy-consolidated.sh staging
 ```
 
-This creates a completely separate set of resources:
-- `ceap-platform-*-staging` (instead of `-dev`)
+This creates a completely separate set of resources with `-staging` suffix.
 
 ### Deploying to Production
 
 ```bash
-./deploy-cdk.sh --environment prod --region us-east-1
+./deploy-consolidated.sh prod
 ```
 
 **⚠️ Production Checklist**:
@@ -645,12 +664,11 @@ Enter credentials for this specific profile.
 ### Using a Profile
 
 ```bash
-# Deploy with specific profile
-./deploy-cdk.sh --environment dev --profile ceap-dev
-
-# Or set as default
+# Set profile as environment variable
 export AWS_PROFILE=ceap-dev
-./deploy-cdk.sh --environment dev
+
+# Deploy with profile
+./deploy-consolidated.sh dev
 ```
 
 ### Listing Profiles
@@ -671,22 +689,25 @@ cat ~/.aws/credentials
 aws sts get-caller-identity
 
 # Bootstrap CDK (first-time only)
-./deploy-cdk.sh --bootstrap --environment dev
+cd infrastructure
+npx cdk bootstrap
 
-# Deploy to dev
-./deploy-cdk.sh --environment dev
+# Deploy to dev (3-stack architecture)
+./deploy-consolidated.sh dev
 
-# Show what will change (before deploying)
-./deploy-cdk.sh --environment dev --diff
+# Validate deployment
+./validate-resources.sh dev
 
-# Deploy specific stack
-./deploy-cdk.sh --environment dev --stack Database
+# Rollback deployment
+./rollback-consolidated.sh dev
 
-# Destroy environment
-cdk destroy --all --context environment=dev
+# View stack outputs
+aws cloudformation describe-stacks --stack-name CeapDatabase-dev
+aws cloudformation describe-stacks --stack-name CeapDataPlatform-dev
+aws cloudformation describe-stacks --stack-name CeapServingAPI-dev
 
 # View logs
-aws logs tail /aws/lambda/ceap-platform-serve-dev --follow
+aws logs tail /aws/lambda/CeapDataPlatform-dev-ETLLambdaFunction... --follow
 ```
 
 ### Useful AWS Console Links
@@ -723,7 +744,7 @@ A: Yes! Ask your AWS administrator for credentials or an IAM role.
 A: AWS requires a credit card, but you can use a prepaid card or virtual card.
 
 **Q: How do I delete everything?**
-A: Run `cdk destroy --all --context environment=dev`
+A: Run `./rollback-consolidated.sh dev` (keeps database) or use AWS Console to delete all 3 stacks
 
 **Q: Is this safe to deploy?**
 A: Yes! The dev environment is isolated and uses minimal resources.
@@ -766,17 +787,19 @@ A: Yes! The dev environment is isolated and uses minimal resources.
 - ✅ How to get AWS credentials
 - ✅ How to install required tools
 - ✅ How to configure AWS CLI
-- ✅ How to deploy CEAP platform
+- ✅ How to deploy CEAP platform (3-stack architecture)
 - ✅ How to verify deployment
 - ✅ How to manage costs
+- ✅ How to rollback if needed
 
-**Time to deploy**: ~30 minutes (after setup)
+**Time to deploy**: ~10 minutes (after setup)
+**Architecture**: 3 consolidated stacks for simplified management
 
 **You're ready to deploy CEAP to AWS!** 🚀
 
 ---
 
-**Guide Version**: 1.0
-**Last Updated**: January 20, 2026
+**Guide Version**: 2.0 (Consolidated Architecture)
+**Last Updated**: January 31, 2026
 **Maintained By**: CEAP Platform Team
 
