@@ -14,9 +14,17 @@
 #   -r, --region REGION      AWS region [default: us-east-1]
 #   -p, --profile PROFILE    AWS CLI profile [default: default]
 #   -t, --type TYPE          Workflow type (express, standard) [default: express]
+#   -n, --name NAME          Workflow name (realtime, batch, etc) [default: auto]
 #   -d, --diff               Show diff before deploying
 #   -v, --validate           Validate only, don't deploy
 #   -h, --help               Show this help message
+#
+# Examples:
+#   # Deploy Express workflow for real-time processing
+#   ./infrastructure/deploy-workflow.sh -e dev -t express -n realtime
+#
+#   # Deploy Standard workflow for batch processing
+#   ./infrastructure/deploy-workflow.sh -e dev -t standard -n batch
 #
 # Prerequisites:
 #   - AWS CLI configured
@@ -39,6 +47,7 @@ ENVIRONMENT="dev"
 AWS_REGION="us-east-1"
 AWS_PROFILE="default"
 WORKFLOW_TYPE="express"
+WORKFLOW_NAME=""
 SHOW_DIFF=false
 VALIDATE_ONLY=false
 
@@ -49,12 +58,22 @@ while [[ $# -gt 0 ]]; do
         -r|--region) AWS_REGION="$2"; shift 2 ;;
         -p|--profile) AWS_PROFILE="$2"; shift 2 ;;
         -t|--type) WORKFLOW_TYPE="$2"; shift 2 ;;
+        -n|--name) WORKFLOW_NAME="$2"; shift 2 ;;
         -d|--diff) SHOW_DIFF=true; shift ;;
         -v|--validate) VALIDATE_ONLY=true; shift ;;
         -h|--help) grep "^#" "$0" | grep -v "#!/bin/bash" | sed 's/^# //'; exit 0 ;;
         *) echo -e "${RED}Unknown option: $1${NC}"; exit 1 ;;
     esac
 done
+
+# Set default workflow name if not provided
+if [ -z "$WORKFLOW_NAME" ]; then
+    if [ "$WORKFLOW_TYPE" = "express" ]; then
+        WORKFLOW_NAME="realtime"
+    else
+        WORKFLOW_NAME="batch"
+    fi
+fi
 
 # Validate workflow type
 if [[ ! "$WORKFLOW_TYPE" =~ ^(express|standard)$ ]]; then
@@ -68,6 +87,7 @@ echo -e "${BLUE}Workflow Orchestration Deployment${NC}"
 echo -e "${BLUE}Environment: $ENVIRONMENT${NC}"
 echo -e "${BLUE}Region: $AWS_REGION${NC}"
 echo -e "${BLUE}Workflow Type: $WORKFLOW_TYPE${NC}"
+echo -e "${BLUE}Workflow Name: $WORKFLOW_NAME${NC}"
 echo -e "${BLUE}========================================${NC}"
 echo ""
 
@@ -107,20 +127,20 @@ echo ""
 echo -e "${YELLOW}Checking existing infrastructure...${NC}"
 
 # Check if database stack exists
-if ! aws cloudformation describe-stacks --stack-name "CeapDatabase-$ENVIRONMENT" --profile "$AWS_PROFILE" &> /dev/null; then
-    echo -e "${RED}CeapDatabase-$ENVIRONMENT stack not found${NC}"
+if ! aws cloudformation describe-stacks --stack-name "CeapDatabase" --profile "$AWS_PROFILE" &> /dev/null; then
+    echo -e "${RED}CeapDatabase stack not found${NC}"
     echo "Please deploy the base CEAP infrastructure first"
     exit 1
 fi
-echo -e "${GREEN}✓ CeapDatabase-$ENVIRONMENT exists${NC}"
+echo -e "${GREEN}✓ CeapDatabase exists${NC}"
 
 # Check if Lambda functions exist
 LAMBDA_FUNCTIONS=(
-    "CeapServingAPI-$ENVIRONMENT-ETLLambdaFunction"
-    "CeapServingAPI-$ENVIRONMENT-FilterLambdaFunction"
-    "CeapServingAPI-$ENVIRONMENT-ScoreLambdaFunction"
-    "CeapServingAPI-$ENVIRONMENT-StoreLambdaFunction"
-    "CeapServingAPI-$ENVIRONMENT-ReactiveLambdaFunction"
+    "CeapServingAPI-ETLLambdaFunction"
+    "CeapServingAPI-FilterLambdaFunction"
+    "CeapServingAPI-ScoreLambdaFunction"
+    "CeapServingAPI-StoreLambdaFunction"
+    "CeapServingAPI-ReactiveLambdaFunction"
 )
 
 for lambda in "${LAMBDA_FUNCTIONS[@]}"; do
@@ -158,6 +178,7 @@ echo -e "${YELLOW}Synthesizing CDK templates...${NC}"
 cdk synth \
     --context environment="$ENVIRONMENT" \
     --context workflowType="$WORKFLOW_TYPE" \
+    --context workflowName="$WORKFLOW_NAME" \
     --profile "$AWS_PROFILE"
 
 if [ $? -ne 0 ]; then
@@ -188,6 +209,7 @@ if [ "$SHOW_DIFF" = true ]; then
     cdk diff \
         --context environment="$ENVIRONMENT" \
         --context workflowType="$WORKFLOW_TYPE" \
+        --context workflowName="$WORKFLOW_NAME" \
         --profile "$AWS_PROFILE"
     echo ""
     read -p "Continue with deployment? (y/n) " -n 1 -r
@@ -204,9 +226,10 @@ echo ""
 
 # Phase 1: Deploy S3 workflow bucket
 echo -e "${BLUE}Phase 1: Deploying S3 Workflow Bucket${NC}"
-cdk deploy "CeapWorkflowStorage-$ENVIRONMENT" \
+cdk deploy "CeapWorkflowStorage-$WORKFLOW_NAME" \
     --context environment="$ENVIRONMENT" \
     --context workflowType="$WORKFLOW_TYPE" \
+    --context workflowName="$WORKFLOW_NAME" \
     --require-approval never \
     --profile "$AWS_PROFILE"
 
@@ -219,9 +242,10 @@ echo ""
 
 # Phase 2: Deploy Lambda functions with base handler
 echo -e "${BLUE}Phase 2: Deploying Lambda Functions${NC}"
-cdk deploy "CeapWorkflowLambdas-$ENVIRONMENT" \
+cdk deploy "CeapWorkflowLambdas-$WORKFLOW_NAME" \
     --context environment="$ENVIRONMENT" \
     --context workflowType="$WORKFLOW_TYPE" \
+    --context workflowName="$WORKFLOW_NAME" \
     --require-approval never \
     --profile "$AWS_PROFILE"
 
@@ -234,9 +258,10 @@ echo ""
 
 # Phase 3: Deploy Step Functions workflow
 echo -e "${BLUE}Phase 3: Deploying Step Functions Workflow${NC}"
-cdk deploy "CeapWorkflowOrchestration-$ENVIRONMENT" \
+cdk deploy "CeapWorkflowOrchestration-$WORKFLOW_NAME" \
     --context environment="$ENVIRONMENT" \
     --context workflowType="$WORKFLOW_TYPE" \
+    --context workflowName="$WORKFLOW_NAME" \
     --require-approval never \
     --profile "$AWS_PROFILE"
 
@@ -250,19 +275,19 @@ echo ""
 # Get stack outputs
 echo -e "${YELLOW}Retrieving stack outputs...${NC}"
 WORKFLOW_BUCKET=$(aws cloudformation describe-stacks \
-    --stack-name "CeapWorkflowStorage-$ENVIRONMENT" \
+    --stack-name "CeapWorkflowStorage-$WORKFLOW_NAME" \
     --profile "$AWS_PROFILE" \
     --query 'Stacks[0].Outputs[?OutputKey==`WorkflowBucketName`].OutputValue' \
     --output text)
 
 STATE_MACHINE_ARN=$(aws cloudformation describe-stacks \
-    --stack-name "CeapWorkflowOrchestration-$ENVIRONMENT" \
+    --stack-name "CeapWorkflowOrchestration-$WORKFLOW_NAME" \
     --profile "$AWS_PROFILE" \
     --query 'Stacks[0].Outputs[?OutputKey==`StateMachineArn`].OutputValue' \
     --output text)
 
 QUEUE_URL=$(aws cloudformation describe-stacks \
-    --stack-name "CeapWorkflowOrchestration-$ENVIRONMENT" \
+    --stack-name "CeapWorkflowOrchestration-$WORKFLOW_NAME" \
     --profile "$AWS_PROFILE" \
     --query 'Stacks[0].Outputs[?OutputKey==`QueueUrl`].OutputValue' \
     --output text)
@@ -275,6 +300,7 @@ echo ""
 echo -e "Environment: ${GREEN}$ENVIRONMENT${NC}"
 echo -e "Region: ${GREEN}$AWS_REGION${NC}"
 echo -e "Workflow Type: ${GREEN}$WORKFLOW_TYPE${NC}"
+echo -e "Workflow Name: ${GREEN}$WORKFLOW_NAME${NC}"
 echo ""
 echo -e "Deployed Resources:"
 echo -e "  S3 Bucket: ${BLUE}$WORKFLOW_BUCKET${NC}"
@@ -282,8 +308,8 @@ echo -e "  State Machine: ${BLUE}$STATE_MACHINE_ARN${NC}"
 echo -e "  Queue URL: ${BLUE}$QUEUE_URL${NC}"
 echo ""
 echo -e "Next steps:"
-echo -e "  1. Run smoke tests: ${YELLOW}./smoke-test-workflow.sh -e $ENVIRONMENT${NC}"
-echo -e "  2. Monitor CloudWatch Logs: ${YELLOW}/aws/stepfunction/CeapWorkflow-$ENVIRONMENT${NC}"
+echo -e "  1. Run smoke tests: ${YELLOW}./smoke-test-workflow.sh -e $ENVIRONMENT -n $WORKFLOW_NAME${NC}"
+echo -e "  2. Monitor CloudWatch Logs: ${YELLOW}/aws/stepfunction/Ceap-$WORKFLOW_NAME-Workflow${NC}"
 echo -e "  3. Check S3 bucket: ${YELLOW}aws s3 ls s3://$WORKFLOW_BUCKET/executions/${NC}"
 echo ""
 echo -e "Documentation:"

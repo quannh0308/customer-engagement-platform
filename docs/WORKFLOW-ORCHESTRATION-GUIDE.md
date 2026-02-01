@@ -62,6 +62,65 @@ This guide documents the CEAP infrastructure enhancement that implements industr
 | Failure detection | Built-in (sync) | EventBridge rule |
 | Use case | Real-time | Batch processing |
 
+## Deploying Multiple Workflows
+
+### Overview
+
+You can deploy both Express and Standard workflows in the same AWS account to handle different use cases. This is a common pattern for separating real-time processing from batch processing.
+
+### Use Case: Real-Time + Batch Processing
+
+**Express Workflow (Real-Time)**:
+- Name: `CeapRealtimeWorkflow`
+- Purpose: Process candidate submissions in real-time
+- Trigger: API Gateway → SQS
+- Duration: 30 seconds
+- Volume: 1000/day
+- Cost: ~$0.15/month
+
+**Standard Workflow (Batch)**:
+- Name: `CeapBatchWorkflow`
+- Purpose: Nightly enrichment with Glue jobs
+- Trigger: EventBridge Schedule → SQS
+- Duration: 2 hours
+- Volume: 30/month
+- Cost: ~$270/month
+
+### Deployment Commands
+
+```bash
+# Deploy Express workflow for real-time processing
+./infrastructure/deploy-workflow.sh -e dev -t express -n realtime
+
+# Deploy Standard workflow for batch processing
+./infrastructure/deploy-workflow.sh -e dev -t standard -n batch
+```
+
+### Architecture
+
+```
+AWS Account (dev)
+├── Step Functions
+│   ├── CeapRealtimeWorkflow (Express)
+│   └── CeapBatchWorkflow (Standard with Glue)
+├── SQS Queues
+│   ├── ceap-realtime-workflow-queue → Express
+│   └── ceap-batch-workflow-queue → Standard
+└── S3
+    └── ceap-workflow-123456789 (shared)
+        ├── executions/
+        │   ├── realtime-abc-123/  ← Express execution
+        │   └── batch-xyz-789/     ← Standard execution
+```
+
+### Benefits
+
+1. **Right tool for the job**: Fast workflows use Express, heavy jobs use Standard
+2. **Cost optimization**: Pay $1/million for real-time, $25/million only for batch
+3. **Independent scaling**: Real-time and batch don't interfere
+4. **Different SLAs**: Real-time needs <1 minute, batch can take hours
+5. **Separate monitoring**: Different CloudWatch dashboards and alarms
+
 ## Glue Job Integration
 
 ### Overview
