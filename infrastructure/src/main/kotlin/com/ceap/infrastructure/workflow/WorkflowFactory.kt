@@ -68,6 +68,7 @@ object WorkflowFactory {
      * - Result path set to DISCARD to prevent large responses
      * - CloudWatch Logs with full execution data
      * - X-Ray tracing enabled
+     * - Support for incremental migration (HYBRID mode)
      * 
      * @param scope CDK construct scope
      * @param config Workflow configuration
@@ -75,7 +76,7 @@ object WorkflowFactory {
      * 
      * @throws IllegalArgumentException if config contains Glue steps
      * 
-     * Validates: Requirements 4.1, 4.4, 4.5, 4.6, 4.7
+     * Validates: Requirements 4.1, 4.4, 4.5, 4.6, 4.7, 10.3
      */
     fun createExpressWorkflow(
         scope: Construct,
@@ -111,7 +112,9 @@ object WorkflowFactory {
             }
             
             // Create Lambda invoke task with execution context payload
-            // Payload structure:
+            // Payload structure varies based on migration mode and step configuration
+            // 
+            // For S3 orchestration (usesS3Orchestration=true):
             // {
             //   "executionId": "$.Execution.Name",
             //   "currentStage": "ETLStage",
@@ -119,16 +122,39 @@ object WorkflowFactory {
             //   "workflowBucket": "ceap-workflow-dev-123456789",
             //   "initialData": "$.body" (parsed from SQS message)
             // }
-            val lambdaTask = LambdaInvoke.Builder.create(scope, step.stateName)
-                .lambdaFunction(lambdaFunction)
-                .payload(TaskInput.fromObject(mapOf(
+            //
+            // For legacy implementation (usesS3Orchestration=false):
+            // {
+            //   "data": "$.body" (parsed from SQS message or previous stage output)
+            // }
+            val payload = if (step.usesS3Orchestration) {
+                // New S3-based orchestration payload (Requirement 10.3)
+                TaskInput.fromObject(mapOf(
                     "executionId" to JsonPath.stringAt("\$.Execution.Name"),
                     "currentStage" to step.stateName,
                     "previousStage" to previousStage,
                     "workflowBucket" to config.workflowBucket.bucketName,
                     "initialData" to JsonPath.stringToJson(JsonPath.stringAt("\$[0].body"))
-                )))
-                .resultPath(JsonPath.DISCARD)  // Discard large responses (Requirement 4.6)
+                ))
+            } else {
+                // Legacy payload for backward compatibility (Requirement 10.3)
+                // Pass data directly in payload (old behavior)
+                if (index == 0) {
+                    // First stage: use SQS message body
+                    TaskInput.fromObject(mapOf(
+                        "data" to JsonPath.stringToJson(JsonPath.stringAt("\$[0].body"))
+                    ))
+                } else {
+                    // Subsequent stages: use previous stage output
+                    // Note: This assumes previous stage returns data in response
+                    TaskInput.fromJsonPathAt("\$.Payload")
+                }
+            }
+            
+            val lambdaTask = LambdaInvoke.Builder.create(scope, step.stateName)
+                .lambdaFunction(lambdaFunction)
+                .payload(payload)
+                .resultPath(if (step.usesS3Orchestration) JsonPath.DISCARD else JsonPath.stringAt("\$.Payload"))
                 .retryOnServiceExceptions(false)  // We configure retries manually
                 .build()
             
@@ -213,12 +239,13 @@ object WorkflowFactory {
      * - CloudWatch Logs with full execution data
      * - X-Ray tracing enabled
      * - EventBridge rule for failure detection
+     * - Support for incremental migration (HYBRID mode)
      * 
      * @param scope CDK construct scope
      * @param config Workflow configuration
      * @return Created StateMachine
      * 
-     * Validates: Requirements 5.1, 5.3, 5.4, 5.5, 5.7
+     * Validates: Requirements 5.1, 5.3, 5.4, 5.5, 5.7, 10.3
      */
     fun createStandardWorkflow(
         scope: Construct,
@@ -251,17 +278,49 @@ object WorkflowFactory {
                         ?: error("Lambda function not found for key: ${step.lambdaFunctionKey}")
                     
                     // Create Lambda invoke task with execution context payload
-                    // Same payload structure as Express workflow
-                    val lambdaTask = LambdaInvoke.Builder.create(scope, step.stateName)
-                        .lambdaFunction(lambdaFunction)
-                        .payload(TaskInput.fromObject(mapOf(
+                    // Payload structure varies based on migration mode and step configuration
+                    // 
+                    // For S3 orchestration (usesS3Orchestration=true):
+                    // {
+                    //   "executionId": "$.Execution.Name",
+                    //   "currentStage": "ETLStage",
+                    //   "previousStage": null | "PreviousStage",
+                    //   "workflowBucket": "ceap-workflow-dev-123456789",
+                    //   "initialData": "$.body" (parsed from SQS message)
+                    // }
+                    //
+                    // For legacy implementation (usesS3Orchestration=false):
+                    // {
+                    //   "data": "$.body" (parsed from SQS message or previous stage output)
+                    // }
+                    val payload = if (step.usesS3Orchestration) {
+                        // New S3-based orchestration payload (Requirement 10.3)
+                        TaskInput.fromObject(mapOf(
                             "executionId" to JsonPath.stringAt("\$.Execution.Name"),
                             "currentStage" to step.stateName,
                             "previousStage" to previousStage,
                             "workflowBucket" to config.workflowBucket.bucketName,
                             "initialData" to JsonPath.stringToJson(JsonPath.stringAt("\$[0].body"))
-                        )))
-                        .resultPath(JsonPath.DISCARD)  // Discard large responses
+                        ))
+                    } else {
+                        // Legacy payload for backward compatibility (Requirement 10.3)
+                        // Pass data directly in payload (old behavior)
+                        if (index == 0) {
+                            // First stage: use SQS message body
+                            TaskInput.fromObject(mapOf(
+                                "data" to JsonPath.stringToJson(JsonPath.stringAt("\$[0].body"))
+                            ))
+                        } else {
+                            // Subsequent stages: use previous stage output
+                            // Note: This assumes previous stage returns data in response
+                            TaskInput.fromJsonPathAt("\$.Payload")
+                        }
+                    }
+                    
+                    val lambdaTask = LambdaInvoke.Builder.create(scope, step.stateName)
+                        .lambdaFunction(lambdaFunction)
+                        .payload(payload)
+                        .resultPath(if (step.usesS3Orchestration) JsonPath.DISCARD else JsonPath.stringAt("\$.Payload"))
                         .retryOnServiceExceptions(false)
                         .build()
                     

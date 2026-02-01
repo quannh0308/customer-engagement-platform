@@ -33,6 +33,40 @@ enum class WorkflowType {
 }
 
 /**
+ * Migration mode for incremental adoption of S3-based orchestration.
+ * 
+ * This enum controls how Lambda functions are integrated into workflows:
+ * - LEGACY: All stages use old implementation (no S3 orchestration)
+ * - HYBRID: Mix of old and new implementations (incremental migration)
+ * - FULL: All stages use new S3-based orchestration
+ * 
+ * Validates: Requirement 10.3
+ */
+enum class MigrationMode {
+    /**
+     * Legacy mode - all stages use old implementation.
+     * No S3-based orchestration, direct Lambda chaining.
+     * Used before migration starts.
+     */
+    LEGACY,
+    
+    /**
+     * Hybrid mode - mix of old and new implementations.
+     * Allows incremental stage-by-stage migration to S3-based orchestration.
+     * Some stages use S3 intermediate storage, others use direct chaining.
+     * Used during migration period.
+     */
+    HYBRID,
+    
+    /**
+     * Full mode - all stages use new S3-based orchestration.
+     * All stages read from and write to S3 intermediate storage.
+     * Used after migration is complete.
+     */
+    FULL
+}
+
+/**
  * Workflow step type - supports Lambda functions and Glue jobs.
  * 
  * Validates: Requirement 6.3
@@ -54,10 +88,15 @@ sealed class WorkflowStepType {
  * 
  * @property stateName Name of the Step Functions state (e.g., "ETLStage", "FilterStage")
  * @property lambdaFunctionKey Key to look up the Lambda function in the functions map
+ * @property usesS3Orchestration Whether this Lambda uses S3-based orchestration (default: true)
+ *           Set to false for legacy Lambda implementations during incremental migration
+ * 
+ * Validates: Requirement 10.3
  */
 data class LambdaStep(
     val stateName: String,
-    val lambdaFunctionKey: String
+    val lambdaFunctionKey: String,
+    val usesS3Orchestration: Boolean = true
 )
 
 /**
@@ -102,8 +141,9 @@ data class RetryConfiguration(
  * @property workflowBucket S3 bucket for intermediate storage
  * @property sourceQueue SQS queue that triggers the workflow
  * @property retryConfig Retry configuration for workflow steps
+ * @property migrationMode Migration mode for incremental adoption (default: FULL)
  * 
- * Validates: Requirement 6.3
+ * Validates: Requirements 6.3, 10.3
  */
 data class WorkflowConfiguration(
     val workflowName: String,
@@ -112,7 +152,8 @@ data class WorkflowConfiguration(
     val lambdaFunctions: Map<String, IFunction>,
     val workflowBucket: IBucket,
     val sourceQueue: IQueue,
-    val retryConfig: RetryConfiguration = RetryConfiguration()
+    val retryConfig: RetryConfiguration = RetryConfiguration(),
+    val migrationMode: MigrationMode = MigrationMode.FULL
 ) {
     init {
         // Validate configuration on construction
@@ -127,10 +168,11 @@ data class WorkflowConfiguration(
      * - All Lambda function keys must exist in the functions map
      * - At least one step is required
      * - Workflow name must not be empty
+     * - Migration mode consistency checks
      * 
      * @throws IllegalArgumentException if validation fails with descriptive error message
      * 
-     * Validates: Requirements 6.1, 6.2, 6.4
+     * Validates: Requirements 6.1, 6.2, 6.4, 10.3
      */
     private fun validate() {
         // Validate: Workflow name must not be empty
@@ -210,5 +252,82 @@ data class WorkflowConfiguration(
                 appendLine("Solution: Rename duplicate steps to have unique names.")
             }
         }
+        
+        // Validate: Migration mode consistency (Requirement 10.3)
+        when (migrationMode) {
+            MigrationMode.LEGACY -> {
+                // In LEGACY mode, all Lambda steps should NOT use S3 orchestration
+                val s3OrchestrationSteps = lambdaSteps.filter { it.step.usesS3Orchestration }
+                if (s3OrchestrationSteps.isNotEmpty()) {
+                    println("WARNING: MigrationMode.LEGACY specified but ${s3OrchestrationSteps.size} step(s) have usesS3Orchestration=true")
+                    println("Consider using MigrationMode.HYBRID for mixed implementations")
+                }
+            }
+            MigrationMode.HYBRID -> {
+                // HYBRID mode allows mixing - no validation needed
+                // This is the mode used during incremental migration
+                val s3Steps = lambdaSteps.count { it.step.usesS3Orchestration }
+                val legacySteps = lambdaSteps.count { !it.step.usesS3Orchestration }
+                println("INFO: MigrationMode.HYBRID - $s3Steps step(s) use S3 orchestration, $legacySteps step(s) use legacy implementation")
+            }
+            MigrationMode.FULL -> {
+                // In FULL mode, all Lambda steps should use S3 orchestration
+                val legacySteps = lambdaSteps.filter { !it.step.usesS3Orchestration }
+                if (legacySteps.isNotEmpty()) {
+                    println("WARNING: MigrationMode.FULL specified but ${legacySteps.size} step(s) have usesS3Orchestration=false")
+                    println("Consider using MigrationMode.HYBRID for mixed implementations")
+                }
+            }
+        }
+    }
+    
+    /**
+     * Returns true if this workflow is in migration mode (HYBRID).
+     * 
+     * During migration, the workflow supports both old and new Lambda implementations.
+     * This affects how execution context is passed to Lambda functions.
+     * 
+     * @return true if migration mode is HYBRID, false otherwise
+     * 
+     * Validates: Requirement 10.3
+     */
+    fun isInMigration(): Boolean = migrationMode == MigrationMode.HYBRID
+    
+    /**
+     * Returns the list of Lambda steps that use S3 orchestration.
+     * 
+     * These steps follow the new pattern:
+     * - Read input from S3 (previous stage output)
+     * - Write output to S3 (for next stage)
+     * - Receive execution context from Step Functions
+     * 
+     * @return List of Lambda steps using S3 orchestration
+     * 
+     * Validates: Requirement 10.3
+     */
+    fun getS3OrchestrationSteps(): List<LambdaStep> {
+        return steps
+            .filterIsInstance<WorkflowStepType.Lambda>()
+            .map { it.step }
+            .filter { it.usesS3Orchestration }
+    }
+    
+    /**
+     * Returns the list of Lambda steps that use legacy implementation.
+     * 
+     * These steps follow the old pattern:
+     * - Receive data directly in Lambda payload
+     * - Return data directly in Lambda response
+     * - No S3 intermediate storage
+     * 
+     * @return List of Lambda steps using legacy implementation
+     * 
+     * Validates: Requirement 10.3
+     */
+    fun getLegacySteps(): List<LambdaStep> {
+        return steps
+            .filterIsInstance<WorkflowStepType.Lambda>()
+            .map { it.step }
+            .filter { !it.usesS3Orchestration }
     }
 }
