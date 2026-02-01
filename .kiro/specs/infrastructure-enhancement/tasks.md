@@ -387,7 +387,7 @@ Each task builds on previous work, with checkpoints to validate progress. The im
   - Commit message: "feat: implement observability features"
   - Push to remote repository
 
-- [-] 14. Implement backward compatibility features
+- [x] 14. Implement backward compatibility features
   - [x] 14.1 Add support for dual naming patterns
     - Allow both old (auto-generated) and new (explicit) naming
     - Provide configuration flag to control naming strategy
@@ -406,17 +406,17 @@ Each task builds on previous work, with checkpoints to validate progress. The im
     - **Property 39: Incremental Stage Migration**
     - **Validates: Requirements 10.3**
 
-- [-] 14.5 Git commit and push Task 14 changes
+- [x] 14.5 Git commit and push Task 14 changes
   - Commit message: "feat: implement backward compatibility features"
   - Push to remote repository
 
-- [~] 15. Implement remaining infrastructure components
-  - [ ] 15.1 Configure EventBridge Pipe in CDK
+- [-] 15. Implement remaining infrastructure components
+  - [x] 15.1 Configure EventBridge Pipe in CDK
     - Create Pipe resource connecting SQS to Step Function
     - Configure appropriate invocation type based on workflow type
     - _Requirements: 11.4_
   
-  - [ ] 15.2 Implement least-privilege IAM roles
+  - [x] 15.2 Implement least-privilege IAM roles
     - Create Lambda execution role with minimal S3 permissions
     - Create Glue job role with minimal S3 permissions
     - Create Step Functions role with minimal Lambda/Glue invoke permissions
@@ -430,7 +430,7 @@ Each task builds on previous work, with checkpoints to validate progress. The im
     - **Property 42: Least-Privilege IAM Roles**
     - **Validates: Requirements 11.9**
 
-- [ ] 15.5 Git commit and push Task 15 changes
+- [-] 15.5 Git commit and push Task 15 changes
   - Commit message: "feat: implement remaining infrastructure components"
   - Push to remote repository
 

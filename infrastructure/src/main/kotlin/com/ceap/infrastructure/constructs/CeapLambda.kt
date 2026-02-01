@@ -2,10 +2,12 @@ package com.ceap.infrastructure.constructs
 
 import software.amazon.awscdk.Duration
 import software.amazon.awscdk.services.dynamodb.ITable
+import software.amazon.awscdk.services.iam.IRole
 import software.amazon.awscdk.services.lambda.Code
 import software.amazon.awscdk.services.lambda.Function
 import software.amazon.awscdk.services.lambda.Runtime
 import software.amazon.awscdk.services.logs.RetentionDays
+import software.amazon.awscdk.services.s3.IBucket
 import software.constructs.Construct
 
 /**
@@ -51,8 +53,9 @@ enum class LambdaNamingStrategy {
  * - Environment variables
  * - Memory and timeout configuration
  * - Backward compatible naming strategies
+ * - Optional least-privilege IAM role for workflow integration
  * 
- * Example usage with explicit naming:
+ * Example usage with explicit naming and workflow integration:
  * ```kotlin
  * val etlLambda = CeapLambda(
  *     this, "ETLLambda",
@@ -62,21 +65,28 @@ enum class LambdaNamingStrategy {
  *     memorySize = 1024,
  *     timeout = Duration.minutes(5),
  *     namingStrategy = LambdaNamingStrategy.EXPLICIT,
- *     functionName = "CeapServingAPI-dev-ETLLambda"
+ *     functionName = "CeapServingAPI-dev-ETLLambda",
+ *     workflowBucket = workflowBucket  // Grants least-privilege S3 access
  * )
  * ```
  * 
- * Example usage with auto-generated naming (backward compatible):
+ * Example usage with custom IAM role:
  * ```kotlin
+ * val customRole = WorkflowIAMRoles.createLambdaExecutionRole(
+ *     this, "CustomRole",
+ *     roleName = "ceap-custom-lambda-role",
+ *     workflowBucket = workflowBucket
+ * )
+ * 
  * val etlLambda = CeapLambda(
  *     this, "ETLLambda",
  *     handler = "com.ceap.workflow.ETLHandler::handleRequest",
  *     jarPath = "../ceap-workflow-etl/build/libs/etl-lambda.jar",
- *     namingStrategy = LambdaNamingStrategy.AUTO_GENERATED
+ *     role = customRole
  * )
  * ```
  * 
- * Validates: Requirement 10.2
+ * Validates: Requirements 10.2, 11.9
  */
 class CeapLambda(
     scope: Construct,
@@ -89,7 +99,9 @@ class CeapLambda(
     timeout: Duration = Duration.minutes(1),
     logRetention: RetentionDays = RetentionDays.ONE_MONTH,
     namingStrategy: LambdaNamingStrategy = LambdaNamingStrategy.EXPLICIT,
-    functionName: String? = null
+    functionName: String? = null,
+    role: IRole? = null,
+    workflowBucket: IBucket? = null
 ) : Construct(scope, id) {
     
     val function: Function
@@ -119,7 +131,7 @@ class CeapLambda(
         function = when (namingStrategy) {
             LambdaNamingStrategy.EXPLICIT -> {
                 // Use explicit function name (new behavior)
-                Function.Builder.create(this, "Function")
+                val builder = Function.Builder.create(this, "Function")
                     .functionName(functionName)  // Explicit name prevents auto-generation
                     .runtime(Runtime.JAVA_17)
                     .handler(handler)
@@ -128,11 +140,17 @@ class CeapLambda(
                     .timeout(timeout)
                     .environment(environment)
                     .logRetention(logRetention)
-                    .build()
+                
+                // Use custom role if provided, otherwise CDK creates default role
+                if (role != null) {
+                    builder.role(role)
+                }
+                
+                builder.build()
             }
             LambdaNamingStrategy.AUTO_GENERATED -> {
                 // Use auto-generated function name (old behavior)
-                Function.Builder.create(this, "Function")
+                val builder = Function.Builder.create(this, "Function")
                     // No functionName property - CloudFormation generates name
                     .runtime(Runtime.JAVA_17)
                     .handler(handler)
@@ -141,7 +159,13 @@ class CeapLambda(
                     .timeout(timeout)
                     .environment(environment)
                     .logRetention(logRetention)
-                    .build()
+                
+                // Use custom role if provided, otherwise CDK creates default role
+                if (role != null) {
+                    builder.role(role)
+                }
+                
+                builder.build()
             }
             LambdaNamingStrategy.DUAL -> {
                 // DUAL mode: Use explicit name if provided, otherwise auto-generate
@@ -159,6 +183,11 @@ class CeapLambda(
                     builder.functionName(functionName)
                 }
                 
+                // Use custom role if provided, otherwise CDK creates default role
+                if (role != null) {
+                    builder.role(role)
+                }
+                
                 builder.build()
             }
         }
@@ -166,6 +195,12 @@ class CeapLambda(
         // Automatically grant DynamoDB permissions
         tables.forEach { table ->
             table.grantReadWriteData(function)
+        }
+        
+        // Grant least-privilege S3 workflow bucket access if provided
+        // This scopes permissions to executions/* prefix only (Requirement 11.9)
+        if (workflowBucket != null) {
+            WorkflowIAMRoles.grantWorkflowBucketAccess(function, workflowBucket)
         }
     }
 }

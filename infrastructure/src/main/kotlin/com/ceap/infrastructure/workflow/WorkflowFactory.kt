@@ -69,6 +69,7 @@ object WorkflowFactory {
      * - CloudWatch Logs with full execution data
      * - X-Ray tracing enabled
      * - Support for incremental migration (HYBRID mode)
+     * - Least-privilege IAM role for Step Functions execution
      * 
      * @param scope CDK construct scope
      * @param config Workflow configuration
@@ -76,7 +77,7 @@ object WorkflowFactory {
      * 
      * @throws IllegalArgumentException if config contains Glue steps
      * 
-     * Validates: Requirements 4.1, 4.4, 4.5, 4.6, 4.7, 10.3
+     * Validates: Requirements 4.1, 4.4, 4.5, 4.6, 4.7, 10.3, 11.9
      */
     fun createExpressWorkflow(
         scope: Construct,
@@ -191,6 +192,19 @@ object WorkflowFactory {
             .retention(RetentionDays.TWO_WEEKS)
             .build()
         
+        // Create least-privilege IAM role for Step Functions (Requirement 11.9)
+        // This role grants only the minimum permissions required:
+        // - Invoke specific Lambda functions in the workflow
+        // - Write logs to CloudWatch
+        // - Send traces to X-Ray
+        val stepFunctionsRole = WorkflowIAMRoles.createStepFunctionsRole(
+            scope = scope,
+            id = "${config.workflowName}StepFunctionsRole",
+            roleName = "${config.workflowName}-stepfunctions-role",
+            lambdaFunctions = config.lambdaFunctions.values.toList(),
+            glueJobNames = emptyList()  // Express workflows don't support Glue jobs
+        )
+        
         // Create Express Step Function (Requirement 4.1)
         val stateMachine = StateMachine.Builder.create(scope, "${config.workflowName}StateMachine")
             .stateMachineName("${config.workflowName}-Express")
@@ -198,6 +212,7 @@ object WorkflowFactory {
             .stateMachineType(StateMachineType.EXPRESS)  // Express workflow type
             .timeout(Duration.minutes(5))  // 5-minute maximum duration
             .tracingEnabled(true)  // Enable X-Ray tracing (Requirement 4.7, 9.1)
+            .role(stepFunctionsRole)  // Use least-privilege role (Requirement 11.9)
             .logs(LogOptions.builder()
                 .destination(logGroup)
                 .includeExecutionData(true)  // Include full execution data (Requirement 4.7, 9.2)
@@ -240,12 +255,13 @@ object WorkflowFactory {
      * - X-Ray tracing enabled
      * - EventBridge rule for failure detection
      * - Support for incremental migration (HYBRID mode)
+     * - Least-privilege IAM role for Step Functions execution
      * 
      * @param scope CDK construct scope
      * @param config Workflow configuration
      * @return Created StateMachine
      * 
-     * Validates: Requirements 5.1, 5.3, 5.4, 5.5, 5.7, 10.3
+     * Validates: Requirements 5.1, 5.3, 5.4, 5.5, 5.7, 10.3, 11.9
      */
     fun createStandardWorkflow(
         scope: Construct,
@@ -259,6 +275,11 @@ object WorkflowFactory {
         
         // Build chainable steps (mix of Lambda and Glue)
         val chainableSteps = mutableListOf<IChainable>()
+        
+        // Collect Glue job names for IAM role creation
+        val glueJobNames = config.steps
+            .filterIsInstance<WorkflowStepType.Glue>()
+            .map { it.step.glueJobName }
         
         config.steps.forEachIndexed { index, stepType ->
             // Determine previous stage name (null for first stage)
@@ -400,12 +421,27 @@ object WorkflowFactory {
             .retention(RetentionDays.TWO_WEEKS)
             .build()
         
+        // Create least-privilege IAM role for Step Functions (Requirement 11.9)
+        // This role grants only the minimum permissions required:
+        // - Invoke specific Lambda functions in the workflow
+        // - Start/stop specific Glue jobs in the workflow
+        // - Write logs to CloudWatch
+        // - Send traces to X-Ray
+        val stepFunctionsRole = WorkflowIAMRoles.createStepFunctionsRole(
+            scope = scope,
+            id = "${config.workflowName}StepFunctionsRole",
+            roleName = "${config.workflowName}-stepfunctions-role",
+            lambdaFunctions = config.lambdaFunctions.values.toList(),
+            glueJobNames = glueJobNames
+        )
+        
         // Create Standard Step Function (Requirement 5.1)
         val stateMachine = StateMachine.Builder.create(scope, "${config.workflowName}StateMachine")
             .stateMachineName("${config.workflowName}-Standard")
             .definitionBody(DefinitionBody.fromChainable(chainableSteps[0]))
             .stateMachineType(StateMachineType.STANDARD)  // Standard workflow type
             .tracingEnabled(true)  // Enable X-Ray tracing (Requirement 9.1)
+            .role(stepFunctionsRole)  // Use least-privilege role (Requirement 11.9)
             .logs(LogOptions.builder()
                 .destination(logGroup)
                 .includeExecutionData(true)  // Include full execution data (Requirement 9.2)
