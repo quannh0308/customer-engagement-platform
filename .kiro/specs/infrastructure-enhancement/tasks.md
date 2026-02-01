@@ -272,7 +272,7 @@ Each task builds on previous work, with checkpoints to validate progress. The im
   - Commit message: "feat: implement Glue job integration"
   - Push to remote repository
 
-- [-] 10. Implement workflow type selection and validation
+- [x] 10. Implement workflow type selection and validation
   - [x] 10.1 Add workflow type validation logic
     - Validate Express workflows don't contain Glue steps
     - Provide clear error messages for invalid configurations
@@ -295,25 +295,25 @@ Each task builds on previous work, with checkpoints to validate progress. The im
     - **Property 27: Automatic Invocation Type Configuration**
     - **Validates: Requirements 6.5**
 
-- [-] 10.6 Git commit and push Task 10 changes
+- [x] 10.6 Git commit and push Task 10 changes
   - Commit message: "feat: implement workflow type selection and validation"
   - Push to remote repository
 
-- [~] 11. Checkpoint - Validate Standard workflow and Glue integration
+- [x] 11. Checkpoint - Validate Standard workflow and Glue integration
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 12. Implement error handling and retry logic
-  - [ ] 12.1 Configure SQS Dead Letter Queue
+- [-] 12. Implement error handling and retry logic
+  - [x] 12.1 Configure SQS Dead Letter Queue
     - Create DLQ for main workflow queue
     - Set maxReceiveCount = 3
     - _Requirements: 8.5_
   
-  - [ ] 12.2 Implement error logging in Lambda handlers
+  - [x] 12.2 Implement error logging in Lambda handlers
     - Log error details in StageResult
     - Include error type, message, and stack trace
     - _Requirements: 8.4_
   
-  - [ ] 12.3 Add error handling for S3 operations
+  - [x] 12.3 Add error handling for S3 operations
     - Handle access denied (403)
     - Handle object not found (404)
     - Handle throttling (503)
@@ -351,11 +351,11 @@ Each task builds on previous work, with checkpoints to validate progress. The im
     - Test retry exhaustion scenario
     - _Requirements: 12.7_
 
-- [ ] 12.11 Git commit and push Task 12 changes
+- [-] 12.11 Git commit and push Task 12 changes
   - Commit message: "feat: implement error handling and retry logic"
   - Push to remote repository
 
-- [ ] 13. Implement observability features
+- [~] 13. Implement observability features
   - [ ] 13.1 Configure CloudWatch Logs for Step Functions
     - Enable logs with includeExecutionData=true
     - Set log level to ALL
@@ -387,7 +387,7 @@ Each task builds on previous work, with checkpoints to validate progress. The im
   - Commit message: "feat: implement observability features"
   - Push to remote repository
 
-- [ ] 14. Implement backward compatibility features
+- [~] 14. Implement backward compatibility features
   - [ ] 14.1 Add support for dual naming patterns
     - Allow both old (auto-generated) and new (explicit) naming
     - Provide configuration flag to control naming strategy
@@ -410,7 +410,7 @@ Each task builds on previous work, with checkpoints to validate progress. The im
   - Commit message: "feat: implement backward compatibility features"
   - Push to remote repository
 
-- [ ] 15. Implement remaining infrastructure components
+- [~] 15. Implement remaining infrastructure components
   - [ ] 15.1 Configure EventBridge Pipe in CDK
     - Create Pipe resource connecting SQS to Step Function
     - Configure appropriate invocation type based on workflow type
@@ -434,10 +434,10 @@ Each task builds on previous work, with checkpoints to validate progress. The im
   - Commit message: "feat: implement remaining infrastructure components"
   - Push to remote repository
 
-- [ ] 16. Checkpoint - Validate complete infrastructure
+- [~] 16. Checkpoint - Validate complete infrastructure
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 17. Write integration tests
+- [~] 17. Write integration tests
   - [ ] 17.1 Write end-to-end Express workflow test
     - Deploy test stack
     - Send test message to SQS

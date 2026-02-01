@@ -18,6 +18,8 @@ import software.amazon.awscdk.services.s3.BlockPublicAccess
 import software.amazon.awscdk.services.s3.Bucket
 import software.amazon.awscdk.services.s3.BucketEncryption
 import software.amazon.awscdk.services.s3.LifecycleRule
+import software.amazon.awscdk.services.sqs.DeadLetterQueue
+import software.amazon.awscdk.services.sqs.Queue
 import software.amazon.awscdk.services.stepfunctions.*
 import software.amazon.awscdk.services.stepfunctions.tasks.LambdaInvoke
 import software.constructs.Construct
@@ -112,6 +114,16 @@ class DataPlatformStack(
     // Validates: Requirements 2.5, 2.7
     val workflowBucket: Bucket
     
+    // SQS Dead Letter Queue - for failed workflow messages
+    // Stores messages that fail after maxReceiveCount attempts
+    // Validates: Requirement 8.5
+    val workflowDLQ: Queue
+    
+    // SQS Workflow Queue - triggers Step Functions workflows
+    // Connected to DLQ for failure handling
+    // Validates: Requirement 8.5
+    val workflowQueue: Queue
+    
     init {
         // Set stack description
         this.templateOptions.description = 
@@ -164,6 +176,31 @@ class DataPlatformStack(
                     .enabled(true)
                     .build()
             ))
+            .build()
+        
+        // ========================================
+        // SQS Queues for Workflow Orchestration
+        // ========================================
+        
+        // Create Dead Letter Queue for failed workflow messages
+        // Messages move here after 3 failed receive attempts
+        // Validates: Requirement 8.5
+        workflowDLQ = Queue.Builder.create(this, "WorkflowDLQ")
+            .queueName("ceap-workflow-dlq-$envName")
+            .retentionPeriod(Duration.days(14)) // Retain failed messages for 14 days
+            .build()
+        
+        // Create main workflow queue with DLQ configuration
+        // Visibility timeout: 10 minutes (allows workflow to complete)
+        // Max receive count: 3 attempts before moving to DLQ
+        // Validates: Requirement 8.5
+        workflowQueue = Queue.Builder.create(this, "WorkflowQueue")
+            .queueName("ceap-workflow-queue-$envName")
+            .visibilityTimeout(Duration.minutes(10)) // Allow time for workflow execution
+            .deadLetterQueue(DeadLetterQueue.builder()
+                .queue(workflowDLQ)
+                .maxReceiveCount(3) // Move to DLQ after 3 failed attempts
+                .build())
             .build()
         
         // ========================================
@@ -605,6 +642,34 @@ class DataPlatformStack(
             .value(workflowBucket.bucketArn)
             .exportName("$stackName-WorkflowBucketArn")
             .description("ARN of the S3 bucket for workflow intermediate storage.")
+            .build()
+        
+        // Export Workflow Queue URL for message publishing
+        CfnOutput.Builder.create(this, "WorkflowQueueUrlOutput")
+            .value(workflowQueue.queueUrl)
+            .exportName("$stackName-WorkflowQueueUrl")
+            .description("URL of the SQS queue for triggering workflows.")
+            .build()
+        
+        // Export Workflow Queue ARN for IAM policy references
+        CfnOutput.Builder.create(this, "WorkflowQueueArnOutput")
+            .value(workflowQueue.queueArn)
+            .exportName("$stackName-WorkflowQueueArn")
+            .description("ARN of the SQS queue for triggering workflows.")
+            .build()
+        
+        // Export Workflow DLQ URL for monitoring and reprocessing
+        CfnOutput.Builder.create(this, "WorkflowDLQUrlOutput")
+            .value(workflowDLQ.queueUrl)
+            .exportName("$stackName-WorkflowDLQUrl")
+            .description("URL of the Dead Letter Queue for failed workflow messages.")
+            .build()
+        
+        // Export Workflow DLQ ARN for IAM policy references
+        CfnOutput.Builder.create(this, "WorkflowDLQArnOutput")
+            .value(workflowDLQ.queueArn)
+            .exportName("$stackName-WorkflowDLQArn")
+            .description("ARN of the Dead Letter Queue for failed workflow messages.")
             .build()
         
         // Task 2.6 - COMPLETED

@@ -6,10 +6,13 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.slf4j.LoggerFactory
+import software.amazon.awssdk.core.exception.SdkException
 import software.amazon.awssdk.core.sync.RequestBody
 import software.amazon.awssdk.services.s3.S3Client
 import software.amazon.awssdk.services.s3.model.GetObjectRequest
+import software.amazon.awssdk.services.s3.model.NoSuchKeyException
 import software.amazon.awssdk.services.s3.model.PutObjectRequest
+import software.amazon.awssdk.services.s3.model.S3Exception
 
 /**
  * Abstract base class for Lambda handlers in Step Functions workflows.
@@ -90,19 +93,38 @@ abstract class WorkflowLambdaHandler : RequestHandler<ExecutionContext, StageRes
             )
             
         } catch (e: Exception) {
+            // Log comprehensive error details for debugging (Requirement 8.4)
             logger.error(
-                "Stage failed: executionId={}, stage={}, error={}",
+                "Stage failed: executionId={}, stage={}, errorType={}, errorMessage={}",
                 context.executionId,
                 context.currentStage,
+                e.javaClass.simpleName,
                 e.message,
-                e
+                e // Include full stack trace in logs
             )
+            
+            // Build detailed error message with stack trace
+            val stackTrace = e.stackTrace.take(5).joinToString("\n") { 
+                "  at ${it.className}.${it.methodName}(${it.fileName}:${it.lineNumber})"
+            }
+            
+            val errorMessage = buildString {
+                append("${e.javaClass.simpleName}: ${e.message ?: "Unknown error"}")
+                if (stackTrace.isNotEmpty()) {
+                    append("\nStack trace:\n")
+                    append(stackTrace)
+                }
+                // Include cause if present
+                e.cause?.let { cause ->
+                    append("\nCaused by: ${cause.javaClass.simpleName}: ${cause.message}")
+                }
+            }
             
             StageResult(
                 status = "FAILED",
                 stage = context.currentStage,
                 recordsProcessed = 0,
-                errorMessage = "${e.javaClass.simpleName}: ${e.message}"
+                errorMessage = errorMessage
             )
         }
     }
@@ -114,8 +136,14 @@ abstract class WorkflowLambdaHandler : RequestHandler<ExecutionContext, StageRes
      * - First stage (previousStage == null): Use initialData from SQS message
      * - Non-first stage: Read from S3 at executions/{executionId}/{previousStage}/output.json
      * 
+     * Error Handling (Requirements 8.1, 8.2, 8.3):
+     * - Transient errors (503 SlowDown, 500 InternalError): Throw to trigger retry
+     * - Permanent errors (403 Forbidden, 404 NoSuchKey): Throw with clear message
+     * 
      * @param context Execution context
      * @return Input data as JsonNode
+     * @throws S3Exception for S3-specific errors (access denied, not found, throttling)
+     * @throws IllegalStateException for configuration errors
      */
     private fun readInput(context: ExecutionContext): JsonNode {
         return if (context.previousStage != null) {
@@ -129,15 +157,106 @@ abstract class WorkflowLambdaHandler : RequestHandler<ExecutionContext, StageRes
                 inputKey
             )
             
-            val getObjectRequest = GetObjectRequest.builder()
-                .bucket(context.workflowBucket)
-                .key(inputKey)
-                .build()
-            
-            val response = s3Client.getObject(getObjectRequest)
-            val jsonBytes = response.readAllBytes()
-            
-            objectMapper.readTree(jsonBytes)
+            try {
+                val getObjectRequest = GetObjectRequest.builder()
+                    .bucket(context.workflowBucket)
+                    .key(inputKey)
+                    .build()
+                
+                val response = s3Client.getObject(getObjectRequest)
+                val jsonBytes = response.readAllBytes()
+                
+                objectMapper.readTree(jsonBytes)
+                
+            } catch (e: NoSuchKeyException) {
+                // Permanent error: Object not found (404)
+                // This indicates previous stage failed or path is incorrect
+                logger.error(
+                    "S3 object not found (404): bucket={}, key={}. " +
+                    "Previous stage may have failed or path is incorrect.",
+                    context.workflowBucket,
+                    inputKey
+                )
+                throw IllegalStateException(
+                    "Input data not found in S3. Previous stage '${context.previousStage}' " +
+                    "may have failed or not written output. Path: s3://${context.workflowBucket}/$inputKey",
+                    e
+                )
+                
+            } catch (e: S3Exception) {
+                when (e.statusCode()) {
+                    403 -> {
+                        // Permanent error: Access denied (403)
+                        // This indicates IAM permission issue
+                        logger.error(
+                            "S3 access denied (403): bucket={}, key={}. " +
+                            "Check IAM permissions for Lambda execution role.",
+                            context.workflowBucket,
+                            inputKey
+                        )
+                        throw IllegalStateException(
+                            "Access denied to S3 bucket. Check IAM permissions for Lambda execution role. " +
+                            "Path: s3://${context.workflowBucket}/$inputKey",
+                            e
+                        )
+                    }
+                    
+                    503 -> {
+                        // Transient error: Throttling (503 SlowDown)
+                        // Throw to trigger Step Functions retry
+                        logger.warn(
+                            "S3 throttling (503): bucket={}, key={}. " +
+                            "Will retry with exponential backoff.",
+                            context.workflowBucket,
+                            inputKey
+                        )
+                        throw S3Exception.builder()
+                            .message("S3 throttling (503 SlowDown). Retrying with backoff.")
+                            .statusCode(503)
+                            .cause(e)
+                            .build()
+                    }
+                    
+                    500 -> {
+                        // Transient error: Internal server error (500)
+                        // Throw to trigger Step Functions retry
+                        logger.warn(
+                            "S3 internal error (500): bucket={}, key={}. " +
+                            "Will retry with exponential backoff.",
+                            context.workflowBucket,
+                            inputKey
+                        )
+                        throw S3Exception.builder()
+                            .message("S3 internal error (500). Retrying with backoff.")
+                            .statusCode(500)
+                            .cause(e)
+                            .build()
+                    }
+                    
+                    else -> {
+                        // Unknown S3 error - log and rethrow
+                        logger.error(
+                            "S3 error ({}): bucket={}, key={}, message={}",
+                            e.statusCode(),
+                            context.workflowBucket,
+                            inputKey,
+                            e.message
+                        )
+                        throw e
+                    }
+                }
+                
+            } catch (e: SdkException) {
+                // Network or SDK errors - likely transient
+                logger.warn(
+                    "SDK error reading from S3: bucket={}, key={}, message={}. " +
+                    "Will retry with exponential backoff.",
+                    context.workflowBucket,
+                    inputKey,
+                    e.message
+                )
+                throw e
+            }
             
         } else {
             // First stage: Use initial SQS message data (Requirement 2.4)
@@ -154,8 +273,13 @@ abstract class WorkflowLambdaHandler : RequestHandler<ExecutionContext, StageRes
      * Convention-based path resolution (Requirement 3.2):
      * - Output path: executions/{executionId}/{currentStage}/output.json
      * 
+     * Error Handling (Requirements 8.1, 8.2, 8.3):
+     * - Transient errors (503 SlowDown, 500 InternalError): Throw to trigger retry
+     * - Permanent errors (403 Forbidden): Throw with clear message
+     * 
      * @param context Execution context
      * @param data Output data to write
+     * @throws S3Exception for S3-specific errors (access denied, throttling)
      */
     private fun writeOutput(context: ExecutionContext, data: JsonNode) {
         // Convention-based output path (Requirement 2.2)
@@ -168,22 +292,98 @@ abstract class WorkflowLambdaHandler : RequestHandler<ExecutionContext, StageRes
             outputKey
         )
         
-        val jsonBytes = objectMapper.writeValueAsBytes(data)
-        
-        val putObjectRequest = PutObjectRequest.builder()
-            .bucket(context.workflowBucket)
-            .key(outputKey)
-            .contentType("application/json")
-            .build()
-        
-        s3Client.putObject(putObjectRequest, RequestBody.fromBytes(jsonBytes))
-        
-        logger.info(
-            "Output written successfully: bucket={}, key={}, sizeBytes={}",
-            context.workflowBucket,
-            outputKey,
-            jsonBytes.size
-        )
+        try {
+            val jsonBytes = objectMapper.writeValueAsBytes(data)
+            
+            val putObjectRequest = PutObjectRequest.builder()
+                .bucket(context.workflowBucket)
+                .key(outputKey)
+                .contentType("application/json")
+                .build()
+            
+            s3Client.putObject(putObjectRequest, RequestBody.fromBytes(jsonBytes))
+            
+            logger.info(
+                "Output written successfully: bucket={}, key={}, sizeBytes={}",
+                context.workflowBucket,
+                outputKey,
+                jsonBytes.size
+            )
+            
+        } catch (e: S3Exception) {
+            when (e.statusCode()) {
+                403 -> {
+                    // Permanent error: Access denied (403)
+                    // This indicates IAM permission issue
+                    logger.error(
+                        "S3 access denied (403): bucket={}, key={}. " +
+                        "Check IAM permissions for Lambda execution role.",
+                        context.workflowBucket,
+                        outputKey
+                    )
+                    throw IllegalStateException(
+                        "Access denied to S3 bucket. Check IAM permissions for Lambda execution role. " +
+                        "Path: s3://${context.workflowBucket}/$outputKey",
+                        e
+                    )
+                }
+                
+                503 -> {
+                    // Transient error: Throttling (503 SlowDown)
+                    // Throw to trigger Step Functions retry
+                    logger.warn(
+                        "S3 throttling (503): bucket={}, key={}. " +
+                        "Will retry with exponential backoff.",
+                        context.workflowBucket,
+                        outputKey
+                    )
+                    throw S3Exception.builder()
+                        .message("S3 throttling (503 SlowDown). Retrying with backoff.")
+                        .statusCode(503)
+                        .cause(e)
+                        .build()
+                }
+                
+                500 -> {
+                    // Transient error: Internal server error (500)
+                    // Throw to trigger Step Functions retry
+                    logger.warn(
+                        "S3 internal error (500): bucket={}, key={}. " +
+                        "Will retry with exponential backoff.",
+                        context.workflowBucket,
+                        outputKey
+                    )
+                    throw S3Exception.builder()
+                        .message("S3 internal error (500). Retrying with backoff.")
+                        .statusCode(500)
+                        .cause(e)
+                        .build()
+                }
+                
+                else -> {
+                    // Unknown S3 error - log and rethrow
+                    logger.error(
+                        "S3 error ({}): bucket={}, key={}, message={}",
+                        e.statusCode(),
+                        context.workflowBucket,
+                        outputKey,
+                        e.message
+                    )
+                    throw e
+                }
+            }
+            
+        } catch (e: SdkException) {
+            // Network or SDK errors - likely transient
+            logger.warn(
+                "SDK error writing to S3: bucket={}, key={}, message={}. " +
+                "Will retry with exponential backoff.",
+                context.workflowBucket,
+                outputKey,
+                e.message
+            )
+            throw e
+        }
     }
     
     /**
